@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { isNil } from 'lodash';
-
-import { UserSubscriber } from '../../entity-subscribers/user-subscriber';
-import { SnakeNamingStrategy } from '../../snake-naming.strategy';
 
 @Injectable()
 export class ApiConfigService {
@@ -56,56 +52,12 @@ export class ApiConfigService {
     return this.getString('FALLBACK_LANGUAGE').toLowerCase();
   }
 
-  get postgresConfig(): TypeOrmModuleOptions {
-    let entities = [
-      __dirname + '/../../modules/**/*.entity{.ts,.js}',
-      __dirname + '/../../modules/**/*.view-entity{.ts,.js}',
-    ];
-    let migrations = [__dirname + '/../../database/migrations/*{.ts,.js}'];
-
-    if (module.hot) {
-      const entityContext = require.context(
-        './../../modules',
-        true,
-        /\.entity\.ts$/,
-      );
-      entities = entityContext.keys().map((id) => {
-        const entityModule = entityContext<Record<string, unknown>>(id);
-        const [entity] = Object.values(entityModule);
-
-        return entity as string;
-      });
-      const migrationContext = require.context(
-        './../../database/migrations',
-        false,
-        /\.ts$/,
-      );
-
-      migrations = migrationContext.keys().map((id) => {
-        const migrationModule = migrationContext<Record<string, unknown>>(id);
-        const [migration] = Object.values(migrationModule);
-
-        return migration as string;
-      });
-    }
-
-    return {
-      entities,
-      migrations,
-      keepConnectionAlive: !this.isTest,
-      dropSchema: this.isTest,
-      type: 'postgres',
-      name: 'default',
-      host: this.getString('DB_HOST'),
-      port: this.getNumber('DB_PORT'),
-      username: this.getString('DB_USERNAME'),
-      password: this.getString('DB_PASSWORD'),
-      database: this.getString('DB_DATABASE'),
-      subscribers: [UserSubscriber],
-      migrationsRun: true,
-      logging: this.getBoolean('ENABLE_ORM_LOGS'),
-      namingStrategy: new SnakeNamingStrategy(),
-    };
+  get getDatabaseUrl(): string {
+    return `mongodb+srv://${this.getString('DB_USER')}:${this.getString(
+      'DB_PASSWORD',
+    )}@devconnector.3mowt.mongodb.net/${this.getString(
+      'DB_DATABASE',
+    )}?retryWrites=true&w=majority`;
   }
 
   get awsS3Config() {

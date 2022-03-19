@@ -5,7 +5,7 @@ RUN yarn install
 
 COPY . ./
 
-RUN yarn build:prod
+RUN yarn build:dev
 
 FROM node:lts AS node_modules
 COPY package.json yarn.lock ./
@@ -27,4 +27,4 @@ COPY . /usr/src/app
 
 EXPOSE $PORT
 
-CMD [ "yarn", "start:prod" ]
+CMD [ "yarn", "start:dev" ]
