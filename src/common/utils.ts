@@ -1,6 +1,24 @@
 import bcrypt from 'bcrypt';
+import _ from 'lodash';
 
 import type { Optional } from '../types';
+
+export class DtoService {
+  public static toDto<T, E>(model: new (schema: E) => T, schema: E): T;
+
+  public static toDto<T, E>(model: new (schema: E) => T, schema: E[]): T[];
+
+  public static toDto<T, E>(
+    model: new (schema: E) => T,
+    schema: E | E[],
+  ): T | T[] {
+    if (_.isArray(schema)) {
+      return schema.map((u) => new model(u));
+    }
+
+    return new model(schema);
+  }
+}
 
 /**
  * generate hash from password or string
