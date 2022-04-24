@@ -1,8 +1,6 @@
 import { Controller } from '@nestjs/common';
-
-import type { QuestionBankService } from '../app/question-bank.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('question-bank')
-export class QuestionBankController {
-  public readonly questionBankService: QuestionBankService;
-}
+@ApiTags('question-bank')
+export class QuestionBankController {}
