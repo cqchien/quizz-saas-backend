@@ -1,7 +1,7 @@
 import { getValue, setValue } from 'express-ctx';
 
 import type { LanguageCode } from '../constants';
-import type { UserEntity } from '../modules/user/user.entity';
+import type { User } from '../modules/user/domain/user.schema';
 
 export class ContextProvider {
   private static readonly nameSpace = 'request';
@@ -23,7 +23,7 @@ export class ContextProvider {
     return `${ContextProvider.nameSpace}.${key}`;
   }
 
-  static setAuthUser(user: UserEntity): void {
+  static setAuthUser(user: User): void {
     ContextProvider.set(ContextProvider.authUserKey, user);
   }
 
@@ -35,7 +35,7 @@ export class ContextProvider {
     return ContextProvider.get<LanguageCode>(ContextProvider.languageKey);
   }
 
-  static getAuthUser(): UserEntity | undefined {
-    return ContextProvider.get<UserEntity>(ContextProvider.authUserKey);
+  static getAuthUser(): User | undefined {
+    return ContextProvider.get<User>(ContextProvider.authUserKey);
   }
 }

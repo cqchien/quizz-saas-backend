@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Types } from 'mongoose';
 
 import type { AbstractSchema } from '../abstract.schema';
 
 export class AbstractSchemaDto {
   @ApiProperty()
-  _id: Types.ObjectId;
+  _id: string;
 
   @ApiProperty()
   createdAt: Date;

@@ -6,7 +6,6 @@ import {
   QuestionBank,
   questionBankSchema,
 } from './domain/question-bank.schema';
-import { QuestionBankRepository } from './infra/question-bank.repository';
 import { QuestionBankController } from './interface/question-bank.controller';
 
 @Module({
@@ -17,6 +16,6 @@ import { QuestionBankController } from './interface/question-bank.controller';
   ],
   exports: [],
   controllers: [QuestionBankController],
-  providers: [QuestionBankService, QuestionBankRepository],
+  providers: [QuestionBankService],
 })
 export class QuestionBankModule {}

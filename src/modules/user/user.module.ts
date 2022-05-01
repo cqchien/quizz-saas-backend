@@ -1,18 +1,16 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 
-import { CreateSettingsHandler } from './commands/create-settings.command';
-import { UserController } from './user.controller';
-import { UserRepository } from './user.repository';
-import { UserService } from './user.service';
-import { UserSettingsRepository } from './user-settings.repository';
-
-export const handlers = [CreateSettingsHandler];
+import { UserService } from './app/user.service';
+import { User, userSchema } from './domain/user.schema';
+import { UserController } from './interface/user.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserRepository, UserSettingsRepository])],
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: userSchema }]),
+  ],
   controllers: [UserController],
   exports: [UserService],
-  providers: [UserService, ...handlers],
+  providers: [UserService],
 })
 export class UserModule {}

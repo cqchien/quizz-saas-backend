@@ -4,7 +4,7 @@ import type { Document } from 'mongoose';
 import { AbstractSchema } from '../../../common/abstract.schema';
 import { HeuristicLevel, QuestionStatus, QuestionType } from '../constant/enum';
 import { QuestionBankDto } from './dto/question-bank.dto';
-import { QuestionOptionsDto } from './dto/question-options.dto';
+import type { QuestionOptionsDto } from './dto/question-options.dto';
 
 export type QuestionBankDocument = QuestionBank & Document;
 
@@ -13,19 +13,19 @@ export class QuestionBank extends AbstractSchema<QuestionBankDto> {
   @Prop()
   question: string;
 
-  @Prop({ name: 'question_type', type: 'enum' })
+  @Prop({ name: 'question_type', type: String })
   type: QuestionType;
 
-  @Prop({ name: 'heuristic_level', type: 'enum' })
+  @Prop({ name: 'heuristic_level', type: String })
   heuristicLevel: HeuristicLevel;
 
-  @Prop({ name: 'question_status', type: 'enum' })
+  @Prop({ name: 'question_status', type: String })
   status: QuestionStatus;
 
   @Prop({ name: 'quantity_level', max: 10, min: 1 })
   level: number;
 
-  @Prop({ name: 'quantity_level', type: [QuestionOptionsDto] })
+  @Prop({ name: 'quantity_level', type: Array })
   options: QuestionOptionsDto[];
 
   @Prop()

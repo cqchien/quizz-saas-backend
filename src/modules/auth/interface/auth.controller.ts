@@ -6,22 +6,20 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  UploadedFile,
   Version,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { RoleType } from '../../constants';
-import { ApiFile, Auth, AuthUser } from '../../decorators';
-import { UserNotFoundException } from '../../exceptions';
-import { IFile } from '../../interfaces';
-import { UserDto } from '../user/dtos/user.dto';
-import { UserEntity } from '../user/user.entity';
-import { UserService } from '../user/user.service';
-import { AuthService } from './auth.service';
-import { LoginPayloadDto } from './dto/LoginPayloadDto';
-import { UserLoginDto } from './dto/UserLoginDto';
-import { UserRegisterDto } from './dto/UserRegisterDto';
+import { RoleType } from '../../../constants';
+import { ApiFile, Auth, AuthUser } from '../../../decorators';
+import { UserNotFoundException } from '../../../exceptions';
+import { UserService } from '../../user/app/user.service';
+import { UserDto } from '../../user/domain/dtos/user.dto';
+import { User } from '../../user/domain/user.schema';
+import { AuthService } from '../app/auth.service';
+import { LoginPayloadDto } from '../dto/LoginPayloadDto';
+import { UserLoginDto } from '../dto/UserLoginDto';
+import { UserRegisterDto } from '../dto/UserRegisterDto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -41,14 +39,16 @@ export class AuthController {
   async userLogin(
     @Body() userLoginDto: UserLoginDto,
   ): Promise<LoginPayloadDto> {
-    const userEntity = await this.authService.validateUser(userLoginDto);
+    const user = await this.authService.validateUser(userLoginDto);
 
     const token = await this.authService.createAccessToken({
-      userId: userEntity.id,
-      role: userEntity.role,
+      userId: user._id,
+      role: user.role,
     });
 
-    return new LoginPayloadDto(userEntity.toDto(), token);
+    const userDto: UserDto = user.toDto();
+
+    return new LoginPayloadDto(userDto, token);
   }
 
   @Post('register')
@@ -57,16 +57,10 @@ export class AuthController {
   @ApiFile({ name: 'avatar' })
   async userRegister(
     @Body() userRegisterDto: UserRegisterDto,
-    @UploadedFile() file: IFile,
   ): Promise<UserDto> {
-    const createdUser = await this.userService.createUser(
-      userRegisterDto,
-      file,
-    );
+    const createdUser = await this.userService.createUser(userRegisterDto);
 
-    return createdUser.toDto({
-      isActive: true,
-    });
+    return createdUser;
   }
 
   @Version('1')
@@ -74,7 +68,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Auth([RoleType.USER, RoleType.ADMIN])
   @ApiOkResponse({ type: UserDto, description: 'current user info' })
-  getCurrentUser(@AuthUser() user: UserEntity): UserDto {
+  getCurrentUser(@AuthUser() user: User): UserDto {
     return user.toDto();
   }
 }

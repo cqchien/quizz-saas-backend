@@ -1,10 +1,10 @@
 /* eslint-disable import/no-default-export */
 import type { Factory, Seeder } from 'typeorm-seeding';
 
-import { UserEntity } from '../../modules/user/user.entity';
+import { User } from '../../modules/user/domain/user.schema';
 
 export default class CreateUsers implements Seeder {
   public async run(factory: Factory): Promise<void> {
-    await factory(UserEntity)({ roles: [] }).createMany(1);
+    await factory(User)({ roles: [] }).createMany(1);
   }
 }

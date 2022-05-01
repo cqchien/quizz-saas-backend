@@ -18,7 +18,7 @@ export class ApiConfigService {
     return this.nodeEnv === 'test';
   }
 
-  private getNumber(key: string): number {
+  public getNumber(key: string): number {
     const value = this.get(key);
 
     try {

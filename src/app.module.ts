@@ -4,6 +4,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { AuthModule } from './modules/auth/auth.module';
+import { QuestionBankModule } from './modules/question-bank/question-bank.module';
+import { UserModule } from './modules/user/user.module';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { SharedModule } from './shared/shared.module';
 
@@ -20,6 +23,9 @@ import { SharedModule } from './shared/shared.module';
       }),
       inject: [ApiConfigService],
     }),
+    UserModule,
+    AuthModule,
+    QuestionBankModule,
   ],
 })
 export class AppModule {}

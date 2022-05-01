@@ -4,7 +4,7 @@ import { Reflector } from '@nestjs/core';
 import _ from 'lodash';
 
 import type { RoleType } from '../constants';
-import type { UserEntity } from '../modules/user/user.entity';
+import type { User } from '../modules/user/domain/user.schema';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = <UserEntity>request.user;
+    const user = <User>request.user;
 
     return roles.includes(user.role);
   }
