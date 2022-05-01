@@ -11,7 +11,7 @@
     "start:hmr": "node dist/main.hmr.ts",
     "start": "ts-node src/main.ts",
     "start:dev": "nodemon src/main.ts",
-    "start:prod": "node dist/src/main.js",
+    "start:prod": "node dist/main.js",
     "typeorm": "ts-node node_modules/typeorm/cli.js -f ormconfig",
     "migration:generate": "yarn run typeorm migration:generate -d src/database/migrations -n",
     "migration:create": "yarn run typeorm migration:create -d src/database/migrations -n",
