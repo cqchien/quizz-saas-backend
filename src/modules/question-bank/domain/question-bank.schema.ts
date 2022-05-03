@@ -9,7 +9,7 @@ import type { QuestionOptionsDto } from './dto/question-options.dto';
 export type QuestionBankDocument = QuestionBank & Document;
 
 @Schema()
-export class QuestionBank extends AbstractSchema<QuestionBankDto> {
+export class QuestionBank extends AbstractSchema {
   @Prop()
   question: string;
 
