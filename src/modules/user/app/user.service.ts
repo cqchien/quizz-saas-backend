@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
 import type { FindConditions } from 'typeorm';
 
-import type { Optional } from '../../../types';
 import type { UserRegisterDto } from '../../auth/dto/UserRegisterDto';
 import type { UserDocument } from '../domain/user.schema';
 import { User } from '../domain/user.schema';
+import { UserGetSerialization } from '../serialization/user.get.serialization';
 
 @Injectable()
 export class UserService {
@@ -18,11 +19,24 @@ export class UserService {
   /**
    * Find single user
    */
-  findOne(findData: FindConditions<User>): Promise<Optional<User | null>> {
-    return this.userModel.findOne(findData).exec();
+  findOne(findData: FindConditions<User>): Promise<UserDocument | null> {
+    return this.userModel.findOne(findData).lean().exec();
   }
 
-  async createUser(userRegisterDto: UserRegisterDto): Promise<User> {
+  async createUser(
+    userRegisterDto: UserRegisterDto,
+  ): Promise<UserGetSerialization> {
+    const existedUser = await this.userModel.findOne({
+      email: userRegisterDto.email,
+    });
+
+    if (existedUser) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.CONFLICT,
+        message: 'user.error.emailExist',
+      });
+    }
+
     const user = new this.userModel(userRegisterDto);
 
     // if (file && !this.validatorService.isImage(file.mimetype)) {
@@ -34,29 +48,16 @@ export class UserService {
 
     await user.save();
 
-    return user.toObject();
+    const userDetail = await this.userModel
+      .findOne({
+        _id: user._id,
+      })
+      .lean();
+
+    return this.serializationUserGet(userDetail);
   }
 
-  // async getUsers(
-  //   pageOptionsDto: UsersPageOptionsDto,
-  // ): Promise<PageDto<UserDto>> {
-  //   const queryBuilder = this.userModel.createQueryBuilder('user');
-  //   const [items, pageMetaDto] = await queryBuilder.paginate(pageOptionsDto);
-
-  //   return items.toPageDto(pageMetaDto);
-  // }
-
-  // async getUser(userId: string): Promise<UserDto> {
-  //   const queryBuilder = this.userModel.createQueryBuilder('user');
-
-  //   queryBuilder.where('user.id = :userId', { userId });
-
-  //   const userModel = await queryBuilder.getOne();
-
-  //   if (!userModel) {
-  //     throw new UserNotFoundException();
-  //   }
-
-  //   return userModel.toDto();
-  // }
+  serializationUserGet(data: UserDocument | null): UserGetSerialization {
+    return plainToInstance(UserGetSerialization, data);
+  }
 }

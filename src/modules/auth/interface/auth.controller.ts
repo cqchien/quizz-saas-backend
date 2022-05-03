@@ -1,21 +1,11 @@
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Version,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { RoleType } from '../../../constants';
-import { ApiFile, Auth, AuthUser } from '../../../decorators';
 import { UserNotFoundException } from '../../../exceptions';
 import { UserService } from '../../user/app/user.service';
 import { UserDto } from '../../user/domain/dtos/user.dto';
-import { User } from '../../user/domain/user.schema';
+import type { UserGetSerialization } from '../../user/serialization/user.get.serialization';
 import { AuthService } from '../app/auth.service';
 import { LoginPayloadDto } from '../dto/LoginPayloadDto';
 import { UserLoginDto } from '../dto/UserLoginDto';
@@ -46,29 +36,17 @@ export class AuthController {
       role: user.role,
     });
 
-    const userDto: UserDto = user.toDto();
-
-    return new LoginPayloadDto(userDto, token);
+    return new LoginPayloadDto(user, token);
   }
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: UserDto, description: 'Successfully Registered' })
-  @ApiFile({ name: 'avatar' })
   async userRegister(
     @Body() userRegisterDto: UserRegisterDto,
-  ): Promise<UserDto> {
+  ): Promise<UserGetSerialization> {
     const createdUser = await this.userService.createUser(userRegisterDto);
 
     return createdUser;
-  }
-
-  @Version('1')
-  @Get('me')
-  @HttpCode(HttpStatus.OK)
-  @Auth([RoleType.USER, RoleType.ADMIN])
-  @ApiOkResponse({ type: UserDto, description: 'current user info' })
-  getCurrentUser(@AuthUser() user: User): UserDto {
-    return user.toDto();
   }
 }
