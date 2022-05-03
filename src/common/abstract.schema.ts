@@ -1,11 +1,6 @@
 import { Prop } from '@nestjs/mongoose';
 
-import type { AbstractSchemaDto } from './dto/abstract.schema.dto';
-import { DtoService } from './utils';
-
-export abstract class AbstractSchema<
-  T extends AbstractSchemaDto = AbstractSchemaDto,
-> {
+export abstract class AbstractSchema {
   _id: string;
 
   @Prop({ name: 'created_at' })
@@ -13,8 +8,4 @@ export abstract class AbstractSchema<
 
   @Prop({ name: 'updated_at' })
   updatedAt: Date;
-
-  abstract dtoClass: new (schema: AbstractSchema) => T;
-
-  public toDto = () => DtoService.toDto(this.dtoClass, this);
 }
