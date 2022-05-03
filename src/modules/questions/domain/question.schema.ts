@@ -9,7 +9,7 @@ import { HeuristicLevel, QuestionStatus, QuestionType } from '../constant/enum';
 import type { QuestionOptionsDto } from './dto/question-options.dto';
 
 @Schema()
-export class QuestionBank extends AbstractSchema {
+export class Question extends AbstractSchema {
   @Prop()
   question: string;
 
@@ -58,10 +58,10 @@ export class QuestionBank extends AbstractSchema {
   updatedBy: string;
 }
 
-export const questionBankSchema = SchemaFactory.createForClass(QuestionBank);
-export type QuestionBankDocument = QuestionBank & Document;
+export const questionSchema = SchemaFactory.createForClass(Question);
+export type QuestionDocument = Question & Document;
 
-questionBankSchema.pre<QuestionBankDocument>('save', function (this, next) {
+questionSchema.pre<QuestionDocument>('save', function (this, next) {
   const now = new Date();
   this.updatedAt = now;
 

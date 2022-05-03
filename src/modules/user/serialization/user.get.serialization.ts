@@ -22,4 +22,7 @@ export class UserGetSerialization {
 
   @Exclude()
   readonly password: string;
+
+  @Exclude()
+  readonly __v: number;
 }
