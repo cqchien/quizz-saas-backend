@@ -8,6 +8,7 @@ import {
 export class PageOptionsDto {
   @EnumFieldOptional(() => Order, {
     default: Order.ASC,
+    example: Order.ASC,
   })
   readonly order: Order = Order.ASC;
 
@@ -31,5 +32,8 @@ export class PageOptionsDto {
   }
 
   @StringFieldOptional()
-  readonly q?: string;
+  readonly searchField?: string;
+
+  @StringFieldOptional()
+  readonly searchValue?: string;
 }

@@ -2,11 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import type { PageOptionsDto } from './page-options.dto';
 
-interface IPageMetaDtoParameters {
-  pageOptionsDto: PageOptionsDto;
-  itemCount: number;
-}
-
 export class PageMetaDto {
   @ApiProperty()
   readonly page: number;
@@ -26,9 +21,9 @@ export class PageMetaDto {
   @ApiProperty()
   readonly hasNextPage: boolean;
 
-  constructor({ pageOptionsDto, itemCount }: IPageMetaDtoParameters) {
-    this.page = pageOptionsDto.page;
-    this.take = pageOptionsDto.take;
+  constructor(pageOptionsDto: PageOptionsDto, itemCount: number) {
+    this.page = pageOptionsDto?.page;
+    this.take = pageOptionsDto?.take;
     this.itemCount = itemCount;
     this.pageCount = Math.ceil(this.itemCount / this.take);
     this.hasPreviousPage = this.page > 1;
