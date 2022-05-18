@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Query,
 } from '@nestjs/common';
@@ -31,11 +32,11 @@ export class QuestionController {
   async createQuestion(
     @Body() questionCreateDto: QuestionCreateDto,
   ): Promise<QuestionResponseSerialization> {
-    const createdUser = await this.questionService.createQuestion(
+    const question = await this.questionService.createQuestion(
       questionCreateDto,
     );
 
-    return createdUser;
+    return question;
   }
 
   @Get()
@@ -48,8 +49,23 @@ export class QuestionController {
   async getAllQuestions(
     @Query() getAllDto: PageOptionsDto,
   ): Promise<QuestionResponseSerialization> {
-    const createdUser = await this.questionService.findAll(getAllDto);
+    const questions = await this.questionService.findAll(getAllDto);
 
-    return createdUser;
+    return questions;
+  }
+
+  @Get(':questionId')
+  @Auth([RoleType.ADMIN])
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: QuestionResponseSerialization,
+    description: 'Successfully Get Detail',
+  })
+  async getDetailQuestion(
+    @Param('questionId') questionId: string,
+  ): Promise<QuestionResponseSerialization> {
+    const question = await this.questionService.findOne(questionId);
+
+    return question;
   }
 }

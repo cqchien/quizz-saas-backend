@@ -1,12 +1,12 @@
 import { Exclude, Transform, Type } from 'class-transformer';
 
+import { UserDocument } from '../../user/domain/user.schema';
 import type {
   HeuristicLevel,
   QuestionStatus,
   QuestionType,
-} from '../../question-bank/constant/enum';
-import type { QuestionOptionsDto } from '../../question-bank/domain/dto/question-options.dto';
-import { UserDocument } from '../../user/domain/user.schema';
+} from '../constant/enum';
+import type { QuestionOptionsDto } from '../domain/dto/question-options.dto';
 
 export class QuestionGetSerialization {
   @Type(() => String)
@@ -34,6 +34,7 @@ export class QuestionGetSerialization {
 
   @Transform(
     ({ value }) => ({
+      id: value._id,
       name: value.name,
       role: value.role,
       email: value.email,
@@ -45,6 +46,7 @@ export class QuestionGetSerialization {
   @Transform(
     // eslint-disable-next-line sonarjs/no-identical-functions
     ({ value }) => ({
+      id: value._id,
       name: value.name,
       role: value.role,
       email: value.email,

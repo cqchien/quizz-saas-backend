@@ -76,6 +76,23 @@ export class QuestionService {
     );
   };
 
+  findOne = async (
+    questionId: string,
+  ): Promise<QuestionResponseSerialization> => {
+    const questionDetail = await this.questionModel
+      .findOne({
+        _id: questionId,
+      })
+      .lean()
+      .populate('createdBy updatedBy');
+
+    const questionSerialization = this.serializationQuestionGet(
+      questionDetail as QuestionDocument,
+    );
+
+    return this.serializationQuestionsResponse(questionSerialization);
+  };
+
   serializationQuestionGet(
     data: QuestionDocument | null,
   ): QuestionGetSerialization {
