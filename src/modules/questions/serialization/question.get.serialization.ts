@@ -34,7 +34,6 @@ export class QuestionGetSerialization {
 
   @Transform(
     ({ value }) => ({
-      id: value._id,
       name: value.name,
       role: value.role,
       email: value.email,
@@ -46,7 +45,6 @@ export class QuestionGetSerialization {
   @Transform(
     // eslint-disable-next-line sonarjs/no-identical-functions
     ({ value }) => ({
-      id: value._id,
       name: value.name,
       role: value.role,
       email: value.email,

@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -15,6 +16,7 @@ import { RoleType } from '../../../constants/role-type';
 import { Auth } from '../../../decorators';
 import { QuestionService } from '../app/question.service';
 import { QuestionCreateDto } from '../domain/dto/question.create.dto';
+import { QuestionUpdateDto } from '../domain/dto/question.update.dto';
 import { QuestionResponseSerialization } from '../serialization/question.response.serialization';
 
 @Controller('question')
@@ -65,6 +67,25 @@ export class QuestionController {
     @Param('questionId') questionId: string,
   ): Promise<QuestionResponseSerialization> {
     const question = await this.questionService.findOne(questionId);
+
+    return question;
+  }
+
+  @Put(':questionId')
+  @Auth([RoleType.ADMIN])
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: QuestionResponseSerialization,
+    description: 'Successfully Update',
+  })
+  async updateQuestion(
+    @Param('questionId') questionId: string,
+    @Body() questionUpdateDto: QuestionUpdateDto,
+  ): Promise<QuestionResponseSerialization> {
+    const question = await this.questionService.updateQuestion(
+      questionId,
+      questionUpdateDto,
+    );
 
     return question;
   }

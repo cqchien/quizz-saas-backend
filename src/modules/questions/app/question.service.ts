@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
@@ -7,6 +7,7 @@ import { PageMetaDto } from '../../../common/dto/page-meta.dto';
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { ContextProvider } from '../../../providers/context.provider';
 import type { QuestionCreateDto } from '../domain/dto/question.create.dto';
+import type { QuestionUpdateDto } from '../domain/dto/question.update.dto';
 import type { QuestionDocument } from '../domain/question.schema';
 import { Question } from '../domain/question.schema';
 import { QuestionGetSerialization } from '../serialization/question.get.serialization';
@@ -38,6 +39,44 @@ export class QuestionService {
 
     const questionSerialization = this.serializationQuestionGet(
       questionDetail as QuestionDocument,
+    );
+
+    return this.serializationQuestionsResponse(questionSerialization);
+  };
+
+  updateQuestion = async (
+    questionId: string,
+    questionUpdateDto: QuestionUpdateDto,
+  ): Promise<QuestionResponseSerialization> => {
+    const user = ContextProvider.getAuthUser();
+
+    const questionDetail = await this.questionModel.findOne({
+      _id: questionId,
+    });
+
+    if (!questionDetail) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'user.error.notFound',
+      });
+    }
+
+    const updatedQuestion = Object.assign(questionDetail, {
+      ...questionUpdateDto,
+      updatedBy: user?._id,
+    });
+
+    await this.questionModel.updateOne({ _id: questionId }, updatedQuestion);
+
+    const questionResult = await this.questionModel
+      .findOne({
+        _id: questionId,
+      })
+      .lean()
+      .populate('createdBy updatedBy');
+
+    const questionSerialization = this.serializationQuestionGet(
+      questionResult as QuestionDocument,
     );
 
     return this.serializationQuestionsResponse(questionSerialization);
@@ -85,6 +124,13 @@ export class QuestionService {
       })
       .lean()
       .populate('createdBy updatedBy');
+
+    if (!questionDetail) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'user.error.notFound',
+      });
+    }
 
     const questionSerialization = this.serializationQuestionGet(
       questionDetail as QuestionDocument,
