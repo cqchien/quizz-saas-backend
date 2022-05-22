@@ -82,6 +82,29 @@ export class QuestionService {
     return this.serializationQuestionsResponse(questionSerialization);
   };
 
+  deleteQuestion = async (
+    questionId: string,
+  ): Promise<QuestionResponseSerialization> => {
+    const questionDetail = await this.questionModel.findOne({
+      _id: questionId,
+    });
+
+    if (!questionDetail) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'user.error.notFound',
+      });
+    }
+
+    await this.questionModel.deleteOne({ _id: questionId });
+
+    const questionSerialization = this.serializationQuestionGet(
+      questionDetail as QuestionDocument,
+    );
+
+    return this.serializationQuestionsResponse(questionSerialization);
+  };
+
   findAll = async (
     options: PageOptionsDto,
   ): Promise<QuestionResponseSerialization> => {

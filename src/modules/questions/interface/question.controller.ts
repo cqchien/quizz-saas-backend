@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -86,6 +87,21 @@ export class QuestionController {
       questionId,
       questionUpdateDto,
     );
+
+    return question;
+  }
+
+  @Delete(':questionId')
+  @Auth([RoleType.ADMIN])
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: QuestionResponseSerialization,
+    description: 'Successfully Delete',
+  })
+  async deleteQuestion(
+    @Param('questionId') questionId: string,
+  ): Promise<QuestionResponseSerialization> {
+    const question = await this.questionService.deleteQuestion(questionId);
 
     return question;
   }
