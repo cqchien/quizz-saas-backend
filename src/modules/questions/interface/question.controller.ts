@@ -1,11 +1,24 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { RoleType } from '../../../constants/role-type';
 import { Auth } from '../../../decorators';
 import { QuestionService } from '../app/question.service';
 import { QuestionCreateDto } from '../domain/dto/question.create.dto';
-import { QuestionGetSerialization } from '../serialization/question.get.serialization';
+import { QuestionUpdateDto } from '../domain/dto/question.update.dto';
+import { QuestionResponseSerialization } from '../serialization/question.response.serialization';
 
 @Controller('question')
 @ApiTags('question')
@@ -16,16 +29,80 @@ export class QuestionController {
   @Auth([RoleType.ADMIN])
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: QuestionGetSerialization,
+    type: QuestionResponseSerialization,
     description: 'Successfully created',
   })
   async createQuestion(
     @Body() questionCreateDto: QuestionCreateDto,
-  ): Promise<QuestionGetSerialization> {
-    const createdUser = await this.questionService.createQuestion(
+  ): Promise<QuestionResponseSerialization> {
+    const question = await this.questionService.createQuestion(
       questionCreateDto,
     );
 
-    return createdUser;
+    return question;
+  }
+
+  @Get()
+  @Auth([RoleType.ADMIN])
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: QuestionResponseSerialization,
+    description: 'Successfully Get All',
+  })
+  async getAllQuestions(
+    @Query() getAllDto: PageOptionsDto,
+  ): Promise<QuestionResponseSerialization> {
+    const questions = await this.questionService.findAll(getAllDto);
+
+    return questions;
+  }
+
+  @Get(':questionId')
+  @Auth([RoleType.ADMIN])
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: QuestionResponseSerialization,
+    description: 'Successfully Get Detail',
+  })
+  async getDetailQuestion(
+    @Param('questionId') questionId: string,
+  ): Promise<QuestionResponseSerialization> {
+    const question = await this.questionService.findOne(questionId);
+
+    return question;
+  }
+
+  @Put(':questionId')
+  @Auth([RoleType.ADMIN])
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: QuestionResponseSerialization,
+    description: 'Successfully Update',
+  })
+  async updateQuestion(
+    @Param('questionId') questionId: string,
+    @Body() questionUpdateDto: QuestionUpdateDto,
+  ): Promise<QuestionResponseSerialization> {
+    const question = await this.questionService.updateQuestion(
+      questionId,
+      questionUpdateDto,
+    );
+
+    return question;
+  }
+
+  @Delete(':questionId')
+  @Auth([RoleType.ADMIN])
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: QuestionResponseSerialization,
+    description: 'Successfully Delete',
+  })
+  async deleteQuestion(
+    @Param('questionId') questionId: string,
+  ): Promise<QuestionResponseSerialization> {
+    const question = await this.questionService.deleteQuestion(questionId);
+
+    return question;
   }
 }

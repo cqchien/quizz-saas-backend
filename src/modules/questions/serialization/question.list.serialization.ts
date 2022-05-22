@@ -1,4 +1,4 @@
-import { Exclude, Transform, Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 
 import { UserDocument } from '../../user/domain/user.schema';
 import type {
@@ -8,7 +8,7 @@ import type {
 } from '../constant/enum';
 import type { QuestionOptionsDto } from '../domain/dto/question-options.dto';
 
-export class QuestionGetSerialization {
+export class QuestionListSerialization {
   @Type(() => String)
   readonly _id: string;
 
@@ -20,38 +20,13 @@ export class QuestionGetSerialization {
 
   readonly level: number;
 
-  readonly options: QuestionOptionsDto[];
-
   readonly topic: string;
 
   readonly tags: string[];
 
   readonly language: string;
 
-  readonly attachment: string[];
-
   readonly isPrivate: boolean;
-
-  @Transform(
-    ({ value }) => ({
-      name: value.name,
-      role: value.role,
-      email: value.email,
-    }),
-    { toClassOnly: true },
-  )
-  readonly createdBy: UserDocument;
-
-  @Transform(
-    // eslint-disable-next-line sonarjs/no-identical-functions
-    ({ value }) => ({
-      name: value.name,
-      role: value.role,
-      email: value.email,
-    }),
-    { toClassOnly: true },
-  )
-  readonly updatedBy: UserDocument;
 
   readonly createdAt: Date;
 
@@ -59,4 +34,16 @@ export class QuestionGetSerialization {
 
   @Exclude()
   readonly __v: number;
+
+  @Exclude()
+  readonly options: QuestionOptionsDto[];
+
+  @Exclude()
+  readonly createdBy: UserDocument;
+
+  @Exclude()
+  readonly updatedBy: UserDocument;
+
+  @Exclude()
+  readonly attachment: string[];
 }

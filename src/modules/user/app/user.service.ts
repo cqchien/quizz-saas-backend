@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
@@ -31,7 +31,7 @@ export class UserService {
     });
 
     if (existedUser) {
-      throw new NotFoundException({
+      throw new ConflictException({
         statusCode: HttpStatus.CONFLICT,
         message: 'user.error.emailExist',
       });

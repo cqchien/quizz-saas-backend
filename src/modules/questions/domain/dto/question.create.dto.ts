@@ -1,64 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { Exclude } from 'class-transformer';
 
-import {
-  HeuristicLevel,
-  QuestionStatus,
-  QuestionType,
-} from '../../constant/enum';
-import { QuestionOptionsDto } from './question-options.dto';
+import { QuestionUpdateDto } from './question.update.dto';
 
-export class QuestionCreateDto {
-  @ApiProperty()
-  @IsString()
-  question: string;
-
-  @ApiProperty({
-    enum: QuestionType,
-  })
-  @IsOptional()
-  type: QuestionType;
-
-  @ApiProperty({
-    enum: HeuristicLevel,
-  })
-  @IsOptional()
-  heuristicLevel: HeuristicLevel;
-
-  @ApiProperty({
-    enum: QuestionStatus,
-  })
-  @IsOptional()
-  status: QuestionStatus;
-
-  @ApiProperty({ maximum: 10, minimum: 1 })
-  @IsOptional()
-  level: number;
-
-  @ApiProperty()
-  @IsOptional()
-  topic: string;
-
-  @ApiProperty()
-  @IsOptional()
-  tags: string[];
-
-  @ApiProperty({
-    type: QuestionOptionsDto,
-    isArray: true,
-  })
-  @IsOptional()
-  options: QuestionOptionsDto[];
-
-  @ApiProperty({ default: 'vi' })
-  @IsOptional()
-  language: string;
-
-  @ApiProperty()
-  @IsOptional()
-  attachment: string[];
-
-  @ApiProperty({ default: false })
-  @IsOptional()
-  isPrivate: boolean;
+export class QuestionCreateDto extends QuestionUpdateDto {
+  @Exclude()
+  id: string;
 }
