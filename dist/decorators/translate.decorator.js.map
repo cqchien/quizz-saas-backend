@@ -1,0 +1,1 @@
+{"version":3,"file":"translate.decorator.js","sourceRoot":"","sources":["../../src/decorators/translate.decorator.ts"],"names":[],"mappings":";;;AAEa,QAAA,yBAAyB,GAAG,kBAAkB,CAAC;AAE5D,SAAgB,SAAS,CACvB,IAAoC;IAEpC,OAAO,CAAC,MAAM,EAAE,GAAG,EAAE,EAAE;QACrB,OAAO,CAAC,cAAc,CAAC,iCAAyB,EAAE,IAAI,EAAE,MAAM,EAAE,GAAG,CAAC,CAAC;IACvE,CAAC,CAAC;AACJ,CAAC;AAND,8BAMC"}
