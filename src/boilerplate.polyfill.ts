@@ -230,10 +230,7 @@ SelectQueryBuilder.prototype.paginate = async function (
     }
   }
 
-  const pageMetaDto = new PageMetaDto({
-    itemCount,
-    pageOptionsDto,
-  });
+  const pageMetaDto = new PageMetaDto(pageOptionsDto, itemCount);
 
   return [entities, pageMetaDto];
 };
