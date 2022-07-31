@@ -18,10 +18,10 @@ import { Auth } from '../../../decorators';
 import { QuestionService } from '../app/question.service';
 import { QuestionCreateDto } from '../domain/dto/question.create.dto';
 import { QuestionUpdateDto } from '../domain/dto/question.update.dto';
-import { QuestionResponseSerialization } from '../serialization/question.response.serialization';
+import { QuestionResponseSerialization } from './serialization/question.response.serialization';
 
-@Controller('question')
-@ApiTags('question')
+@Controller('questions')
+@ApiTags('questions')
 export class QuestionController {
   constructor(private questionService: QuestionService) {}
 

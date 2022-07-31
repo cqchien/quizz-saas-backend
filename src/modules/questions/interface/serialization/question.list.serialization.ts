@@ -1,12 +1,12 @@
 import { Exclude, Type } from 'class-transformer';
 
-import { UserDocument } from '../../user/domain/user.schema';
+import { UserDocument } from '../../../user/domain/user.schema';
 import type {
   HeuristicLevel,
   QuestionStatus,
   QuestionType,
-} from '../constant/enum';
-import type { QuestionOptionsDto } from '../domain/dto/question-options.dto';
+} from '../../constant/enum';
+import type { QuestionOptionsDto } from '../../domain/dto/question-options.dto';
 
 export class QuestionListSerialization {
   @Type(() => String)
