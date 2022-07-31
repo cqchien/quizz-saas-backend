@@ -1,43 +1,35 @@
-import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { plainToInstance } from 'class-transformer';
-import { Model } from 'mongoose';
-import type { FindConditions } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
-import type { UserRegisterDto } from '../../auth/dto/UserRegisterDto';
-import type { UserDocument } from '../domain/user.schema';
-import { User } from '../domain/user.schema';
-import { UserGetSerialization } from '../serialization/user.get.serialization';
+import { RoleType } from '../../../constants/role-type';
+import { UserConflictException } from '../../../exceptions/user/user-conflict.exception';
+import { UserNotFoundException } from '../../../exceptions/user/user-not-found.exception';
+import { UserNotSaveException } from '../../../exceptions/user/user-not-save.exception';
+import type { UserRegisterDto } from '../../auth/domain/dto/register.dto';
+import type { User } from '../domain/entity/user.entity';
+import { UserRepository } from '../domain/user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
-  ) {}
+  constructor(private userRepository: UserRepository) {}
 
-  /**
-   * Find single user
-   */
-  findOne(findData: FindConditions<User>): Promise<UserDocument | null> {
-    return this.userModel.findOne(findData).lean().exec();
+  public async findOne(options: Record<string, string>): Promise<User> {
+    const user = await this.userRepository.findByCondition(options);
+
+    if (!user) {
+      throw new UserNotFoundException('User does not exist!!');
+    }
+
+    return user;
   }
 
-  async createUser(
-    userRegisterDto: UserRegisterDto,
-  ): Promise<UserGetSerialization> {
-    const existedUser = await this.userModel.findOne({
+  async createUser(userRegisterDto: UserRegisterDto): Promise<User> {
+    const existedUser = await this.userRepository.findByCondition({
       email: userRegisterDto.email,
     });
 
     if (existedUser) {
-      throw new ConflictException({
-        statusCode: HttpStatus.CONFLICT,
-        message: 'user.error.emailExist',
-      });
+      throw new UserConflictException('User is existed!!');
     }
-
-    const user = new this.userModel(userRegisterDto);
 
     // if (file && !this.validatorService.isImage(file.mimetype)) {
     //   throw new FileNotImageException();
@@ -46,18 +38,17 @@ export class UserService {
     //   user.avatar = await this.awsS3Service.uploadImage(file);
     // }
 
-    await user.save();
+    const userEntity: User = {
+      ...userRegisterDto,
+      role: RoleType.USER,
+    };
 
-    const userDetail = await this.userModel
-      .findOne({
-        _id: user._id,
-      })
-      .lean();
+    const user = await this.userRepository.create(userEntity);
 
-    return this.serializationUserGet(userDetail);
-  }
+    if (!user) {
+      throw new UserNotSaveException('Create user failed!');
+    }
 
-  serializationUserGet(data: UserDocument | null): UserGetSerialization {
-    return plainToInstance(UserGetSerialization, data);
+    return user;
   }
 }

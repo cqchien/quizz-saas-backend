@@ -10,11 +10,11 @@ import {
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { UserService } from '../../user/app/user.service';
-import { UserGetSerialization } from '../../user/serialization/user.get.serialization';
 import { AuthService } from '../app/auth.service';
-import { LoginPayloadDto } from '../dto/LoginPayloadDto';
-import { UserLoginDto } from '../dto/UserLoginDto';
-import { UserRegisterDto } from '../dto/UserRegisterDto';
+import { UserLoginDto } from '../domain/dto/login.dto';
+import { UserRegisterDto } from '../domain/dto/register.dto';
+import { LoginPresenter } from '../domain/presenter/login.presenter';
+import { AuthResponsePresenter } from '../domain/presenter/response.presenter';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -27,34 +27,36 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: LoginPayloadDto,
+    type: AuthResponsePresenter,
     description: 'User info with access token',
   })
   @ApiException(() => [NotFoundException])
   async userLogin(
     @Body() userLoginDto: UserLoginDto,
-  ): Promise<LoginPayloadDto> {
+  ): Promise<AuthResponsePresenter> {
     const user = await this.authService.validateUser(userLoginDto);
 
     const token = await this.authService.createAccessToken({
-      userId: user._id,
+      userId: user.id ? user.id : '',
       role: user.role,
     });
 
-    return new LoginPayloadDto(user, token);
+    const loginPresenter = new LoginPresenter(user, token);
+
+    return new AuthResponsePresenter(loginPresenter);
   }
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: UserGetSerialization,
+    type: AuthResponsePresenter,
     description: 'Successfully Registered',
   })
   async userRegister(
     @Body() userRegisterDto: UserRegisterDto,
-  ): Promise<UserGetSerialization> {
-    const createdUser = await this.userService.createUser(userRegisterDto);
+  ): Promise<AuthResponsePresenter> {
+    const user = await this.userService.createUser(userRegisterDto);
 
-    return createdUser;
+    return new AuthResponsePresenter(user);
   }
 }

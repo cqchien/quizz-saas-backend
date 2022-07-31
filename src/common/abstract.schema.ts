@@ -1,7 +1,9 @@
 import { Prop } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 export abstract class AbstractSchema {
-  _id: string;
+  @Prop()
+  _id: Types.ObjectId;
 
   @Prop({ name: 'created_at' })
   createdAt: Date;

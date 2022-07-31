@@ -4,7 +4,7 @@ import type { Document } from 'mongoose';
 import { Types } from 'mongoose';
 
 import { AbstractSchema } from '../../../common/abstract.schema';
-import { User } from '../../user/domain/user.schema';
+import { User } from '../../user/domain/entity/user.entity';
 import { HeuristicLevel, QuestionStatus, QuestionType } from '../constant/enum';
 import type { QuestionOptionsDto } from './dto/question-options.dto';
 

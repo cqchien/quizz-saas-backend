@@ -27,7 +27,7 @@ export class QuestionService {
     const user = ContextProvider.getAuthUser();
 
     const question = new this.questionModel(questionCreateDto);
-    question.updatedBy = question.createdBy = user?._id || '';
+    question.updatedBy = question.createdBy = user?.id || '';
     await question.save();
 
     const questionDetail = await this.questionModel
@@ -63,7 +63,7 @@ export class QuestionService {
 
     const updatedQuestion = Object.assign(questionDetail, {
       ...questionUpdateDto,
-      updatedBy: user?._id,
+      updatedBy: user?.id,
     });
 
     await this.questionModel.updateOne({ _id: questionId }, updatedQuestion);

@@ -1,6 +1,6 @@
 import { Exclude, Type } from 'class-transformer';
 
-import { UserDocument } from '../../../user/domain/user.schema';
+import { UserDocument } from '../../../user/domain/entity/user.schema';
 import type {
   HeuristicLevel,
   QuestionStatus,

@@ -2,13 +2,12 @@ import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { validateHash } from '../../../common/utils';
-import type { RoleType } from '../../../constants';
 import { TokenType } from '../../../constants';
 import { ApiConfigService } from '../../../shared/services/api-config.service';
 import { UserService } from '../../user/app/user.service';
-import type { UserGetSerialization } from '../../user/serialization/user.get.serialization';
-import { TokenPayloadDto } from '../dto/TokenPayloadDto';
-import type { UserLoginDto } from '../dto/UserLoginDto';
+import type { User } from '../../user/domain/entity/user.entity';
+import type { UserLoginDto } from '../domain/dto/login.dto';
+import { TokenPresenter } from '../domain/presenter/token.presenter';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +18,10 @@ export class AuthService {
   ) {}
 
   async createAccessToken(data: {
-    role: RoleType;
+    role: string;
     userId: string;
-  }): Promise<TokenPayloadDto> {
-    return new TokenPayloadDto({
+  }): Promise<TokenPresenter> {
+    return new TokenPresenter({
       expiresIn: this.configService.authConfig.jwtExpirationTime,
       accessToken: await this.jwtService.signAsync({
         userId: data.userId,
@@ -32,9 +31,7 @@ export class AuthService {
     });
   }
 
-  async validateUser(
-    userLoginDto: UserLoginDto,
-  ): Promise<UserGetSerialization> {
+  async validateUser(userLoginDto: UserLoginDto): Promise<User> {
     const user = await this.userService.findOne({
       email: userLoginDto.email,
     });
@@ -51,6 +48,6 @@ export class AuthService {
       });
     }
 
-    return this.userService.serializationUserGet(user);
+    return user;
   }
 }

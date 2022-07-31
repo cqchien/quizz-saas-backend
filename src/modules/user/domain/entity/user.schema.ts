@@ -1,12 +1,14 @@
 /* eslint-disable no-invalid-this */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import type { NextFunction } from 'express';
 
-import { AbstractSchema } from '../../../common/abstract.schema';
-import { generateHash } from '../../../common/utils';
-import { RoleType } from '../../../constants';
+import { AbstractSchema } from '../../../../common/abstract.schema';
+import { generateHash } from '../../../../common/utils';
+import { RoleType } from '../../../../constants';
+import type { User } from './user.entity';
 
 @Schema()
-export class User extends AbstractSchema {
+export class UserModel extends AbstractSchema {
   @Prop({
     required: true,
     index: true,
@@ -35,11 +37,12 @@ export class User extends AbstractSchema {
   avatar: string;
 }
 
-export const userSchema = SchemaFactory.createForClass(User);
-export type UserDocument = User & Document;
+export const userSchema = SchemaFactory.createForClass(UserModel);
+export type UserDocument = UserModel & Document;
 
-userSchema.pre<UserDocument>('save', function (this, next) {
+userSchema.pre<User>('save', function (this: User, next: NextFunction) {
   const now = new Date();
+
   this.updatedAt = now;
 
   if (!this.createdAt) {
