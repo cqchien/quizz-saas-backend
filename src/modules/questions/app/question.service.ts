@@ -10,9 +10,9 @@ import type { QuestionCreateDto } from '../domain/dto/question.create.dto';
 import type { QuestionUpdateDto } from '../domain/dto/question.update.dto';
 import type { QuestionDocument } from '../domain/question.schema';
 import { Question } from '../domain/question.schema';
-import { QuestionGetSerialization } from '../serialization/question.get.serialization';
-import { QuestionListSerialization } from '../serialization/question.list.serialization';
-import { QuestionResponseSerialization } from '../serialization/question.response.serialization';
+import { QuestionGetSerialization } from '../interface/serialization/question.get.serialization';
+import { QuestionListSerialization } from '../interface/serialization/question.list.serialization';
+import { QuestionResponseSerialization } from '../interface/serialization/question.response.serialization';
 
 @Injectable()
 export class QuestionService {
