@@ -24,8 +24,17 @@ export async function bootstrap(): Promise<NestExpressApplication> {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
     new ExpressAdapter(),
-    { cors: true },
   );
+
+  app.enableCors({
+    origin: [
+      'http://localhost:8000',
+      'http://localhost:8002',
+      'http://localhost:3000',
+      'https://knowled.netlify.app',
+    ],
+  });
+
   app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
   app.use(helmet());
   // app.setGlobalPrefix('/api'); use api as global prefix if you don't have subdomain
