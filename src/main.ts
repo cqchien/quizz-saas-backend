@@ -33,6 +33,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
       'http://localhost:3000',
       'https://knowled.netlify.app',
     ],
+    credentials: true,
   });
 
   app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
