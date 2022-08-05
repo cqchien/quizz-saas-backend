@@ -1,13 +1,14 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { validateHash } from '../../../common/utils';
 import { TokenType } from '../../../constants';
+import { UserNotFoundException } from '../../../exceptions/user/user-not-found.exception';
 import { ApiConfigService } from '../../../shared/services/api-config.service';
 import { UserService } from '../../user/app/user.service';
-import type { User } from '../../user/domain/entity/user.entity';
-import type { UserLoginDto } from '../domain/dto/login.dto';
-import { TokenPresenter } from '../domain/presenter/token.presenter';
+import type { UserEntity } from '../../user/domain/entity/user.entity';
+import type { UserLoginDto } from '../interface/dto/login.dto';
+import { TokenPresenter } from '../interface/presenter/token.presenter';
 
 @Injectable()
 export class AuthService {
@@ -31,21 +32,18 @@ export class AuthService {
     });
   }
 
-  async validateUser(userLoginDto: UserLoginDto): Promise<User> {
+  async validateUser(userLoginDto: UserLoginDto): Promise<UserEntity> {
     const user = await this.userService.findOne({
       email: userLoginDto.email,
     });
 
     const isPasswordValid = await validateHash(
       userLoginDto.password,
-      user?.password,
+      user.password,
     );
 
     if (!isPasswordValid) {
-      throw new NotFoundException({
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'user.error.notFound',
-      });
+      throw new UserNotFoundException('Wrong Password!');
     }
 
     return user;

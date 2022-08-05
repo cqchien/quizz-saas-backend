@@ -6,7 +6,7 @@ import type { RoleType } from '../../../constants';
 import { TokenType } from '../../../constants';
 import { ApiConfigService } from '../../../shared/services/api-config.service';
 import { UserService } from '../../user/app/user.service';
-import type { User } from '../../user/domain/entity/user.entity';
+import type { UserEntity } from '../../user/domain/entity/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     userId: string;
     role: RoleType;
     type: TokenType;
-  }): Promise<User> {
+  }): Promise<UserEntity> {
     if (args.type !== TokenType.ACCESS_TOKEN) {
       throw new UnauthorizedException();
     }

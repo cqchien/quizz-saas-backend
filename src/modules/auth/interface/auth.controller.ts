@@ -11,10 +11,10 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { UserService } from '../../user/app/user.service';
 import { AuthService } from '../app/auth.service';
-import { UserLoginDto } from '../domain/dto/login.dto';
-import { UserRegisterDto } from '../domain/dto/register.dto';
-import { LoginPresenter } from '../domain/presenter/login.presenter';
-import { AuthResponsePresenter } from '../domain/presenter/response.presenter';
+import { UserLoginDto } from './dto/login.dto';
+import { UserRegisterDto } from './dto/register.dto';
+import { LoginPresenter } from './presenter/login.presenter';
+import { AuthResponsePresenter } from './presenter/response.presenter';
 
 @Controller('auth')
 @ApiTags('auth')

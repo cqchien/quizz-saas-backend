@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { UserPresenter } from '../../../user/domain/presenter/user.presenter';
+import { UserPresenter } from '../../../user/interface/presenter/user.presenter';
 import { TokenPresenter } from './token.presenter';
 
 export class LoginPresenter {

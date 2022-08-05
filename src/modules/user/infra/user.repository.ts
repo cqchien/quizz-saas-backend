@@ -2,38 +2,38 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import type { User } from './entity/user.entity';
-import type { UserDocument } from './entity/user.schema';
-import { UserModel } from './entity/user.schema';
+import type { UserEntity } from '../domain/entity/user.entity';
+import type { UserDocument } from '../domain/user.schema';
+import { User } from '../domain/user.schema';
 
 @Injectable()
 export class UserRepository {
   constructor(
-    @InjectModel(UserModel.name)
+    @InjectModel(User.name)
     private repository: Model<UserDocument>,
   ) {}
 
   public async findByCondition(
     options: Record<string, string>,
-  ): Promise<User | undefined> {
+  ): Promise<UserEntity | undefined> {
     const { id, ...rest } = options;
-    const formatedOptions = { _id: id, ...rest };
+    const formatedOptions = id ? { _id: id, ...rest } : { ...rest };
 
     const userModel = await this.repository
       .findOne(formatedOptions)
-      .lean<UserModel>()
+      .lean<User>()
       .exec();
 
     return this.toEntity(userModel);
   }
 
-  public async create(userEntity: User): Promise<User | undefined> {
+  public async create(userEntity: UserEntity): Promise<UserEntity | undefined> {
     const user = await this.repository.create(userEntity);
 
     return this.toEntity(user.toObject());
   }
 
-  private toEntity(userModel: UserModel): User | undefined {
+  private toEntity(userModel: User): UserEntity | undefined {
     if (!userModel) {
       return undefined;
     }
