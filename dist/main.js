@@ -19,7 +19,15 @@ const setup_swagger_1 = require("./setup-swagger");
 const api_config_service_1 = require("./shared/services/api-config.service");
 const shared_module_1 = require("./shared/shared.module");
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule, new platform_express_1.ExpressAdapter(), { cors: true });
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, new platform_express_1.ExpressAdapter());
+    app.enableCors({
+        origin: [
+            'http://localhost:8000',
+            'http://localhost:8002',
+            'http://localhost:3000',
+            'https://knowled.netlify.app',
+        ],
+    });
     app.enable('trust proxy');
     app.use((0, helmet_1.default)());
     app.use((0, express_rate_limit_1.default)({
