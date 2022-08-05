@@ -19,7 +19,6 @@ __exportStar(require("./public-route.decorator"), exports);
 __exportStar(require("./swagger.schema"), exports);
 __exportStar(require("./transform.decorators"), exports);
 __exportStar(require("./translate.decorator"), exports);
-__exportStar(require("./use-dto.decorator"), exports);
 __exportStar(require("./validator.decorators"), exports);
 __exportStar(require("./virtual-column.decorator"), exports);
 //# sourceMappingURL=index.js.map

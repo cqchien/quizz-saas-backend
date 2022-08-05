@@ -14,9 +14,10 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const utils_1 = require("../../../common/utils");
 const constants_1 = require("../../../constants");
+const user_not_found_exception_1 = require("../../../exceptions/user/user-not-found.exception");
 const api_config_service_1 = require("../../../shared/services/api-config.service");
 const user_service_1 = require("../../user/app/user.service");
-const TokenPayloadDto_1 = require("../dto/TokenPayloadDto");
+const token_presenter_1 = require("../interface/presenter/token.presenter");
 let AuthService = class AuthService {
     constructor(jwtService, configService, userService) {
         this.jwtService = jwtService;
@@ -24,7 +25,7 @@ let AuthService = class AuthService {
         this.userService = userService;
     }
     async createAccessToken(data) {
-        return new TokenPayloadDto_1.TokenPayloadDto({
+        return new token_presenter_1.TokenPresenter({
             expiresIn: this.configService.authConfig.jwtExpirationTime,
             accessToken: await this.jwtService.signAsync({
                 userId: data.userId,
@@ -37,14 +38,11 @@ let AuthService = class AuthService {
         const user = await this.userService.findOne({
             email: userLoginDto.email,
         });
-        const isPasswordValid = await (0, utils_1.validateHash)(userLoginDto.password, user === null || user === void 0 ? void 0 : user.password);
+        const isPasswordValid = await (0, utils_1.validateHash)(userLoginDto.password, user.password);
         if (!isPasswordValid) {
-            throw new common_1.NotFoundException({
-                statusCode: common_1.HttpStatus.NOT_FOUND,
-                message: 'user.error.notFound',
-            });
+            throw new user_not_found_exception_1.UserNotFoundException('Wrong Password!');
         }
-        return this.userService.serializationUserGet(user);
+        return user;
     }
 };
 AuthService = __decorate([

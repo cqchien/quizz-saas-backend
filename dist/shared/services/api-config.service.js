@@ -57,24 +57,8 @@ let ApiConfigService = class ApiConfigService {
     get getDatabaseUrl() {
         return `mongodb+srv://${this.getString('DB_USER')}:${this.getString('DB_PASSWORD')}@devconnector.3mowt.mongodb.net/${this.getString('DB_DATABASE')}?retryWrites=true&w=majority`;
     }
-    get awsS3Config() {
-        return {
-            bucketRegion: this.getString('AWS_S3_BUCKET_REGION'),
-            bucketApiVersion: this.getString('AWS_S3_API_VERSION'),
-            bucketName: this.getString('AWS_S3_BUCKET_NAME'),
-        };
-    }
     get documentationEnabled() {
         return this.getBoolean('ENABLE_DOCUMENTATION');
-    }
-    get natsEnabled() {
-        return this.getBoolean('NATS_ENABLED');
-    }
-    get natsConfig() {
-        return {
-            host: this.getString('NATS_HOST'),
-            port: this.getNumber('NATS_PORT'),
-        };
     }
     get authConfig() {
         return {

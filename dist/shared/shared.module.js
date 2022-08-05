@@ -11,13 +11,11 @@ const axios_1 = require("@nestjs/axios");
 const common_1 = require("@nestjs/common");
 const cqrs_1 = require("@nestjs/cqrs");
 const api_config_service_1 = require("./services/api-config.service");
-const aws_s3_service_1 = require("./services/aws-s3.service");
 const generator_service_1 = require("./services/generator.service");
 const validator_service_1 = require("./services/validator.service");
 const providers = [
     api_config_service_1.ApiConfigService,
     validator_service_1.ValidatorService,
-    aws_s3_service_1.AwsS3Service,
     generator_service_1.GeneratorService,
 ];
 let SharedModule = class SharedModule {

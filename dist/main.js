@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bootstrap = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
-const microservices_1 = require("@nestjs/microservices");
 const platform_express_1 = require("@nestjs/platform-express");
 const compression_1 = __importDefault(require("compression"));
 const express_ctx_1 = require("express-ctx");
@@ -42,17 +41,6 @@ async function bootstrap() {
         exceptionFactory: (errors) => new common_1.UnprocessableEntityException(errors),
     }));
     const configService = app.select(shared_module_1.SharedModule).get(api_config_service_1.ApiConfigService);
-    if (configService.natsEnabled) {
-        const natsConfig = configService.natsConfig;
-        app.connectMicroservice({
-            transport: microservices_1.Transport.NATS,
-            options: {
-                url: `nats://${natsConfig.host}:${natsConfig.port}`,
-                queue: 'main_service',
-            },
-        });
-        await app.startAllMicroservices();
-    }
     if (configService.documentationEnabled) {
         (0, setup_swagger_1.setupSwagger)(app);
     }

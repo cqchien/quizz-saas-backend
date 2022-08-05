@@ -8,51 +8,43 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const class_transformer_1 = require("class-transformer");
-const mongoose_2 = require("mongoose");
-const user_schema_1 = require("../domain/user.schema");
-const user_get_serialization_1 = require("../serialization/user.get.serialization");
+const role_type_1 = require("../../../constants/role-type");
+const user_exist_exception_1 = require("../../../exceptions/user/user-exist.exception");
+const user_not_found_exception_1 = require("../../../exceptions/user/user-not-found.exception");
+const user_save_failed_exception_1 = require("../../../exceptions/user/user-save-failed.exception");
+const user_repository_1 = require("../infra/user.repository");
 let UserService = class UserService {
-    constructor(userModel) {
-        this.userModel = userModel;
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
-    findOne(findData) {
-        return this.userModel.findOne(findData).lean().exec();
+    async findOne(options) {
+        const user = await this.userRepository.findByCondition(options);
+        if (!user) {
+            throw new user_not_found_exception_1.UserNotFoundException('User does not exist!!');
+        }
+        return user;
     }
     async createUser(userRegisterDto) {
-        const existedUser = await this.userModel.findOne({
+        const existedUser = await this.userRepository.findByCondition({
             email: userRegisterDto.email,
         });
         if (existedUser) {
-            throw new common_1.ConflictException({
-                statusCode: common_1.HttpStatus.CONFLICT,
-                message: 'user.error.emailExist',
-            });
+            throw new user_exist_exception_1.UserExistException('User is existed!!');
         }
-        const user = new this.userModel(userRegisterDto);
-        await user.save();
-        const userDetail = await this.userModel
-            .findOne({
-            _id: user._id,
-        })
-            .lean();
-        return this.serializationUserGet(userDetail);
-    }
-    serializationUserGet(data) {
-        return (0, class_transformer_1.plainToInstance)(user_get_serialization_1.UserGetSerialization, data);
+        const userEntity = Object.assign(Object.assign({}, userRegisterDto), { role: role_type_1.RoleType.USER });
+        const user = await this.userRepository.create(userEntity);
+        if (!user) {
+            throw new user_save_failed_exception_1.UserSaveFailedException('Create user failed!');
+        }
+        return user;
     }
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __metadata("design:paramtypes", [user_repository_1.UserRepository])
 ], UserService);
 exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map

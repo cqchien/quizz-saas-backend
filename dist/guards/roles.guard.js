@@ -21,7 +21,7 @@ let RolesGuard = class RolesGuard {
         this.reflector = reflector;
     }
     canActivate(context) {
-        const roles = this.reflector.get('roles', context.getHandler());
+        const roles = this.reflector.get('role', context.getHandler());
         if (lodash_1.default.isEmpty(roles)) {
             return true;
         }

@@ -20,16 +20,16 @@ const mongoose_2 = require("mongoose");
 const page_meta_dto_1 = require("../../../common/dto/page-meta.dto");
 const context_provider_1 = require("../../../providers/context.provider");
 const question_schema_1 = require("../domain/question.schema");
-const question_get_serialization_1 = require("../serialization/question.get.serialization");
-const question_list_serialization_1 = require("../serialization/question.list.serialization");
-const question_response_serialization_1 = require("../serialization/question.response.serialization");
+const question_get_serialization_1 = require("../interface/serialization/question.get.serialization");
+const question_list_serialization_1 = require("../interface/serialization/question.list.serialization");
+const question_response_serialization_1 = require("../interface/serialization/question.response.serialization");
 let QuestionService = class QuestionService {
     constructor(questionModel) {
         this.questionModel = questionModel;
         this.createQuestion = async (questionCreateDto) => {
             const user = context_provider_1.ContextProvider.getAuthUser();
             const question = new this.questionModel(questionCreateDto);
-            question.updatedBy = question.createdBy = (user === null || user === void 0 ? void 0 : user._id) || '';
+            question.updatedBy = question.createdBy = (user === null || user === void 0 ? void 0 : user.id) || '';
             await question.save();
             const questionDetail = await this.questionModel
                 .findOne({
@@ -51,7 +51,7 @@ let QuestionService = class QuestionService {
                     message: 'user.error.notFound',
                 });
             }
-            const updatedQuestion = Object.assign(questionDetail, Object.assign(Object.assign({}, questionUpdateDto), { updatedBy: user === null || user === void 0 ? void 0 : user._id }));
+            const updatedQuestion = Object.assign(questionDetail, Object.assign(Object.assign({}, questionUpdateDto), { updatedBy: user === null || user === void 0 ? void 0 : user.id }));
             await this.questionModel.updateOne({ _id: questionId }, updatedQuestion);
             const questionResult = await this.questionModel
                 .findOne({

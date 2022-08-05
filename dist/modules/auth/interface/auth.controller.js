@@ -17,11 +17,11 @@ const nestjs_swagger_api_exception_decorator_1 = require("@nanogiants/nestjs-swa
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const user_service_1 = require("../../user/app/user.service");
-const user_get_serialization_1 = require("../../user/serialization/user.get.serialization");
 const auth_service_1 = require("../app/auth.service");
-const LoginPayloadDto_1 = require("../dto/LoginPayloadDto");
-const UserLoginDto_1 = require("../dto/UserLoginDto");
-const UserRegisterDto_1 = require("../dto/UserRegisterDto");
+const login_dto_1 = require("./dto/login.dto");
+const register_dto_1 = require("./dto/register.dto");
+const login_presenter_1 = require("./presenter/login.presenter");
+const response_presenter_1 = require("./presenter/response.presenter");
 let AuthController = class AuthController {
     constructor(userService, authService) {
         this.userService = userService;
@@ -30,39 +30,40 @@ let AuthController = class AuthController {
     async userLogin(userLoginDto) {
         const user = await this.authService.validateUser(userLoginDto);
         const token = await this.authService.createAccessToken({
-            userId: user._id,
+            userId: user.id ? user.id : '',
             role: user.role,
         });
-        return new LoginPayloadDto_1.LoginPayloadDto(user, token);
+        const loginPresenter = new login_presenter_1.LoginPresenter(user, token);
+        return new response_presenter_1.AuthResponsePresenter(loginPresenter);
     }
     async userRegister(userRegisterDto) {
-        const createdUser = await this.userService.createUser(userRegisterDto);
-        return createdUser;
+        const user = await this.userService.createUser(userRegisterDto);
+        return new response_presenter_1.AuthResponsePresenter(user);
     }
 };
 __decorate([
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOkResponse)({
-        type: LoginPayloadDto_1.LoginPayloadDto,
+        type: response_presenter_1.AuthResponsePresenter,
         description: 'User info with access token',
     }),
     (0, nestjs_swagger_api_exception_decorator_1.ApiException)(() => [common_1.NotFoundException]),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [UserLoginDto_1.UserLoginDto]),
+    __metadata("design:paramtypes", [login_dto_1.UserLoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "userLogin", null);
 __decorate([
     (0, common_1.Post)('register'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOkResponse)({
-        type: user_get_serialization_1.UserGetSerialization,
+        type: response_presenter_1.AuthResponsePresenter,
         description: 'Successfully Registered',
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [UserRegisterDto_1.UserRegisterDto]),
+    __metadata("design:paramtypes", [register_dto_1.UserRegisterDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "userRegister", null);
 AuthController = __decorate([

@@ -21,7 +21,7 @@ const decorators_1 = require("../../../decorators");
 const question_service_1 = require("../app/question.service");
 const question_create_dto_1 = require("../domain/dto/question.create.dto");
 const question_update_dto_1 = require("../domain/dto/question.update.dto");
-const question_response_serialization_1 = require("../serialization/question.response.serialization");
+const question_response_serialization_1 = require("./serialization/question.response.serialization");
 let QuestionController = class QuestionController {
     constructor(questionService) {
         this.questionService = questionService;
@@ -114,8 +114,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QuestionController.prototype, "deleteQuestion", null);
 QuestionController = __decorate([
-    (0, common_1.Controller)('question'),
-    (0, swagger_1.ApiTags)('question'),
+    (0, common_1.Controller)('questions'),
+    (0, swagger_1.ApiTags)('questions'),
     __metadata("design:paramtypes", [question_service_1.QuestionService])
 ], QuestionController);
 exports.QuestionController = QuestionController;
