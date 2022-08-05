@@ -27,6 +27,7 @@ async function bootstrap() {
             'http://localhost:3000',
             'https://knowled.netlify.app',
         ],
+        credentials: true,
     });
     app.enable('trust proxy');
     app.use((0, helmet_1.default)());
