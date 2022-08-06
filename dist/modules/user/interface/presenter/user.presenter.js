@@ -21,6 +21,8 @@ class UserPresenter {
         this.email = entity.email;
         this.avatar = entity.avatar;
         this.phone = entity.phone;
+        this.updatedAt = entity.updatedAt;
+        this.createdAt = entity.createdAt;
     }
 }
 __decorate([
@@ -47,5 +49,13 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     __metadata("design:type", String)
 ], UserPresenter.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    __metadata("design:type", Date)
+], UserPresenter.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    __metadata("design:type", Date)
+], UserPresenter.prototype, "createdAt", void 0);
 exports.UserPresenter = UserPresenter;
 //# sourceMappingURL=user.presenter.js.map

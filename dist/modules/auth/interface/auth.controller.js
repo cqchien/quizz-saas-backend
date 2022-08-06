@@ -16,6 +16,7 @@ exports.AuthController = void 0;
 const nestjs_swagger_api_exception_decorator_1 = require("@nanogiants/nestjs-swagger-api-exception-decorator");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const exceptions_1 = require("../../../exceptions");
 const user_service_1 = require("../../user/app/user.service");
 const auth_service_1 = require("../app/auth.service");
 const login_dto_1 = require("./dto/login.dto");
@@ -30,7 +31,7 @@ let AuthController = class AuthController {
     async userLogin(userLoginDto) {
         const user = await this.authService.validateUser(userLoginDto);
         const token = await this.authService.createAccessToken({
-            userId: user.id ? user.id : '',
+            userId: user.id,
             role: user.role,
         });
         const loginPresenter = new login_presenter_1.LoginPresenter(user, token);
@@ -48,7 +49,7 @@ __decorate([
         type: response_presenter_1.AuthResponsePresenter,
         description: 'User info with access token',
     }),
-    (0, nestjs_swagger_api_exception_decorator_1.ApiException)(() => [common_1.NotFoundException]),
+    (0, nestjs_swagger_api_exception_decorator_1.ApiException)(() => [exceptions_1.UserNotFoundException]),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [login_dto_1.UserLoginDto]),

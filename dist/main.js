@@ -38,7 +38,6 @@ async function bootstrap() {
     app.use((0, compression_1.default)());
     app.use((0, morgan_1.default)('combined'));
     app.enableVersioning();
-    app.setGlobalPrefix('/api');
     const reflector = app.get(core_1.Reflector);
     app.useGlobalFilters(new bad_request_filter_1.HttpExceptionFilter(reflector), new query_failed_filter_1.QueryFailedFilter(reflector));
     app.useGlobalInterceptors(new common_1.ClassSerializerInterceptor(reflector));

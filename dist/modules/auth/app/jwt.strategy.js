@@ -30,7 +30,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             throw new common_1.UnauthorizedException();
         }
         const user = await this.userService.findOne({
-            _id: args.userId,
+            id: args.userId,
             role: args.role,
         });
         if (!user) {
