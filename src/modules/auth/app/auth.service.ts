@@ -20,7 +20,7 @@ export class AuthService {
 
   async createAccessToken(data: {
     role: string;
-    userId: string;
+    userId: string | undefined;
   }): Promise<TokenPresenter> {
     return new TokenPresenter({
       expiresIn: this.configService.authConfig.jwtExpirationTime,
