@@ -11,6 +11,7 @@
     "start:hmr": "node dist/main.hmr.ts",
     "start": "ts-node --max_old_space_size=2560 src/main.ts",
     "start:dev": "nodemon src/main.ts",
+    "heroku-prebuild": "yarn postbuild:prod && yarn build:prod",
     "start:prod": "node dist/main.js",
     "typeorm": "ts-node node_modules/typeorm/cli.js -f ormconfig",
     "migration:generate": "yarn run typeorm migration:generate -d src/database/migrations -n",
