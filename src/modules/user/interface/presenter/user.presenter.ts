@@ -23,6 +23,12 @@ export class UserPresenter {
   @ApiPropertyOptional()
   phone?: string;
 
+  @ApiPropertyOptional()
+  updatedAt?: Date;
+
+  @ApiPropertyOptional()
+  createdAt?: Date;
+
   constructor(entity: UserEntity) {
     this.id = entity.id;
     this.name = entity.name;
@@ -30,5 +36,7 @@ export class UserPresenter {
     this.email = entity.email;
     this.avatar = entity.avatar;
     this.phone = entity.phone;
+    this.updatedAt = entity.updatedAt;
+    this.createdAt = entity.createdAt;
   }
 }

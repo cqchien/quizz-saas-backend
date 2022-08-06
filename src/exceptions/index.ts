@@ -1,2 +1,3 @@
 export * from './file-not-image.exception';
-export * from './user/user-not-found.exception';
+export * from './server-error.exception';
+export * from './user';
