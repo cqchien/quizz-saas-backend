@@ -1,14 +1,8 @@
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  NotFoundException,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { UserNotFoundException } from '../../../exceptions';
 import { UserService } from '../../user/app/user.service';
 import { AuthService } from '../app/auth.service';
 import { UserLoginDto } from './dto/login.dto';
@@ -30,14 +24,14 @@ export class AuthController {
     type: AuthResponsePresenter,
     description: 'User info with access token',
   })
-  @ApiException(() => [NotFoundException])
+  @ApiException(() => [UserNotFoundException])
   async userLogin(
     @Body() userLoginDto: UserLoginDto,
   ): Promise<AuthResponsePresenter> {
     const user = await this.authService.validateUser(userLoginDto);
 
     const token = await this.authService.createAccessToken({
-      userId: user.id ? user.id : '',
+      userId: user.id,
       role: user.role,
     });
 
