@@ -18,6 +18,7 @@ import { Auth } from '../../../decorators';
 import { QuestionService } from '../app/question.service';
 import { QuestionCreateDto } from '../domain/dto/question.create.dto';
 import { QuestionUpdateDto } from '../domain/dto/question.update.dto';
+import { QuestionGetSerialization } from './serialization/question.get.serialization';
 import { QuestionResponseSerialization } from './serialization/question.response.serialization';
 
 @Controller('questions')
@@ -33,13 +34,17 @@ export class QuestionController {
     description: 'Successfully created',
   })
   async createQuestion(
-    @Body() questionCreateDto: QuestionCreateDto,
+    @Body() questionCreateDto: QuestionCreateDto
   ): Promise<QuestionResponseSerialization> {
-    const question = await this.questionService.createQuestion(
-      questionCreateDto,
+    const questionEntity = await this.questionService.createQuestion(
+      questionCreateDto
     );
 
-    return question;
+    const questionGetSerialization = new QuestionGetSerialization(
+      questionEntity
+    );
+
+    return new QuestionResponseSerialization(questionGetSerialization);
   }
 
   @Get()
@@ -50,7 +55,7 @@ export class QuestionController {
     description: 'Successfully Get All',
   })
   async getAllQuestions(
-    @Query() getAllDto: PageOptionsDto,
+    @Query() getAllDto: PageOptionsDto
   ): Promise<QuestionResponseSerialization> {
     const questions = await this.questionService.findAll(getAllDto);
 
@@ -65,11 +70,17 @@ export class QuestionController {
     description: 'Successfully Get Detail',
   })
   async getDetailQuestion(
-    @Param('questionId') questionId: string,
+    @Param('questionId') questionId: string
   ): Promise<QuestionResponseSerialization> {
-    const question = await this.questionService.findOne(questionId);
+    const questionEntity = await this.questionService.findOne({
+      id: questionId,
+    });
 
-    return question;
+    const questionGetSerialization = new QuestionGetSerialization(
+      questionEntity
+    );
+
+    return new QuestionResponseSerialization(questionGetSerialization);
   }
 
   @Put(':questionId')
@@ -81,11 +92,11 @@ export class QuestionController {
   })
   async updateQuestion(
     @Param('questionId') questionId: string,
-    @Body() questionUpdateDto: QuestionUpdateDto,
+    @Body() questionUpdateDto: QuestionUpdateDto
   ): Promise<QuestionResponseSerialization> {
     const question = await this.questionService.updateQuestion(
       questionId,
-      questionUpdateDto,
+      questionUpdateDto
     );
 
     return question;
@@ -99,7 +110,7 @@ export class QuestionController {
     description: 'Successfully Delete',
   })
   async deleteQuestion(
-    @Param('questionId') questionId: string,
+    @Param('questionId') questionId: string
   ): Promise<QuestionResponseSerialization> {
     const question = await this.questionService.deleteQuestion(questionId);
 

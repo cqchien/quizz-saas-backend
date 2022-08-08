@@ -1,62 +1,65 @@
-import { Exclude, Transform, Type } from 'class-transformer';
-
-import { UserDocument } from '../../../user/domain/user.schema';
-import type {
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiEnumProperty } from "../../../../decorators";
+import { QuestionEntity } from "modules/questions/domain/entity/question.entity";
+import {
   HeuristicLevel,
   QuestionStatus,
   QuestionType,
-} from '../../constant/enum';
-import type { QuestionOptionsDto } from '../../domain/dto/question-options.dto';
+} from "../../constant/enum";
 
 export class QuestionGetSerialization {
-  @Type(() => String)
-  readonly _id: string;
+  @ApiProperty()
+  id?: string;
 
-  readonly type: QuestionType;
+  @ApiPropertyOptional()
+  question: string;
 
-  readonly heuristicLevel: HeuristicLevel;
+  @ApiEnumProperty(() => QuestionType)
+  type: string;
 
-  readonly status: QuestionStatus;
+  @ApiEnumProperty(() => HeuristicLevel)
+  heuristicLevel: string;
 
-  readonly level: number;
+  @ApiEnumProperty(() => QuestionStatus)
+  status: string;
 
-  readonly options: QuestionOptionsDto[];
+  @ApiPropertyOptional()
+  level?: number;
 
-  readonly topic: string;
+  @ApiPropertyOptional()
+  topic?: string;
 
-  readonly tags: string[];
+  @ApiPropertyOptional()
+  tags: string[];
 
-  readonly language: string;
+  @ApiPropertyOptional()
+  language: string;
 
-  readonly attachment: string[];
+  @ApiPropertyOptional()
+  attachment?: string[];
 
-  readonly isPrivate: boolean;
+  @ApiPropertyOptional()
+  isPrivate: boolean;
 
-  @Transform(
-    ({ value }) => ({
-      name: value.name,
-      role: value.role,
-      email: value.email,
-    }),
-    { toClassOnly: true },
-  )
-  readonly createdBy: UserDocument;
+  @ApiPropertyOptional()
+  updatedAt?: Date;
 
-  @Transform(
-    // eslint-disable-next-line sonarjs/no-identical-functions
-    ({ value }) => ({
-      name: value.name,
-      role: value.role,
-      email: value.email,
-    }),
-    { toClassOnly: true },
-  )
-  readonly updatedBy: UserDocument;
+  @ApiPropertyOptional()
+  createdAt?: Date;
 
-  readonly createdAt: Date;
-
-  readonly updatedAt: Date;
-
-  @Exclude()
-  readonly __v: number;
+  constructor(entity: QuestionEntity) {
+    this.id = entity.id;
+    this.question = entity.question;
+    this.type = entity.type;
+    this.heuristicLevel = entity.heuristicLevel;
+    this.status = entity.status;
+    this.level = entity.level;
+    this.topic = entity.topic;
+    this.tags = entity.tags;
+    this.language = entity.language;
+    this.attachment = entity.attachment;
+    this.isPrivate = entity.isPrivate;
+    this.updatedAt = entity.updatedAt;
+    this.createdAt = entity.createdAt;
+  }
 }

@@ -9,5 +9,13 @@ export class QuestionResponseSerialization {
   readonly data: QuestionGetSerialization | QuestionListSerialization[];
 
   @ApiProperty()
-  readonly meta: PageMetaDto;
+  readonly meta?: PageMetaDto;
+
+  constructor(
+    data: QuestionGetSerialization | QuestionListSerialization[],
+    meta?: PageMetaDto
+  ) {
+    this.data = data;
+    this.meta = meta;
+  }
 }
