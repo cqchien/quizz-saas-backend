@@ -40,7 +40,7 @@ export class Question extends AbstractSchema {
   language: string;
 
   @Prop({ type: [String] })
-  attachment: string[];
+  attachments: string[];
 
   @Prop()
   isPrivate: boolean;
