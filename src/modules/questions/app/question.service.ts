@@ -1,85 +1,115 @@
 import { Injectable } from '@nestjs/common';
+
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { QuestionExistException } from '../../../exceptions/question/question-exist.exception';
 import { QuestionNotFoundException } from '../../../exceptions/question/question-not-found.exception';
 import { QuestionSaveFailedException } from '../../../exceptions/question/question-save-failed.exception';
-import type { QuestionCreateDto } from '../domain/dto/question.create.dto';
-import type { QuestionUpdateDto } from '../domain/dto/question.update.dto';
-import { QuestionEntity } from '../domain/entity/question.entity';
+import { ServerErrorException } from '../../../exceptions/server-error.exception';
+import type { UserEntity } from '../../user/domain/entity/user.entity';
+import type { QuestionEntity } from '../domain/entity/question.entity';
 import { QuestionRepository } from '../infra/question.repository';
-import { QuestionResponseSerialization } from '../interface/serialization/question.response.serialization';
+import type { QuestionDto } from '../interface/dto/question.dto';
 
 @Injectable()
 export class QuestionService {
   constructor(private questionRepository: QuestionRepository) {}
 
   async createQuestion(
-    questionCreateDto: QuestionCreateDto
+    user: UserEntity,
+    questionDto: QuestionDto,
   ): Promise<QuestionEntity> {
-    const existedQuestion = await this.questionRepository.findByCondition({
-      question: questionCreateDto.question,
-    });
+    try {
+      const existedQuestion = await this.questionRepository.findByCondition({
+        id: questionDto.id || '',
+      });
 
-    if (existedQuestion) {
-      throw new QuestionExistException("Question is existed!!");
+      if (existedQuestion) {
+        throw new QuestionExistException('Question is existed!!');
+      }
+
+      const questionEntity: QuestionEntity = {
+        ...questionDto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: user.id,
+        updatedBy: user.id,
+      };
+
+      const question = await this.questionRepository.create(questionEntity);
+
+      if (!question) {
+        throw new QuestionSaveFailedException('Create question failed!');
+      }
+
+      return question;
+    } catch {
+      throw new ServerErrorException();
     }
-
-    const questionEntity: QuestionEntity = {
-      ...questionCreateDto,
-      type: questionCreateDto.type.toString(),
-      heuristicLevel: questionCreateDto.heuristicLevel.toString(),
-    };
-
-    const question = await this.questionRepository.create(questionEntity);
-
-    if (!question) {
-      throw new QuestionSaveFailedException("Create question failed!");
-    }
-
-    return question;
   }
 
   public async findOne(
-    options: Record<string, string>
+    options: Record<string, string>,
   ): Promise<QuestionEntity> {
     const question = await this.questionRepository.findByCondition(options);
 
     if (!question) {
-      throw new QuestionNotFoundException("Question does not exist!!");
+      throw new QuestionNotFoundException('Question does not exist!!');
     }
 
     return question;
   }
 
-  public async findAll(
-    options: PageOptionsDto
-  ): Promise<QuestionResponseSerialization> {
-    const questionResponseSerialization = await this.questionRepository.findAll(
-      options
-    );
-
-    return questionResponseSerialization;
+  public async findAll({ query, take, skip }: PageOptionsDto): Promise<{
+    data: Array<QuestionEntity | undefined>;
+    total: number;
+  }> {
+    return this.questionRepository.findAll(query, take, skip);
   }
 
   public async updateQuestion(
+    user: UserEntity,
     questionId: string,
-    questionUpdateDto: QuestionUpdateDto
-  ): Promise<QuestionResponseSerialization> {
-    const questionResponseSerialization =
-      await this.questionRepository.updateQuestion(
-        questionId,
-        questionUpdateDto
-      );
+    questionDto: QuestionDto,
+  ): Promise<QuestionEntity> {
+    try {
+      const existedQuestion = await this.questionRepository.findByCondition({
+        id: questionId,
+      });
 
-    return questionResponseSerialization;
+      if (!existedQuestion) {
+        throw new QuestionNotFoundException('Question does not exist!!');
+      }
+
+      const questionEntity: QuestionEntity = {
+        ...questionDto,
+        updatedAt: new Date(),
+        updatedBy: user.id,
+      };
+      const question = await this.questionRepository.update(questionEntity);
+
+      if (!question) {
+        throw new QuestionSaveFailedException('Update question failed!');
+      }
+
+      return question;
+    } catch {
+      throw new ServerErrorException();
+    }
   }
 
-  public async deleteQuestion(
-    questionId: string
-  ): Promise<QuestionResponseSerialization> {
-    const questionResponseSerialization =
-      await this.questionRepository.deleteQuestion(questionId);
+  public async deleteQuestion(questionId: string): Promise<void> {
+    try {
+      const existedQuestion = await this.questionRepository.findByCondition({
+        id: questionId,
+      });
 
-    return questionResponseSerialization;
+      if (!existedQuestion) {
+        throw new QuestionNotFoundException('Question does not exist!!');
+      }
+
+      await this.questionRepository.delete(questionId);
+    } catch {
+      throw new ServerErrorException();
+    }
   }
 }

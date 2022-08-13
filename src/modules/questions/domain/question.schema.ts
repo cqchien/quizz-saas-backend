@@ -1,14 +1,14 @@
 /* eslint-disable no-invalid-this */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { NextFunction } from 'express';
+import type { NextFunction } from 'express';
 import type { Document } from 'mongoose';
 import { Types } from 'mongoose';
 
 import { AbstractSchema } from '../../../common/abstract.schema';
 import { User } from '../../user/domain/user.schema';
 import { HeuristicLevel, QuestionStatus, QuestionType } from '../constant/enum';
-import type { QuestionOptionsDto } from './dto/question-options.dto';
-import { QuestionEntity } from './entity/question.entity';
+import type { QuestionOptionsDto } from '../interface/dto/question-options.dto';
+import type { QuestionEntity } from './entity/question.entity';
 
 @Schema()
 export class Question extends AbstractSchema {
@@ -74,5 +74,5 @@ questionSchema.pre<QuestionEntity>(
     }
 
     next();
-  }
+  },
 );

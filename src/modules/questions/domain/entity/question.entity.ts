@@ -1,3 +1,11 @@
+class QuestionOption {
+  order: number;
+
+  option: string;
+
+  value: string;
+}
+
 export class QuestionEntity {
   id?: string;
 
@@ -15,9 +23,11 @@ export class QuestionEntity {
 
   tags: string[];
 
+  options: QuestionOption[];
+
   language: string;
 
-  attachment?: string[];
+  attachments?: string[];
 
   isPrivate: boolean;
 
