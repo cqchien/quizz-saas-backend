@@ -80,5 +80,4 @@ db-data
 .temp
 .cache
 
-dist/
 build:prod/
