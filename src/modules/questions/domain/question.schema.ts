@@ -1,12 +1,14 @@
 /* eslint-disable no-invalid-this */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import type { NextFunction } from 'express';
 import type { Document } from 'mongoose';
 import { Types } from 'mongoose';
 
 import { AbstractSchema } from '../../../common/abstract.schema';
 import { User } from '../../user/domain/user.schema';
 import { HeuristicLevel, QuestionStatus, QuestionType } from '../constant/enum';
-import type { QuestionOptionsDto } from './dto/question-options.dto';
+import type { QuestionOptionsDto } from '../interface/dto/question-options.dto';
+import type { QuestionEntity } from './entity/question.entity';
 
 @Schema()
 export class Question extends AbstractSchema {
@@ -61,13 +63,16 @@ export class Question extends AbstractSchema {
 export const questionSchema = SchemaFactory.createForClass(Question);
 export type QuestionDocument = Question & Document;
 
-questionSchema.pre<QuestionDocument>('save', function (this, next) {
-  const now = new Date();
-  this.updatedAt = now;
+questionSchema.pre<QuestionEntity>(
+  'save',
+  function (this: QuestionEntity, next: NextFunction) {
+    const now = new Date();
+    this.updatedAt = now;
 
-  if (!this.createdAt) {
-    this.createdAt = now;
-  }
+    if (!this.createdAt) {
+      this.createdAt = now;
+    }
 
-  next();
-});
+    next();
+  },
+);

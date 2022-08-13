@@ -1,21 +1,21 @@
 export enum QuestionType {
   // Multiple Choice Question
-  MCQ = 1,
+  MCQ = 'multiple_choice_question',
   // Fill In The Blank
-  FITB = 2,
+  FITB = 'fill_in_the_blank',
   // Matching
-  MATCHING = 3,
+  MATCHING = 'matching',
   // Ordering
-  ORDERING = 4,
+  ORDERING = 'ordering',
 }
 
 export enum HeuristicLevel {
-  KNOWLEDGE = 1,
-  COMPREHENSION = 2,
-  APPLICATION = 3,
-  ANALYSIS = 4,
-  SYNTHESIS = 5,
-  EVALUATION = 6,
+  KNOWLEDGE = 'knowledge',
+  COMPREHENSION = 'comprehension',
+  APPLICATION = 'application',
+  ANALYSIS = 'analysis',
+  SYNTHESIS = 'synthesis',
+  EVALUATION = 'evaluation',
 }
 
 export enum QuestionStatus {

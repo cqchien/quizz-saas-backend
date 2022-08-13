@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { UserEntity } from '../../../user/domain/entity/user.entity';
+import { UserPresenter } from '../../../user/interface/presenter/user.presenter';
 import { LoginPresenter } from './login.presenter';
 
 export class AuthResponsePresenter {
-  @ApiProperty({ type: LoginPresenter || UserEntity })
-  data: LoginPresenter | UserEntity;
+  @ApiProperty({ type: LoginPresenter || UserPresenter })
+  data: LoginPresenter | UserPresenter;
 
   @ApiProperty()
   success: boolean;
 
-  constructor(data: LoginPresenter | UserEntity) {
+  constructor(data: LoginPresenter | UserPresenter) {
     this.data = data;
     this.success = true;
   }

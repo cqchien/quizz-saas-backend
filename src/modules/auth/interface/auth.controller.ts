@@ -4,6 +4,7 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { UserNotFoundException } from '../../../exceptions';
 import { UserService } from '../../user/app/user.service';
+import { UserPresenter } from '../../user/interface/presenter/user.presenter';
 import { AuthService } from '../app/auth.service';
 import { UserLoginDto } from './dto/login.dto';
 import { UserRegisterDto } from './dto/register.dto';
@@ -35,7 +36,8 @@ export class AuthController {
       role: user.role,
     });
 
-    const loginPresenter = new LoginPresenter(user, token);
+    const userPresenter = new UserPresenter(user);
+    const loginPresenter = new LoginPresenter(userPresenter, token);
 
     return new AuthResponsePresenter(loginPresenter);
   }
@@ -50,7 +52,8 @@ export class AuthController {
     @Body() userRegisterDto: UserRegisterDto,
   ): Promise<AuthResponsePresenter> {
     const user = await this.userService.createUser(userRegisterDto);
+    const userPresenter = new UserPresenter(user);
 
-    return new AuthResponsePresenter(user);
+    return new AuthResponsePresenter(userPresenter);
   }
 }
