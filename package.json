@@ -79,7 +79,8 @@
     "ts-node": "^10.7.0",
     "typeorm": "^0.2.41",
     "typeorm-transactional-cls-hooked": "^0.1.21",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@handfish/hygen": "^6.1.3",

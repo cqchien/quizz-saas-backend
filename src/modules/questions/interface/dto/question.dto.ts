@@ -2,10 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 import {
-  HeuristicLevel,
-  QuestionStatus,
-  QuestionType,
-} from '../../constant/enum';
+  HEURISTIC_LEVEL,
+  MODE,
+  QUESTION_STATUS,
+  QUESTION_TYPE,
+} from '../../constant';
 import { QuestionOptionsDto } from './question-options.dto';
 
 export class QuestionDto {
@@ -18,22 +19,22 @@ export class QuestionDto {
   question: string;
 
   @ApiProperty({
-    enum: QuestionType,
+    enum: QUESTION_TYPE,
   })
   @IsOptional()
-  type: QuestionType;
+  type: string;
 
   @ApiProperty({
-    enum: HeuristicLevel,
+    enum: HEURISTIC_LEVEL,
   })
   @IsOptional()
-  heuristicLevel: HeuristicLevel;
+  heuristicLevel: string;
 
   @ApiProperty({
-    enum: QuestionStatus,
+    enum: QUESTION_STATUS,
   })
   @IsOptional()
-  status: QuestionStatus;
+  status: string;
 
   @ApiProperty({ maximum: 10, minimum: 1 })
   @IsOptional()
@@ -62,7 +63,9 @@ export class QuestionDto {
   @IsOptional()
   attachment: string[];
 
-  @ApiProperty({ default: false })
+  @ApiProperty({
+    enum: MODE,
+  })
   @IsOptional()
-  isPrivate: boolean;
+  mode: string;
 }

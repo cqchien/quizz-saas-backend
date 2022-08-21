@@ -6,7 +6,6 @@ import { Types } from 'mongoose';
 
 import { AbstractSchema } from '../../../common/abstract.schema';
 import { User } from '../../user/domain/user.schema';
-import { HeuristicLevel, QuestionStatus, QuestionType } from '../constant/enum';
 import type { QuestionOptionsDto } from '../interface/dto/question-options.dto';
 import type { QuestionEntity } from './entity/question.entity';
 
@@ -15,19 +14,19 @@ export class Question extends AbstractSchema {
   @Prop()
   question: string;
 
-  @Prop({ name: 'question_type', type: String })
-  type: QuestionType;
+  @Prop({ name: 'ype', type: String })
+  type: string;
 
   @Prop({ name: 'heuristic_level', type: String })
-  heuristicLevel: HeuristicLevel;
+  heuristicLevel: string;
 
-  @Prop({ name: 'question_status', type: String })
-  status: QuestionStatus;
+  @Prop({ name: 'status', type: String })
+  status: string;
 
   @Prop({ name: 'quantity_level', max: 10, min: 1 })
   level: number;
 
-  @Prop({ name: 'quantity_level', type: Array })
+  @Prop({ name: 'options', type: Array })
   options: QuestionOptionsDto[];
 
   @Prop()
@@ -43,7 +42,7 @@ export class Question extends AbstractSchema {
   attachments: string[];
 
   @Prop()
-  isPrivate: boolean;
+  mode: string;
 
   @Prop({
     required: true,

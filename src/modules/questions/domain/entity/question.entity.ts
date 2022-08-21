@@ -1,9 +1,9 @@
-class QuestionOption {
+export class QuestionOption {
   order: number;
 
   option: string;
 
-  value: string;
+  value: string | boolean;
 }
 
 export class QuestionEntity {
@@ -29,7 +29,7 @@ export class QuestionEntity {
 
   attachments?: string[];
 
-  isPrivate: boolean;
+  mode: string;
 
   createdBy?: string;
 

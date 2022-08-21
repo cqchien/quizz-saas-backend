@@ -12,5 +12,5 @@ export class QuestionOptionsDto {
 
   @ApiProperty()
   @IsOptional()
-  value: string;
+  value: string | boolean;
 }
