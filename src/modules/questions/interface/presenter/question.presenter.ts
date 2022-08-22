@@ -37,8 +37,8 @@ export class QuestionPresenter {
   @ApiProperty()
   attachments?: string[];
 
-  @ApiProperty({ default: false })
-  isPrivate: boolean;
+  @ApiProperty()
+  mode: string;
 
   @ApiProperty()
   createdAt?: Date;
@@ -64,7 +64,7 @@ export class QuestionPresenter {
     this.options = entity.options;
     this.language = entity.language;
     this.attachments = entity.attachments;
-    this.isPrivate = entity.isPrivate;
+    this.mode = entity.mode;
     this.createdAt = entity.createdAt;
     this.updatedAt = entity.updatedAt;
     this.createdBy = entity.createdBy;

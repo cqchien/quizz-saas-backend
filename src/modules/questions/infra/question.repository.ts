@@ -67,6 +67,14 @@ export class QuestionRepository {
     return this.toEntity(question.toObject());
   }
 
+  public async createMultiple(
+    questionEntity: QuestionEntity[],
+  ): Promise<Array<QuestionEntity | undefined>> {
+    const questions = await this.repository.insertMany(questionEntity);
+
+    return questions.map((question) => this.toEntity(question.toObject()));
+  }
+
   public async update(
     questionEntity: QuestionEntity,
   ): Promise<QuestionEntity | undefined> {
@@ -96,7 +104,7 @@ export class QuestionRepository {
       options: questionModel.options,
       language: questionModel.language,
       attachments: questionModel.attachments,
-      isPrivate: questionModel.isPrivate,
+      mode: questionModel.mode,
       createdBy: questionModel.createdBy,
       updatedBy: questionModel.updatedBy,
       createdAt: questionModel.createdAt,

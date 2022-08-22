@@ -10,16 +10,18 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { PageMetaDto } from '../../../common/dto/page-meta.dto';
 import { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { RoleType } from '../../../constants/role-type';
-import { Auth, AuthUser } from '../../../decorators';
+import { ApiFile, Auth, AuthUser } from '../../../decorators';
 import { QuestionExistException } from '../../../exceptions/question/question-exist.exception';
 import { QuestionNotFoundException } from '../../../exceptions/question/question-not-found.exception';
 import { ServerErrorException } from '../../../exceptions/server-error.exception';
+import { IFile } from '../../../interfaces/IFile';
 import { User } from '../../user/domain/user.schema';
 import { QuestionService } from '../app/question.service';
 import type { QuestionEntity } from '../domain/entity/question.entity';
@@ -76,6 +78,20 @@ export class QuestionController {
       questionPresenters,
       pageMetaPresenters,
     );
+  }
+
+  @Post('upload')
+  @ApiFile([{ name: 'file', isArray: false }])
+  async uploadQuestions(
+    @UploadedFile() file: IFile,
+  ): Promise<QuestionResponsePresenter> {
+    const questions = await this.questionService.uploadQuestions(file);
+
+    const questionPresenters = (questions || []).map(
+      (question: QuestionEntity) => new QuestionPresenter(question),
+    );
+
+    return new QuestionResponsePresenter(questionPresenters);
   }
 
   @Get(':questionId')
