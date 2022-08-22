@@ -36,22 +36,16 @@ export class QuestionRepository {
     data: Array<QuestionEntity | undefined>;
     total: number;
   }> {
-    const questionsQuery = this.repository.find();
+    const questionsQuery = this.repository
+      .find({
+        $or: [{ topic: query }, { tag: query }],
+      })
+      .limit(take)
+      .skip(skip)
+      .sort({ updatedAt: 1 });
 
-    if (query) {
-      await questionsQuery.where('topic').equals(query);
-
-      await questionsQuery.where('tags').elemMatch(query);
-    }
-
-    await questionsQuery.sort({ updatedAt: 1 });
-    await questionsQuery.limit(take);
-    await questionsQuery.skip(skip);
-
-    const [questions, total] = await Promise.all([
-      questionsQuery.lean<Question[]>().exec(),
-      questionsQuery.countDocuments(),
-    ]);
+    const questions = await questionsQuery.lean<Question[]>().exec();
+    const total = await this.repository.countDocuments();
 
     return {
       data: questions.map((question: Question) => this.toEntity(question)),
