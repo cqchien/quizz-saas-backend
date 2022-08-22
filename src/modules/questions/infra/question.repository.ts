@@ -2,6 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
+import {
+  MAP_HEURISTIC_LEVEL,
+  MAP_MODE,
+  MAP_QUESTION_STATUS,
+  MAP_QUESTION_TYPE,
+} from '../constant';
 import type { QuestionEntity } from '../domain/entity/question.entity';
 import type { QuestionDocument } from '../domain/question.schema';
 import { Question } from '../domain/question.schema';
@@ -89,16 +95,16 @@ export class QuestionRepository {
     return {
       id: questionModel._id.toString(),
       question: questionModel.question,
-      type: questionModel.type,
-      heuristicLevel: questionModel.heuristicLevel,
-      status: questionModel.status,
+      type: MAP_QUESTION_TYPE[questionModel.type],
+      heuristicLevel: MAP_HEURISTIC_LEVEL[questionModel.heuristicLevel],
+      status: MAP_QUESTION_STATUS[questionModel.status],
       level: questionModel.level,
       topic: questionModel.topic,
       tags: questionModel.tags,
       options: questionModel.options,
       language: questionModel.language,
       attachments: questionModel.attachments,
-      mode: questionModel.mode,
+      mode: MAP_MODE[questionModel.mode],
       createdBy: questionModel.createdBy,
       updatedBy: questionModel.updatedBy,
       createdAt: questionModel.createdAt,
