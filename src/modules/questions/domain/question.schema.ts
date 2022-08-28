@@ -11,10 +11,10 @@ import type { QuestionEntity } from './entity/question.entity';
 
 @Schema()
 export class Question extends AbstractSchema {
-  @Prop()
+  @Prop({ index: true })
   question: string;
 
-  @Prop({ name: 'ype', type: String })
+  @Prop({ name: 'type', type: String, index: true })
   type: string;
 
   @Prop({ name: 'heuristic_level', type: String })
@@ -29,10 +29,10 @@ export class Question extends AbstractSchema {
   @Prop({ name: 'options', type: Array })
   options: QuestionOptionsDto[];
 
-  @Prop()
+  @Prop({ index: true })
   topic: string;
 
-  @Prop({ type: [String] })
+  @Prop({ type: [String], index: true })
   tags: string[];
 
   @Prop()
@@ -45,14 +45,12 @@ export class Question extends AbstractSchema {
   mode: string;
 
   @Prop({
-    required: true,
     type: Types.ObjectId,
     ref: User.name,
   })
   createdBy: string;
 
   @Prop({
-    required: true,
     type: Types.ObjectId,
     ref: User.name,
   })

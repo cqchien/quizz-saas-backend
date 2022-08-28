@@ -134,7 +134,7 @@ export class QuestionService {
     }
   }
 
-  public async uploadQuestions(file: IFile) {
+  public async uploadQuestions(file: IFile, user: UserEntity) {
     try {
       if (file && !this.validatorService.isExcel(file.mimetype)) {
         throw new FileNotExelException(
@@ -191,12 +191,11 @@ export class QuestionService {
           tags: tagNames.split(','),
           language: lang || LANG.VIET,
           mode: invert(MAP_MODE)[mode],
+          createdBy: user.id,
         };
       });
 
-      await this.questionRepository.createMultiple(questionsToInsert);
-
-      return questionsToInsert;
+      return this.questionRepository.createMultiple(questionsToInsert);
     } catch (error) {
       throw new ServerErrorException((error as Error).message);
     }

@@ -81,11 +81,13 @@ export class QuestionController {
   }
 
   @Post('upload')
+  @Auth([RoleType.ADMIN])
   @ApiFile([{ name: 'file', isArray: false }])
   async uploadQuestions(
+    @AuthUser() user: User,
     @UploadedFile() file: IFile,
   ): Promise<QuestionResponsePresenter> {
-    const questions = await this.questionService.uploadQuestions(file);
+    const questions = await this.questionService.uploadQuestions(file, user);
 
     const questionPresenters = (questions || []).map(
       (question: QuestionEntity) => new QuestionPresenter(question),
