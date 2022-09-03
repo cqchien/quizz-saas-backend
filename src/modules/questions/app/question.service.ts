@@ -41,7 +41,7 @@ export class QuestionService {
   ): Promise<QuestionEntity> {
     try {
       const existedQuestion = await this.questionRepository.findByCondition({
-        id: questionDto.id || '',
+        question: questionDto.question,
       });
 
       if (existedQuestion) {
@@ -63,7 +63,9 @@ export class QuestionService {
       }
 
       return question;
-    } catch {
+    } catch (error) {
+      console.error(error);
+
       throw new ServerErrorException();
     }
   }
