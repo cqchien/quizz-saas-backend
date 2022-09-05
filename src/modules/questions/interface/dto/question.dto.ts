@@ -11,10 +11,6 @@ import { QuestionOptionsDto } from './question-options.dto';
 
 export class QuestionDto {
   @ApiProperty()
-  @IsOptional()
-  id?: string;
-
-  @ApiProperty()
   @IsString()
   question: string;
 

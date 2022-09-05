@@ -105,6 +105,7 @@ export class QuestionService {
 
       const questionEntity: QuestionEntity = {
         ...questionDto,
+        id: questionId,
         updatedAt: new Date(),
         updatedBy: user.id,
       };
@@ -115,7 +116,9 @@ export class QuestionService {
       }
 
       return question;
-    } catch {
+    } catch (error) {
+      console.error(error);
+
       throw new ServerErrorException();
     }
   }
