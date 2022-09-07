@@ -11,7 +11,7 @@ import type { QuestionEntity } from './entity/question.entity';
 
 @Schema()
 export class Question extends AbstractSchema {
-  @Prop({ index: true })
+  @Prop({ text: true })
   question: string;
 
   @Prop({ name: 'type', type: String, index: true })
@@ -58,6 +58,15 @@ export class Question extends AbstractSchema {
 }
 
 export const questionSchema = SchemaFactory.createForClass(Question);
+questionSchema.index(
+  { question: 'text' },
+  {
+    name: 'question-full-text-search',
+    default_language: 'en-US',
+    language_override: 'en-US',
+  },
+);
+
 export type QuestionDocument = Question & Document;
 
 questionSchema.pre<QuestionEntity>(
