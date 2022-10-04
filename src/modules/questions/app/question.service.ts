@@ -82,11 +82,17 @@ export class QuestionService {
     return question;
   }
 
-  public async findAll({ query, take, skip }: PageOptionsDto): Promise<{
+  public async findAll({
+    question,
+    tags,
+    topic,
+    take,
+    skip,
+  }: PageOptionsDto): Promise<{
     data: Array<QuestionEntity | undefined>;
     total: number;
   }> {
-    return this.questionRepository.findAll(query, take, skip);
+    return this.questionRepository.findAll(question, tags, topic, take, skip);
   }
 
   public async updateQuestion(

@@ -11,7 +11,7 @@ import type { QuestionEntity } from './entity/question.entity';
 
 @Schema()
 export class Question extends AbstractSchema {
-  @Prop({ text: true })
+  @Prop({ index: 'text' })
   question: string;
 
   @Prop({ name: 'type', type: String, index: true })

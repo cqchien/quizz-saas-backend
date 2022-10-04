@@ -29,27 +29,34 @@ export class QuestionRepository {
   }
 
   public async findAll(
-    query = '',
+    topic: string,
+    tags: string,
+    question: string,
     take: number,
     skip: number,
   ): Promise<{
     data: Array<QuestionEntity | undefined>;
     total: number;
   }> {
-    const questionsQuery = this.repository
-      .find({
-        $or: [{ tag: query }],
-      })
+    const questionsQuery =
+      tags || topic
+        ? this.repository.find({
+            $or: [{ topic }, { tags: { $in: tags.split(',') } }],
+          })
+        : this.repository.find();
+
+    const questions = await questionsQuery
       .limit(take)
       .skip(skip)
-      .sort({ updatedAt: 1 });
-
-    const questions = await questionsQuery.lean<Question[]>().exec();
-    const total = await this.repository.countDocuments();
+      .sort({ updatedAt: -1 })
+      .lean<Question[]>()
+      .exec();
 
     return {
-      data: questions.map((question: Question) => this.toEntity(question)),
-      total,
+      data: questions.map((questionModel: Question) =>
+        this.toEntity(questionModel),
+      ),
+      total: questions.length,
     };
   }
 

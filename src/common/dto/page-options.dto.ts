@@ -3,7 +3,7 @@ import { NumberFieldOptional, StringFieldOptional } from '../../decorators';
 export class PageOptionsDto {
   @NumberFieldOptional({
     minimum: 1,
-    default: 1,
+    default: 20,
     int: true,
   })
   readonly page: number = 1;
@@ -21,5 +21,11 @@ export class PageOptionsDto {
   }
 
   @StringFieldOptional()
-  readonly query?: string;
+  question: string;
+
+  @StringFieldOptional()
+  tags: string;
+
+  @StringFieldOptional()
+  topic: string;
 }
