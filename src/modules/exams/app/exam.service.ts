@@ -31,11 +31,17 @@ export class ExamService {
     }
   }
 
-  public async findOne(options: Record<string, string>): Promise<ExamEntity> {
-    const exam = await this.examRepository.findByCondition(options);
+  public async findOne(
+    user: UserEntity,
+    options: Record<string, string>,
+  ): Promise<ExamEntity> {
+    const query = user.id ? { ...options, createdBy: user.id } : options;
+    const exam = await this.examRepository.findByCondition(query);
 
     if (!exam) {
-      throw new ExamNotFoundException('Exam does not exist!!');
+      throw new ExamNotFoundException(
+        'Exam does not exist or user not allow to get the exam!!',
+      );
     }
 
     return exam;

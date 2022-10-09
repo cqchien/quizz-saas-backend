@@ -10,10 +10,11 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { RoleType } from '../../../constants/role-type';
 import { Auth, AuthUser } from '../../../decorators';
-import { ServerErrorException } from '../../../exceptions';
 import { ExamNotFoundException } from '../../../exceptions/exam/exam-not-found.exception';
 import { ExamSaveFailedException } from '../../../exceptions/exam/exam-save-failed.exception';
+import { ServerErrorException } from '../../../exceptions/server-error.exception';
 import { User } from '../../user/domain/user.schema';
 import { ExamService } from '../app/exam.service';
 import { ExamDto } from './dto/exam.dto';
@@ -26,12 +27,12 @@ export class ExamController {
   constructor(private examService: ExamService) {}
 
   @Post()
-  @Auth([])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [ExamSaveFailedException, ServerErrorException])
   @ApiOkResponse({
     type: ExamResponsePresenter,
-    description: 'Question is created successfully',
+    description: 'Exam is created successfully',
   })
   async createExam(@AuthUser() user: User, @Body() examDto: ExamDto) {
     const examEntity = await this.examService.createExam(user, examDto);
@@ -41,17 +42,18 @@ export class ExamController {
   }
 
   @Get(':id')
-  @Auth()
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [ExamNotFoundException])
   @ApiOkResponse({
     type: ExamResponsePresenter,
     description: 'Get detail information of the questions successfully',
   })
-  async getDetailQuestion(@Param('id') questionId: string) {
-    const examEntity = await this.examService.findOne({
-      id: questionId,
-    });
+  async getDetailQuestion(
+    @AuthUser() user: User,
+    @Param('id') questionId: string,
+  ) {
+    const examEntity = await this.examService.findOne(user, { id: questionId });
 
     const examPresenter = new ExamPresenter(examEntity);
 

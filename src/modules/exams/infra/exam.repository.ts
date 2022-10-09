@@ -22,7 +22,7 @@ export class ExamRepository {
     const exam = await this.repository
       .findOne(formatedOptions)
       .lean()
-      .populate('questions createdBy updatedBy')
+      .populate('questions createdBy updatedBy', '-options.value')
       .exec();
 
     if (!exam) {
