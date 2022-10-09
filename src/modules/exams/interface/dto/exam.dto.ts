@@ -41,6 +41,10 @@ class SettingDto {
 export class ExamDto {
   @ApiProperty()
   @IsString()
+  code: string;
+
+  @ApiProperty()
+  @IsString()
   name: string;
 
   @ApiPropertyOptional()

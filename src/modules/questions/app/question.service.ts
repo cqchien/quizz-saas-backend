@@ -111,39 +111,33 @@ export class QuestionService {
     questionId: string,
     questionDto: QuestionDto,
   ): Promise<QuestionEntity> {
-    try {
-      const existedQuestion = await this.questionRepository.findByCondition({
-        id: questionId,
-      });
+    const existedQuestion = await this.questionRepository.findByCondition({
+      id: questionId,
+    });
 
-      if (!existedQuestion) {
-        throw new QuestionNotFoundException('Question does not exist!!');
-      }
-
-      if (existedQuestion.createdBy !== user.id) {
-        throw new QuestionNotAllowToSave(
-          'User does not have permission to update this question',
-        );
-      }
-
-      const questionEntity: QuestionEntity = {
-        ...questionDto,
-        id: questionId,
-        updatedAt: new Date(),
-        updatedBy: user.id,
-      };
-      const question = await this.questionRepository.update(questionEntity);
-
-      if (!question) {
-        throw new QuestionSaveFailedException('Update question failed!');
-      }
-
-      return question;
-    } catch (error) {
-      console.error(error);
-
-      throw new ServerErrorException();
+    if (!existedQuestion) {
+      throw new QuestionNotFoundException('Question does not exist!!');
     }
+
+    if (existedQuestion.createdBy !== user.id && user.role !== RoleType.ADMIN) {
+      throw new QuestionNotAllowToSave(
+        'User does not have permission to update this question',
+      );
+    }
+
+    const questionEntity: QuestionEntity = {
+      ...questionDto,
+      id: questionId,
+      updatedAt: new Date(),
+      updatedBy: user.id,
+    };
+    const question = await this.questionRepository.update(questionEntity);
+
+    if (!question) {
+      throw new QuestionSaveFailedException('Update question failed!');
+    }
+
+    return question;
   }
 
   public async deleteQuestion(
@@ -159,7 +153,10 @@ export class QuestionService {
         throw new QuestionNotFoundException('Question does not exist!!');
       }
 
-      if (existedQuestion.createdBy !== user.id) {
+      if (
+        existedQuestion.createdBy !== user.id &&
+        user.role !== RoleType.ADMIN
+      ) {
         throw new QuestionNotAllowToSave(
           'User does not have permission to delete this question',
         );

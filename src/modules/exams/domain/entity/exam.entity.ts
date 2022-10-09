@@ -28,6 +28,8 @@ class Setting {
 export class ExamEntity {
   id?: string;
 
+  code: string;
+
   name: string;
 
   description: string;
@@ -35,6 +37,8 @@ export class ExamEntity {
   defaultQuestionNumber: number;
 
   time: string;
+
+  status: string;
 
   type: string;
 

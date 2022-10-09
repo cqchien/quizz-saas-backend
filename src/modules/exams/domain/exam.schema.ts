@@ -49,6 +49,12 @@ export class Exam extends AbstractSchema {
     required: true,
     index: true,
   })
+  code: string;
+
+  @Prop({
+    required: true,
+    index: true,
+  })
   name: string;
 
   @Prop()
@@ -59,6 +65,9 @@ export class Exam extends AbstractSchema {
 
   @Prop()
   time: string;
+
+  @Prop()
+  status: string;
 
   @Prop()
   type: string;
