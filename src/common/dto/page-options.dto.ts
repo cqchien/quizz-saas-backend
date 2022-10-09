@@ -1,4 +1,8 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
+
 import { NumberFieldOptional, StringFieldOptional } from '../../decorators';
+import { QUESTION_BANK_TYPE } from '../../modules/exams/constant';
 
 export class PageOptionsDto {
   @NumberFieldOptional({
@@ -28,4 +32,10 @@ export class PageOptionsDto {
 
   @StringFieldOptional()
   topic: string;
+
+  @ApiPropertyOptional({
+    type: QUESTION_BANK_TYPE,
+  })
+  @IsOptional()
+  type: string;
 }

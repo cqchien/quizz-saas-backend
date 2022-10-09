@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
+import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
+import { MODE } from '../constant';
 import type { QuestionEntity } from '../domain/entity/question.entity';
 import type { QuestionDocument } from '../domain/question.schema';
 import { Question } from '../domain/question.schema';
@@ -29,21 +31,47 @@ export class QuestionRepository {
   }
 
   public async findAll(
-    topic: string,
-    tags: string,
-    question: string,
-    take: number,
-    skip: number,
+    pageOptions: PageOptionsDto,
+    mode = '',
+    userId = '',
   ): Promise<{
     data: Array<QuestionEntity | undefined>;
     total: number;
   }> {
-    const questionsQuery =
-      tags || topic
-        ? this.repository.find({
-            $or: [{ topic }, { tags: { $in: tags.split(',') } }],
-          })
-        : this.repository.find();
+    const { topic, tags, take, skip } = pageOptions;
+
+    let query = {};
+
+    if (topic || tags) {
+      query = {
+        ...query,
+        $or: [{ topic }, { tags: { $in: tags.split(',') } }],
+      };
+    }
+
+    if (mode === MODE.PUBLIC) {
+      query = {
+        ...query,
+        $and: [{ mode }],
+      };
+    } else {
+      query =
+        mode === MODE.PRIVATE
+          ? {
+              ...query,
+              $and: [{ createdBy: userId }],
+            }
+          : {
+              ...query,
+              $and: [
+                {
+                  $or: [{ createdBy: userId }, { mode: MODE.PUBLIC }],
+                },
+              ],
+            };
+    }
+
+    const questionsQuery = this.repository.find({ ...query });
 
     const questions = await questionsQuery
       .limit(take)

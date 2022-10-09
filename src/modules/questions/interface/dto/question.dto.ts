@@ -51,7 +51,7 @@ export class QuestionDto {
   @IsOptional()
   options: QuestionOptionsDto[];
 
-  @ApiProperty({ default: 'vi' })
+  @ApiProperty({ default: 'en' })
   @IsOptional()
   language: string;
 
@@ -61,6 +61,7 @@ export class QuestionDto {
 
   @ApiProperty({
     enum: MODE,
+    default: MODE.PUBLIC,
   })
   @IsOptional()
   mode: string;

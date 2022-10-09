@@ -3,13 +3,16 @@ import type { IFile } from 'interfaces';
 import { invert } from 'lodash';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
+import { RoleType } from '../../../constants/role-type';
 import { FileNotExelException } from '../../../exceptions/file/file-not-exel.exception';
 import { QuestionExistException } from '../../../exceptions/question/question-exist.exception';
+import { QuestionNotAllowToSave } from '../../../exceptions/question/question-not-allow-to-save.exception';
 import { QuestionNotFoundException } from '../../../exceptions/question/question-not-found.exception';
 import { QuestionSaveFailedException } from '../../../exceptions/question/question-save-failed.exception';
 import { ServerErrorException } from '../../../exceptions/server-error.exception';
 import { FileService } from '../../../shared/services/file.service';
 import { ValidatorService } from '../../../shared/services/validator.service';
+import { QUESTION_BANK_TYPE } from '../../exams/constant';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
 import {
   ANSWER_START_WITH,
@@ -19,6 +22,7 @@ import {
   MAP_MODE,
   MAP_QUESTION_STATUS,
   MAP_QUESTION_TYPE,
+  MODE,
 } from '../constant';
 import type {
   QuestionEntity,
@@ -39,35 +43,29 @@ export class QuestionService {
     user: UserEntity,
     questionDto: QuestionDto,
   ): Promise<QuestionEntity> {
-    try {
-      const existedQuestion = await this.questionRepository.findByCondition({
-        question: questionDto.question,
-      });
+    const existedQuestion = await this.questionRepository.findByCondition({
+      question: questionDto.question,
+    });
 
-      if (existedQuestion) {
-        throw new QuestionExistException('Question is existed!!');
-      }
-
-      const questionEntity: QuestionEntity = {
-        ...questionDto,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: user.id,
-        updatedBy: user.id,
-      };
-
-      const question = await this.questionRepository.create(questionEntity);
-
-      if (!question) {
-        throw new QuestionSaveFailedException('Create question failed!');
-      }
-
-      return question;
-    } catch (error) {
-      console.error(error);
-
-      throw new ServerErrorException();
+    if (existedQuestion) {
+      throw new QuestionExistException('Question is existed!!');
     }
+
+    const questionEntity: QuestionEntity = {
+      ...questionDto,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: user.id,
+      updatedBy: user.id,
+    };
+
+    const question = await this.questionRepository.create(questionEntity);
+
+    if (!question) {
+      throw new QuestionSaveFailedException('Create question failed!');
+    }
+
+    return question;
   }
 
   public async findOne(
@@ -82,17 +80,30 @@ export class QuestionService {
     return question;
   }
 
-  public async findAll({
-    question,
-    tags,
-    topic,
-    take,
-    skip,
-  }: PageOptionsDto): Promise<{
+  public async findAll(
+    user: UserEntity,
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<{
     data: Array<QuestionEntity | undefined>;
     total: number;
   }> {
-    return this.questionRepository.findAll(question, tags, topic, take, skip);
+    if (pageOptionsDto.type) {
+      if (pageOptionsDto.type === QUESTION_BANK_TYPE.SYSTEM) {
+        return this.questionRepository.findAll(pageOptionsDto, MODE.PUBLIC);
+      }
+
+      return this.questionRepository.findAll(
+        pageOptionsDto,
+        MODE.PRIVATE,
+        user.id,
+      );
+    }
+
+    if (user.role === RoleType.ADMIN) {
+      return this.questionRepository.findAll(pageOptionsDto);
+    }
+
+    return this.questionRepository.findAll(pageOptionsDto, '', user.id);
   }
 
   public async updateQuestion(
@@ -107,6 +118,12 @@ export class QuestionService {
 
       if (!existedQuestion) {
         throw new QuestionNotFoundException('Question does not exist!!');
+      }
+
+      if (existedQuestion.createdBy !== user.id) {
+        throw new QuestionNotAllowToSave(
+          'User does not have permission to update this question',
+        );
       }
 
       const questionEntity: QuestionEntity = {
@@ -129,7 +146,10 @@ export class QuestionService {
     }
   }
 
-  public async deleteQuestion(questionId: string): Promise<void> {
+  public async deleteQuestion(
+    user: UserEntity,
+    questionId: string,
+  ): Promise<void> {
     try {
       const existedQuestion = await this.questionRepository.findByCondition({
         id: questionId,
@@ -137,6 +157,12 @@ export class QuestionService {
 
       if (!existedQuestion) {
         throw new QuestionNotFoundException('Question does not exist!!');
+      }
+
+      if (existedQuestion.createdBy !== user.id) {
+        throw new QuestionNotAllowToSave(
+          'User does not have permission to delete this question',
+        );
       }
 
       await this.questionRepository.delete(questionId);

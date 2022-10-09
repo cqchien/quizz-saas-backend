@@ -35,7 +35,7 @@ export class QuestionController {
   constructor(private questionService: QuestionService) {}
 
   @Post()
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [QuestionExistException, ServerErrorException])
   @ApiOkResponse({
@@ -57,16 +57,20 @@ export class QuestionController {
   }
 
   @Get()
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: QuestionResponsePresenter,
     description: 'Get all questions successfully',
   })
   async getAllQuestions(
+    @AuthUser() user: User,
     @Query() pageOptionsDto: PageOptionsDto,
   ): Promise<QuestionResponsePresenter> {
-    const { data, total } = await this.questionService.findAll(pageOptionsDto);
+    const { data, total } = await this.questionService.findAll(
+      user,
+      pageOptionsDto,
+    );
 
     const questionPresenters = (data || []).map(
       (question: QuestionEntity) => new QuestionPresenter(question),
@@ -81,7 +85,7 @@ export class QuestionController {
   }
 
   @Post('upload')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @ApiFile([{ name: 'file', isArray: false }])
   async uploadQuestions(
     @AuthUser() user: User,
@@ -97,7 +101,7 @@ export class QuestionController {
   }
 
   @Get(':questionId')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [QuestionNotFoundException])
   @ApiOkResponse({
@@ -117,7 +121,7 @@ export class QuestionController {
   }
 
   @Put(':questionId')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [QuestionNotFoundException, ServerErrorException])
   @ApiOkResponse({
@@ -141,7 +145,7 @@ export class QuestionController {
   }
 
   @Delete(':questionId')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [QuestionNotFoundException, ServerErrorException])
   @ApiOkResponse({
@@ -149,9 +153,10 @@ export class QuestionController {
     description: 'Successfully Delete',
   })
   async deleteQuestion(
+    @AuthUser() user: User,
     @Param('questionId') questionId: string,
   ): Promise<QuestionResponsePresenter> {
-    await this.questionService.deleteQuestion(questionId);
+    await this.questionService.deleteQuestion(user, questionId);
 
     return new QuestionResponsePresenter();
   }

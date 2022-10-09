@@ -2,7 +2,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import type { NextFunction } from 'express';
 import type { Document } from 'mongoose';
-import { Types } from 'mongoose';
+import { SchemaTypes } from 'mongoose';
 
 import { AbstractSchema } from '../../../common/abstract.schema';
 import { User } from '../../user/domain/user.schema';
@@ -45,13 +45,13 @@ export class Question extends AbstractSchema {
   mode: string;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: User.name,
   })
   createdBy: string;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: User.name,
   })
   updatedBy: string;
