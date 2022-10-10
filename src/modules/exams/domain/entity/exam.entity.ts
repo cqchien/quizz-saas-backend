@@ -1,34 +1,10 @@
 import type { QuestionEntity } from '../../../questions/domain/entity/question.entity';
 import type { UserEntity } from '../../../user/domain/entity/user.entity';
-
-class Setting {
-  plusScorePerQuestion: number;
-
-  minusScorePerQuestion: number;
-
-  viewPassQuestion: boolean;
-
-  viewNextQuestion: boolean;
-
-  showAllQuestion: boolean;
-
-  timePerQuestion: string;
-
-  shufflingExams: number; // the number of the exam need to be generate for shuffling
-
-  hideResult: boolean;
-
-  percentageToPass: number;
-
-  startTime: Date;
-
-  endTime: Date;
-}
+import type { Scheduler } from './scheduler.entity';
+import type { Setting } from './setting.entity';
 
 export class ExamEntity {
   id?: string;
-
-  code: string;
 
   name: string;
 
@@ -49,6 +25,8 @@ export class ExamEntity {
   questionEntities?: QuestionEntity[];
 
   setting: Setting;
+
+  scheduler: Scheduler[];
 
   updatedAt?: Date;
 

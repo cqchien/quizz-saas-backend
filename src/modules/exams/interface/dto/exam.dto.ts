@@ -2,41 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 import { QUESTION_BANK_TYPE } from '../../constant';
-
-class SettingDto {
-  @ApiProperty()
-  plusScorePerQuestion: number;
-
-  @ApiProperty()
-  minusScorePerQuestion: number;
-
-  @ApiProperty()
-  viewPassQuestion: boolean;
-
-  @ApiProperty()
-  viewNextQuestion: boolean;
-
-  @ApiProperty()
-  showAllQuestion: boolean;
-
-  @ApiProperty()
-  timePerQuestion: string;
-
-  @ApiProperty()
-  shufflingExams: number;
-
-  @ApiProperty()
-  hideResult: boolean;
-
-  @ApiProperty()
-  percentageToPass: number;
-
-  @ApiProperty()
-  startTime: Date;
-
-  @ApiProperty()
-  endTime: Date;
-}
+import { SchedulerDto } from './scheduler.dto';
+import { SettingDto } from './setting.dto';
 
 export class ExamDto {
   @ApiProperty()
@@ -76,4 +43,10 @@ export class ExamDto {
   @ApiProperty()
   @IsNotEmpty()
   setting: SettingDto;
+
+  @ApiProperty({
+    type: SchedulerDto,
+    isArray: true,
+  })
+  scheduler: SchedulerDto[];
 }

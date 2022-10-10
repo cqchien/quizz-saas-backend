@@ -84,7 +84,6 @@ export class ExamRepository {
   private toEntity(exam: Exam): ExamEntity {
     return {
       id: exam._id.toString(),
-      code: exam.code,
       name: exam.name,
       description: exam.description,
       defaultQuestionNumber: exam.defaultQuestionNumber,
@@ -95,6 +94,7 @@ export class ExamRepository {
       questions: exam.questions.map((question) => question._id.toString()),
       questionEntities: exam.questions,
       setting: exam.setting,
+      scheduler: exam.scheduler,
       updatedAt: exam.updatedAt,
       createdAt: exam.createdAt,
       createdBy: exam.createdBy._id.toString(),

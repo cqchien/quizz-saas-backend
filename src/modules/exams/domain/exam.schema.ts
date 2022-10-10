@@ -7,41 +7,8 @@ import { AbstractSchema } from '../../../common/abstract.schema';
 import { Question } from '../../questions/domain/question.schema';
 import { User } from '../../user/domain/user.schema';
 import type { ExamEntity } from './entity/exam.entity';
-
-export class Setting {
-  @Prop()
-  plusScorePerQuestion: number;
-
-  @Prop()
-  minusScorePerQuestion: number;
-
-  @Prop()
-  viewPassQuestion: boolean;
-
-  @Prop()
-  viewNextQuestion: boolean;
-
-  @Prop()
-  showAllQuestion: boolean;
-
-  @Prop()
-  timePerQuestion: string;
-
-  @Prop()
-  shufflingExams: number;
-
-  @Prop()
-  hideResult: boolean;
-
-  @Prop()
-  percentageToPass: number;
-
-  @Prop()
-  startTime: Date;
-
-  @Prop()
-  endTime: Date;
-}
+import type { Scheduler } from './scheduler.schema';
+import { Setting } from './setting.schema';
 
 @Schema()
 export class Exam extends AbstractSchema {
@@ -99,6 +66,9 @@ export class Exam extends AbstractSchema {
 
   @Prop({ type: () => Setting })
   setting: Setting;
+
+  @Prop({ type: Array })
+  scheduler: Scheduler[];
 }
 
 export const examSchema = SchemaFactory.createForClass(Exam);

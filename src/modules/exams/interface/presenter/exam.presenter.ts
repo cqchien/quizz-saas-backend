@@ -4,41 +4,8 @@ import { QuestionPresenter } from '../../../questions/interface/presenter/questi
 import { UserPresenter } from '../../../user/interface/presenter/user.presenter';
 import { QUESTION_BANK_TYPE } from '../../constant';
 import type { ExamEntity } from '../../domain/entity/exam.entity';
-
-export class SettingPresenter {
-  @ApiProperty()
-  plusScorePerQuestion: number;
-
-  @ApiProperty()
-  minusScorePerQuestion: number;
-
-  @ApiProperty()
-  viewPassQuestion: boolean;
-
-  @ApiProperty()
-  viewNextQuestion: boolean;
-
-  @ApiProperty()
-  showAllQuestion: boolean;
-
-  @ApiProperty()
-  timePerQuestion: string;
-
-  @ApiProperty()
-  shufflingExams: number;
-
-  @ApiProperty()
-  hideResult: boolean;
-
-  @ApiProperty()
-  percentageToPass: number;
-
-  @ApiProperty()
-  startTime: Date;
-
-  @ApiProperty()
-  endTime: Date;
-}
+import { SchedulerPresenter } from './scheduler.presenter';
+import { SettingPresenter } from './setting.presenter';
 
 export class ExamPresenter {
   @ApiProperty()
@@ -70,8 +37,16 @@ export class ExamPresenter {
   })
   questions: QuestionPresenter[];
 
-  @ApiProperty()
+  @ApiProperty({
+    type: SettingPresenter,
+  })
   setting: SettingPresenter;
+
+  @ApiProperty({
+    type: SchedulerPresenter,
+    isArray: true,
+  })
+  scheduler: SchedulerPresenter[];
 
   @ApiPropertyOptional()
   createdAt?: Date;
@@ -97,6 +72,7 @@ export class ExamPresenter {
       (questionEntity) => new QuestionPresenter(questionEntity),
     );
     this.setting = entity.setting;
+    this.scheduler = entity.scheduler;
     this.createdAt = entity.createdAt;
     this.updatedAt = entity.updatedAt;
     this.createdBy = entity.createdByEntity

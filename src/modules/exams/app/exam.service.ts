@@ -7,8 +7,9 @@ import {
   ExamSaveFailedException,
 } from '../../../exceptions/exam';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
-import { EXAM_STATUS } from '../constant';
+import { EXAM_STATUS, SCHEDULER_STATUS } from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
+import type { Scheduler } from '../domain/entity/scheduler.entity';
 import { ExamRepository } from '../infra/exam.repository';
 import type { ExamDto } from '../interface/dto/exam.dto';
 import type { QueryExamDto } from '../interface/dto/query.dto';
@@ -19,27 +20,36 @@ export class ExamService {
 
   async createExam(user: UserEntity, examDto: ExamDto): Promise<ExamEntity> {
     try {
+      let error = '';
+
+      const formattedScheduler = examDto.scheduler.map(
+        (scheduler): Scheduler => {
+          if (this.checkTimePast(scheduler.startTime)) {
+            error = 'Can not schedule for the past!';
+          }
+
+          if (!this.checkStartEndTime(scheduler.startTime, scheduler.endTime)) {
+            error = 'End time should be greater than start time.';
+          }
+
+          return {
+            ...scheduler,
+            status: SCHEDULER_STATUS.NOT_STARTED,
+          };
+        },
+      );
+
+      if (error) {
+        throw new ExamSaveFailedException(error);
+      }
+
       const examEntity: ExamEntity = {
         ...examDto,
         status: EXAM_STATUS.NOT_STARTED,
+        scheduler: formattedScheduler,
         createdBy: user.id,
         updatedBy: user.id,
       };
-
-      if (this.checkTimePast(examDto.setting.startTime)) {
-        throw new BadRequestException('Can not create exam in the past');
-      }
-
-      if (
-        !this.checkStartEndTime(
-          examDto.setting.startTime,
-          examDto.setting.endTime,
-        )
-      ) {
-        throw new ExamSaveFailedException(
-          'End time should be greater than start time',
-        );
-      }
 
       const exam = await this.examRepository.create(examEntity);
 
@@ -56,6 +66,8 @@ export class ExamService {
     examId: string,
     examDto: ExamDto,
   ): Promise<ExamEntity> {
+    let error = '';
+
     const existedExam = await this.examRepository.findByCondition({
       id: examId,
     });
@@ -70,24 +82,35 @@ export class ExamService {
       );
     }
 
-    if (this.checkTimePast(examDto.setting.startTime)) {
-      throw new BadRequestException('Can not update exam in the past');
-    }
+    const formattedScheduler = examDto.scheduler.map((scheduler): Scheduler => {
+      let status = scheduler.status;
 
-    if (
-      !this.checkStartEndTime(
-        examDto.setting.startTime,
-        examDto.setting.endTime,
-      )
-    ) {
-      throw new ExamSaveFailedException(
-        'End time should be greater than start time.',
-      );
+      if (!status) {
+        if (this.checkTimePast(scheduler.startTime)) {
+          error = 'Can not schedule for the past!';
+        } else if (
+          !this.checkStartEndTime(scheduler.startTime, scheduler.endTime)
+        ) {
+          error = 'End time should be greater than start time.';
+        } else {
+          status = SCHEDULER_STATUS.NOT_STARTED;
+        }
+      }
+
+      return {
+        ...scheduler,
+        status,
+      };
+    });
+
+    if (error) {
+      throw new ExamSaveFailedException(error);
     }
 
     const examEntity: ExamEntity = {
       ...existedExam,
       ...examDto,
+      scheduler: formattedScheduler,
       updatedAt: new Date(),
       updatedBy: user.id,
     };
@@ -160,9 +183,20 @@ export class ExamService {
       );
     }
 
+    const inProgressScheduler = exam.scheduler.find(
+      (scheduler) => scheduler.status === SCHEDULER_STATUS.IN_PROGRESS,
+    );
+
+    if (!inProgressScheduler) {
+      throw new ExamNotFoundException('Exam have not start yet.');
+    }
+
     if (
       exam.status !== EXAM_STATUS.IN_PROGRESS ||
-      !this.checkValidTakeExam(exam.setting.startTime, exam.setting.endTime)
+      !this.checkValidTakeExam(
+        inProgressScheduler.startTime,
+        inProgressScheduler.endTime,
+      )
     ) {
       throw new BadRequestException(
         'You can view the exam when it has started and during the test.',
