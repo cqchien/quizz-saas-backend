@@ -1,10 +1,12 @@
 import type { QuestionEntity } from '../../../questions/domain/entity/question.entity';
 import type { UserEntity } from '../../../user/domain/entity/user.entity';
-import type { Scheduler } from './scheduler.entity';
+import type { Schedule } from './schedule.entity';
 import type { Setting } from './setting.entity';
 
 export class ExamEntity {
   id?: string;
+
+  code: string;
 
   name: string;
 
@@ -26,7 +28,7 @@ export class ExamEntity {
 
   setting: Setting;
 
-  scheduler: Scheduler[];
+  schedules: Schedule[];
 
   updatedAt?: Date;
 

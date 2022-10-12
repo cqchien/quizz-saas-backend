@@ -4,7 +4,7 @@ import { QuestionPresenter } from '../../../questions/interface/presenter/questi
 import { UserPresenter } from '../../../user/interface/presenter/user.presenter';
 import { QUESTION_BANK_TYPE } from '../../constant';
 import type { ExamEntity } from '../../domain/entity/exam.entity';
-import { SchedulerPresenter } from './scheduler.presenter';
+import { SchedulePresenter } from './schedule.presenter';
 import { SettingPresenter } from './setting.presenter';
 
 export class ExamPresenter {
@@ -12,10 +12,16 @@ export class ExamPresenter {
   id?: string;
 
   @ApiProperty()
+  code: string;
+
+  @ApiProperty()
   name: string;
 
   @ApiPropertyOptional()
   description: string;
+
+  @ApiProperty()
+  status: string;
 
   @ApiProperty()
   defaultQuestionNumber: number;
@@ -43,10 +49,10 @@ export class ExamPresenter {
   setting: SettingPresenter;
 
   @ApiProperty({
-    type: SchedulerPresenter,
+    type: SchedulePresenter,
     isArray: true,
   })
-  scheduler: SchedulerPresenter[];
+  schedules: SchedulePresenter[];
 
   @ApiPropertyOptional()
   createdAt?: Date;
@@ -62,7 +68,9 @@ export class ExamPresenter {
 
   constructor(entity: ExamEntity) {
     this.id = entity.id;
+    this.code = entity.code;
     this.name = entity.name;
+    this.status = entity.status;
     this.description = entity.description;
     this.defaultQuestionNumber = entity.defaultQuestionNumber;
     this.time = entity.time;
@@ -72,7 +80,7 @@ export class ExamPresenter {
       (questionEntity) => new QuestionPresenter(questionEntity),
     );
     this.setting = entity.setting;
-    this.scheduler = entity.scheduler;
+    this.schedules = entity.schedules;
     this.createdAt = entity.createdAt;
     this.updatedAt = entity.updatedAt;
     this.createdBy = entity.createdByEntity

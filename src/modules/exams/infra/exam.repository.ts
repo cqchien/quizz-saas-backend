@@ -68,6 +68,7 @@ export class ExamRepository {
       .limit(take)
       .skip(skip)
       .sort({ updatedAt: -1 })
+      .select('-questions -createdBy -updatedBy')
       .lean<Exam[]>()
       .exec();
 
@@ -84,6 +85,7 @@ export class ExamRepository {
   private toEntity(exam: Exam): ExamEntity {
     return {
       id: exam._id.toString(),
+      code: exam.code,
       name: exam.name,
       description: exam.description,
       defaultQuestionNumber: exam.defaultQuestionNumber,
@@ -91,15 +93,17 @@ export class ExamRepository {
       status: exam.status,
       type: exam.type,
       quesstionBankType: exam.quesstionBankType,
-      questions: exam.questions.map((question) => question._id.toString()),
+      questions: (exam.questions || []).map((question) =>
+        question._id.toString(),
+      ),
       questionEntities: exam.questions,
       setting: exam.setting,
-      scheduler: exam.scheduler,
+      schedules: exam.schedules,
       updatedAt: exam.updatedAt,
       createdAt: exam.createdAt,
-      createdBy: exam.createdBy._id.toString(),
+      createdBy: exam.createdBy?._id?.toString(),
       createdByEntity: exam.createdBy,
-      updatedBy: exam.updatedBy._id.toString(),
+      updatedBy: exam.updatedBy?._id?.toString(),
       updatedByEntity: exam.updatedBy,
     };
   }

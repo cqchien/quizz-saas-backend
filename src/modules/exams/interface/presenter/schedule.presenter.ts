@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class SchedulerPresenter {
+export class SchedulePresenter {
   @ApiProperty()
   code: string;
 

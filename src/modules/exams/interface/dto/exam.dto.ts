@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 import { QUESTION_BANK_TYPE } from '../../constant';
-import { SchedulerDto } from './scheduler.dto';
+import { ScheduleDto } from './schedule.dto';
 import { SettingDto } from './setting.dto';
 
 export class ExamDto {
@@ -45,8 +45,9 @@ export class ExamDto {
   setting: SettingDto;
 
   @ApiProperty({
-    type: SchedulerDto,
+    type: ScheduleDto,
     isArray: true,
   })
-  scheduler: SchedulerDto[];
+  @IsNotEmpty()
+  schedules: ScheduleDto[];
 }

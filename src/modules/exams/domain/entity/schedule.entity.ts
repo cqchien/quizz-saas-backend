@@ -1,4 +1,4 @@
-export class Scheduler {
+export class Schedule {
   code: string;
 
   status?: string;

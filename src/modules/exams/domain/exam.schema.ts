@@ -7,7 +7,7 @@ import { AbstractSchema } from '../../../common/abstract.schema';
 import { Question } from '../../questions/domain/question.schema';
 import { User } from '../../user/domain/user.schema';
 import type { ExamEntity } from './entity/exam.entity';
-import type { Scheduler } from './scheduler.schema';
+import type { Schedule } from './schedule.schema';
 import { Setting } from './setting.schema';
 
 @Schema()
@@ -68,7 +68,7 @@ export class Exam extends AbstractSchema {
   setting: Setting;
 
   @Prop({ type: Array })
-  scheduler: Scheduler[];
+  schedules: Schedule[];
 }
 
 export const examSchema = SchemaFactory.createForClass(Exam);

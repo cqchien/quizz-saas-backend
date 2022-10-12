@@ -1,6 +1,6 @@
 import { Prop } from '@nestjs/mongoose';
 
-export class Scheduler {
+export class Schedule {
   @Prop({
     index: true,
     unique: true,

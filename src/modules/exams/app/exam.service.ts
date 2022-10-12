@@ -7,9 +7,9 @@ import {
   ExamSaveFailedException,
 } from '../../../exceptions/exam';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
-import { EXAM_STATUS, SCHEDULER_STATUS } from '../constant';
+import { EXAM_STATUS, SCHEDULE_STATUS } from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
-import type { Scheduler } from '../domain/entity/scheduler.entity';
+import type { Schedule } from '../domain/entity/schedule.entity';
 import { ExamRepository } from '../infra/exam.repository';
 import type { ExamDto } from '../interface/dto/exam.dto';
 import type { QueryExamDto } from '../interface/dto/query.dto';
@@ -22,22 +22,20 @@ export class ExamService {
     try {
       let error = '';
 
-      const formattedScheduler = examDto.scheduler.map(
-        (scheduler): Scheduler => {
-          if (this.checkTimePast(scheduler.startTime)) {
-            error = 'Can not schedule for the past!';
-          }
+      const formattedSchedules = examDto.schedules.map((schedule): Schedule => {
+        if (this.checkTimePast(schedule.startTime)) {
+          error = 'Can not schedule for the past!';
+        }
 
-          if (!this.checkStartEndTime(scheduler.startTime, scheduler.endTime)) {
-            error = 'End time should be greater than start time.';
-          }
+        if (!this.checkStartEndTime(schedule.startTime, schedule.endTime)) {
+          error = 'End time should be greater than start time.';
+        }
 
-          return {
-            ...scheduler,
-            status: SCHEDULER_STATUS.NOT_STARTED,
-          };
-        },
-      );
+        return {
+          ...schedule,
+          status: SCHEDULE_STATUS.NOT_STARTED,
+        };
+      });
 
       if (error) {
         throw new ExamSaveFailedException(error);
@@ -46,7 +44,7 @@ export class ExamService {
       const examEntity: ExamEntity = {
         ...examDto,
         status: EXAM_STATUS.NOT_STARTED,
-        scheduler: formattedScheduler,
+        schedules: formattedSchedules,
         createdBy: user.id,
         updatedBy: user.id,
       };
@@ -82,23 +80,23 @@ export class ExamService {
       );
     }
 
-    const formattedScheduler = examDto.scheduler.map((scheduler): Scheduler => {
-      let status = scheduler.status;
+    const formattedSchedules = examDto.schedules.map((schedule): Schedule => {
+      let status = schedule.status;
 
       if (!status) {
-        if (this.checkTimePast(scheduler.startTime)) {
+        if (this.checkTimePast(schedule.startTime)) {
           error = 'Can not schedule for the past!';
         } else if (
-          !this.checkStartEndTime(scheduler.startTime, scheduler.endTime)
+          !this.checkStartEndTime(schedule.startTime, schedule.endTime)
         ) {
           error = 'End time should be greater than start time.';
         } else {
-          status = SCHEDULER_STATUS.NOT_STARTED;
+          status = SCHEDULE_STATUS.NOT_STARTED;
         }
       }
 
       return {
-        ...scheduler,
+        ...schedule,
         status,
       };
     });
@@ -110,7 +108,7 @@ export class ExamService {
     const examEntity: ExamEntity = {
       ...existedExam,
       ...examDto,
-      scheduler: formattedScheduler,
+      schedules: formattedSchedules,
       updatedAt: new Date(),
       updatedBy: user.id,
     };
@@ -172,7 +170,11 @@ export class ExamService {
     return exam;
   }
 
-  public async takeExam(user: UserEntity, examId: string): Promise<ExamEntity> {
+  public async takeExam(
+    user: UserEntity,
+    examId: string,
+    scheduleCode: string,
+  ): Promise<ExamEntity> {
     const exam = await this.examRepository.findByCondition({
       id: examId,
     });
@@ -183,19 +185,23 @@ export class ExamService {
       );
     }
 
-    const inProgressScheduler = exam.scheduler.find(
-      (scheduler) => scheduler.status === SCHEDULER_STATUS.IN_PROGRESS,
+    const inProgressSchedule = exam.schedules.find(
+      (schedule) =>
+        schedule.status === SCHEDULE_STATUS.IN_PROGRESS &&
+        schedule.code === scheduleCode,
     );
 
-    if (!inProgressScheduler) {
-      throw new ExamNotFoundException('Exam have not start yet.');
+    if (!inProgressSchedule) {
+      throw new ExamNotFoundException(
+        'Schedule have not start yet or does not exist.',
+      );
     }
 
     if (
-      exam.status !== EXAM_STATUS.IN_PROGRESS ||
+      // exam.status !== EXAM_STATUS.IN_PROGRESS ||
       !this.checkValidTakeExam(
-        inProgressScheduler.startTime,
-        inProgressScheduler.endTime,
+        inProgressSchedule.startTime,
+        inProgressSchedule.endTime,
       )
     ) {
       throw new BadRequestException(

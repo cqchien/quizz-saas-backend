@@ -9,7 +9,7 @@ export const EXAM_STATUS = {
   COMPLETED: 'completed',
 };
 
-export const SCHEDULER_STATUS = {
+export const SCHEDULE_STATUS = {
   NOT_STARTED: 'not_started',
   IN_PROGRESS: 'in_progress',
   COMPLETED: 'completed',

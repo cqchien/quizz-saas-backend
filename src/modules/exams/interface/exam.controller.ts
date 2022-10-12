@@ -138,8 +138,16 @@ export class ExamController {
     type: ExamResponsePresenter,
     description: 'Take the exam successfully',
   })
-  async takeExam(@AuthUser() user: User, @Param('id') examId: string) {
-    const examEntity = await this.examService.takeExam(user, examId);
+  async takeExam(
+    @AuthUser() user: User,
+    @Param('id') examId: string,
+    @Query('code') scheduleCode: string,
+  ) {
+    const examEntity = await this.examService.takeExam(
+      user,
+      examId,
+      scheduleCode,
+    );
 
     const examPresenter = new ExamPresenter(examEntity);
 
