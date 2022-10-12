@@ -29,6 +29,7 @@ import type {
   QuestionOption,
 } from '../domain/entity/question.entity';
 import { QuestionRepository } from '../infra/question.repository';
+import type { QueryQuestionDto } from '../interface/dto/query.dto';
 import type { QuestionDto } from '../interface/dto/question.dto';
 
 @Injectable()
@@ -82,28 +83,39 @@ export class QuestionService {
 
   public async findAll(
     user: UserEntity,
+    queryDto: QueryQuestionDto,
     pageOptionsDto: PageOptionsDto,
   ): Promise<{
     data: Array<QuestionEntity | undefined>;
     total: number;
   }> {
-    if (pageOptionsDto.type) {
-      if (pageOptionsDto.type === QUESTION_BANK_TYPE.SYSTEM) {
-        return this.questionRepository.findAll(pageOptionsDto, MODE.PUBLIC);
+    if (queryDto.type) {
+      if (queryDto.type === QUESTION_BANK_TYPE.SYSTEM) {
+        return this.questionRepository.findAll(
+          pageOptionsDto,
+          queryDto,
+          MODE.PUBLIC,
+        );
       }
 
       return this.questionRepository.findAll(
         pageOptionsDto,
+        queryDto,
         MODE.PRIVATE,
         user.id,
       );
     }
 
     if (user.role === RoleType.ADMIN) {
-      return this.questionRepository.findAll(pageOptionsDto);
+      return this.questionRepository.findAll(pageOptionsDto, queryDto);
     }
 
-    return this.questionRepository.findAll(pageOptionsDto, '', user.id);
+    return this.questionRepository.findAll(
+      pageOptionsDto,
+      queryDto,
+      '',
+      user.id,
+    );
   }
 
   public async updateQuestion(

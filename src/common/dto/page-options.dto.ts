@@ -1,21 +1,19 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
-
-import { NumberFieldOptional, StringFieldOptional } from '../../decorators';
-import { QUESTION_BANK_TYPE } from '../../modules/exams/constant';
+import { NumberFieldOptional } from '../../decorators';
 
 export class PageOptionsDto {
   @NumberFieldOptional({
     minimum: 1,
-    default: 20,
+    default: 1,
+    example: 1,
     int: true,
   })
   readonly page: number = 1;
 
   @NumberFieldOptional({
-    minimum: 1,
+    minimum: 10,
     maximum: 50,
     default: 10,
+    example: '10',
     int: true,
   })
   readonly take: number = 10;
@@ -23,19 +21,4 @@ export class PageOptionsDto {
   get skip(): number {
     return (this.page - 1) * this.take;
   }
-
-  @StringFieldOptional()
-  question: string;
-
-  @StringFieldOptional()
-  tags: string;
-
-  @StringFieldOptional()
-  topic: string;
-
-  @ApiPropertyOptional({
-    type: QUESTION_BANK_TYPE,
-  })
-  @IsOptional()
-  type: string;
 }

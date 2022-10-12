@@ -7,6 +7,7 @@ import { MODE } from '../constant';
 import type { QuestionEntity } from '../domain/entity/question.entity';
 import type { QuestionDocument } from '../domain/question.schema';
 import { Question } from '../domain/question.schema';
+import type { QueryQuestionDto } from '../interface/dto/query.dto';
 
 @Injectable()
 export class QuestionRepository {
@@ -32,13 +33,15 @@ export class QuestionRepository {
 
   public async findAll(
     pageOptions: PageOptionsDto,
+    queryDto: QueryQuestionDto,
     mode = '',
     userId = '',
   ): Promise<{
     data: Array<QuestionEntity | undefined>;
     total: number;
   }> {
-    const { topic, tags, take, skip } = pageOptions;
+    const { take, skip } = pageOptions;
+    const { topic, tags } = queryDto;
 
     let query = {};
 
@@ -55,20 +58,22 @@ export class QuestionRepository {
         $and: [{ mode }],
       };
     } else {
-      query =
-        mode === MODE.PRIVATE
-          ? {
-              ...query,
-              $and: [{ createdBy: userId }],
-            }
-          : {
-              ...query,
-              $and: [
-                {
-                  $or: [{ createdBy: userId }, { mode: MODE.PUBLIC }],
-                },
-              ],
-            };
+      if (userId) {
+        query =
+          mode === MODE.PRIVATE
+            ? {
+                ...query,
+                $and: [{ createdBy: userId }],
+              }
+            : {
+                ...query,
+                $and: [
+                  {
+                    $or: [{ createdBy: userId }, { mode: MODE.PUBLIC }],
+                  },
+                ],
+              };
+      }
     }
 
     const questionsQuery = this.repository.find({ ...query });

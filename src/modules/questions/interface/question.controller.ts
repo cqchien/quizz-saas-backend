@@ -25,6 +25,7 @@ import { IFile } from '../../../interfaces/IFile';
 import { User } from '../../user/domain/user.schema';
 import { QuestionService } from '../app/question.service';
 import type { QuestionEntity } from '../domain/entity/question.entity';
+import { QueryQuestionDto } from './dto/query.dto';
 import { QuestionDto } from './dto/question.dto';
 import { QuestionPresenter } from './presenter/question.presenter';
 import { QuestionResponsePresenter } from './presenter/response.presenter';
@@ -58,6 +59,7 @@ export class QuestionController {
 
   @Get()
   @Auth([RoleType.ADMIN, RoleType.USER])
+  @ApiException(() => [ServerErrorException])
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: QuestionResponsePresenter,
@@ -66,9 +68,11 @@ export class QuestionController {
   async getAllQuestions(
     @AuthUser() user: User,
     @Query() pageOptionsDto: PageOptionsDto,
+    @Query() queryDto: QueryQuestionDto,
   ): Promise<QuestionResponsePresenter> {
     const { data, total } = await this.questionService.findAll(
       user,
+      queryDto,
       pageOptionsDto,
     );
 
@@ -86,6 +90,7 @@ export class QuestionController {
 
   @Post('upload')
   @Auth([RoleType.ADMIN, RoleType.USER])
+  @ApiException(() => [ServerErrorException])
   @ApiFile([{ name: 'file', isArray: false }])
   async uploadQuestions(
     @AuthUser() user: User,
@@ -103,7 +108,7 @@ export class QuestionController {
   @Get(':questionId')
   @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
-  @ApiException(() => [QuestionNotFoundException])
+  @ApiException(() => [QuestionNotFoundException, ServerErrorException])
   @ApiOkResponse({
     type: QuestionResponsePresenter,
     description: 'Get detail information of the questions successfully',
