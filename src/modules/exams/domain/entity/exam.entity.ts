@@ -14,7 +14,7 @@ export class ExamEntity {
 
   defaultQuestionNumber: number;
 
-  time: string;
+  time: number;
 
   status: string;
 

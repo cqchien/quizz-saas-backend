@@ -31,7 +31,7 @@ export class Exam extends AbstractSchema {
   defaultQuestionNumber: number;
 
   @Prop()
-  time: string;
+  time: number;
 
   @Prop()
   status: string;

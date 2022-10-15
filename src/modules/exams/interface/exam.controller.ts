@@ -132,6 +132,7 @@ export class ExamController {
   }
 
   @Get(':id/take-exam')
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [ExamNotFoundException])
   @ApiOkResponse({

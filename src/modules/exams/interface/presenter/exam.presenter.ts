@@ -27,7 +27,7 @@ export class ExamPresenter {
   defaultQuestionNumber: number;
 
   @ApiProperty()
-  time: string;
+  time: number;
 
   @ApiProperty()
   type: string;

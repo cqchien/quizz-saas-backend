@@ -23,8 +23,7 @@ export class ExamDto {
   defaultQuestionNumber: number;
 
   @ApiProperty()
-  @IsString()
-  time: string;
+  time: number;
 
   @ApiProperty()
   @IsString()
