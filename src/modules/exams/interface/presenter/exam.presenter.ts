@@ -21,9 +21,6 @@ export class ExamPresenter {
   description: string;
 
   @ApiProperty()
-  status: string;
-
-  @ApiProperty()
   defaultQuestionNumber: number;
 
   @ApiProperty()
@@ -70,7 +67,6 @@ export class ExamPresenter {
     this.id = entity.id;
     this.code = entity.code;
     this.name = entity.name;
-    this.status = entity.status;
     this.description = entity.description;
     this.defaultQuestionNumber = entity.defaultQuestionNumber;
     this.time = entity.time;

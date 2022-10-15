@@ -1,4 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
+import moment from 'moment';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { RoleType } from '../../../constants/role-type';
@@ -7,7 +9,11 @@ import {
   ExamSaveFailedException,
 } from '../../../exceptions/exam';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
-import { EXAM_STATUS, SCHEDULE_STATUS } from '../constant';
+import {
+  FORMAT_FULL_TIME,
+  SCHEDULE_STATUS,
+  UPDATE_EXAM_STATUS_TIME,
+} from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
 import type { Schedule } from '../domain/entity/schedule.entity';
 import { ExamRepository } from '../infra/exam.repository';
@@ -43,7 +49,6 @@ export class ExamService {
 
       const examEntity: ExamEntity = {
         ...examDto,
-        status: EXAM_STATUS.NOT_STARTED,
         schedules: formattedSchedules,
         createdBy: user.id,
         updatedBy: user.id,
@@ -198,7 +203,6 @@ export class ExamService {
     }
 
     if (
-      // exam.status !== EXAM_STATUS.IN_PROGRESS ||
       !this.checkValidTakeExam(
         inProgressSchedule.startTime,
         inProgressSchedule.endTime,
@@ -210,6 +214,44 @@ export class ExamService {
     }
 
     return exam;
+  }
+
+  @Interval(UPDATE_EXAM_STATUS_TIME)
+  public async handleStatusExam() {
+    // Get all exams with status of the schedule not completed
+    const examEntities = await this.examRepository.findExamNotCompleted();
+
+    await Promise.all(
+      examEntities.map(async (exam) => {
+        const schedules = exam.schedules.map((schedule) => {
+          const now = moment().utc().format(FORMAT_FULL_TIME);
+          const endDate = moment(schedule.endTime)
+            .utc()
+            .format(FORMAT_FULL_TIME);
+          const startDate = moment(schedule.startTime)
+            .utc()
+            .format(FORMAT_FULL_TIME);
+
+          if (now === endDate) {
+            return {
+              ...schedule,
+              status: SCHEDULE_STATUS.COMPLETED,
+            };
+          }
+
+          if (now === startDate) {
+            return {
+              ...schedule,
+              status: SCHEDULE_STATUS.IN_PROGRESS,
+            };
+          }
+
+          return schedule;
+        });
+
+        await this.examRepository.update({ ...exam, schedules });
+      }),
+    );
   }
 
   private checkTimePast(date: Date) {

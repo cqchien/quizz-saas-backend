@@ -34,9 +34,6 @@ export class Exam extends AbstractSchema {
   time: number;
 
   @Prop()
-  status: string;
-
-  @Prop()
   type: string;
 
   @Prop()

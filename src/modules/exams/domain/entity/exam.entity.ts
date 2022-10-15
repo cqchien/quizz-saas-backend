@@ -16,8 +16,6 @@ export class ExamEntity {
 
   time: number;
 
-  status: string;
-
   type: string;
 
   quesstionBankType: string;
