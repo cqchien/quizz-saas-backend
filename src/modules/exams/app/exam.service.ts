@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Interval } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { uniqBy } from 'lodash';
 import moment from 'moment';
 
@@ -233,7 +233,7 @@ export class ExamService {
     return exam;
   }
 
-  @Interval(UPDATE_EXAM_STATUS_TIME)
+  @Cron(UPDATE_EXAM_STATUS_TIME)
   public async handleStatusExam() {
     // Get all exams with status of the schedule not completed
     const examEntities = await this.examRepository.findExamNotCompleted();
