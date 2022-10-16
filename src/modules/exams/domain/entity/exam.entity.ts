@@ -14,8 +14,6 @@ export class ExamEntity {
 
   defaultQuestionNumber: number;
 
-  time: number;
-
   type: string;
 
   quesstionBankType: string;

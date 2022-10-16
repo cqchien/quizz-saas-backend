@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
+import { uniqBy } from 'lodash';
 import moment from 'moment';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
@@ -42,6 +43,12 @@ export class ExamService {
           status: SCHEDULE_STATUS.NOT_STARTED,
         };
       });
+
+      const uniqiueSchedule = uniqBy(formattedSchedules, 'code');
+
+      if (uniqiueSchedule.length !== formattedSchedules.length) {
+        error = 'Can not create with duplicated code in schedule';
+      }
 
       if (error) {
         throw new ExamSaveFailedException(error);
@@ -86,25 +93,35 @@ export class ExamService {
     }
 
     const formattedSchedules = examDto.schedules.map((schedule): Schedule => {
-      let status = schedule.status;
+      const existedSchedule = existedExam.schedules.find(
+        (examSchedule) => schedule.code === examSchedule.code,
+      );
 
-      if (!status) {
-        if (this.checkTimePast(schedule.startTime)) {
-          error = 'Can not schedule for the past!';
-        } else if (
-          !this.checkStartEndTime(schedule.startTime, schedule.endTime)
-        ) {
-          error = 'End time should be greater than start time.';
-        } else {
-          status = SCHEDULE_STATUS.NOT_STARTED;
-        }
+      if (existedSchedule?.status === SCHEDULE_STATUS.COMPLETED) {
+        return existedSchedule;
+      }
+
+      if (this.checkTimePast(schedule.startTime)) {
+        error = 'Can not schedule for the past!';
+      }
+
+      if (!this.checkStartEndTime(schedule.startTime, schedule.endTime)) {
+        error = 'End time should be greater than start time.';
       }
 
       return {
         ...schedule,
-        status,
+        status: existedSchedule
+          ? existedSchedule.status
+          : SCHEDULE_STATUS.NOT_STARTED,
       };
     });
+
+    const uniqiueSchedule = uniqBy(formattedSchedules, 'code');
+
+    if (uniqiueSchedule.length !== formattedSchedules.length) {
+      error = 'Can not create with duplicated code in schedule';
+    }
 
     if (error) {
       throw new ExamSaveFailedException(error);

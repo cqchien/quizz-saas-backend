@@ -24,7 +24,7 @@ export class SettingDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  timePerQuestion: string;
+  timePerQuestion: number;
 
   @ApiPropertyOptional()
   @IsOptional()

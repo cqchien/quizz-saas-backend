@@ -103,7 +103,6 @@ export class ExamRepository {
       name: exam.name,
       description: exam.description,
       defaultQuestionNumber: exam.defaultQuestionNumber,
-      time: exam.time,
       type: exam.type,
       quesstionBankType: exam.quesstionBankType,
       questions: (exam.questions || []).map((question) =>

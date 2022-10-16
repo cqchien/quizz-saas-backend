@@ -1,14 +1,13 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsDate, IsString } from 'class-validator';
 
 export class ScheduleDto {
   @ApiProperty()
   @IsString()
   code: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  status?: string;
+  @ApiProperty()
+  time: number;
 
   @ApiProperty()
   @IsDate()

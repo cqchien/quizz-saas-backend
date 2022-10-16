@@ -9,7 +9,7 @@ export class Setting {
 
   showAllQuestion: boolean;
 
-  timePerQuestion: string;
+  timePerQuestion: number;
 
   shufflingExams: number; // the number of the exam need to be generate for shuffling
 

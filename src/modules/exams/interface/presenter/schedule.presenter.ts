@@ -5,6 +5,9 @@ export class SchedulePresenter {
   code: string;
 
   @ApiProperty()
+  time: number;
+
+  @ApiProperty()
   startTime: Date;
 
   @ApiProperty()

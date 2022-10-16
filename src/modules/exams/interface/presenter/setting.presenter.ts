@@ -24,7 +24,7 @@ export class SettingPresenter {
 
   @ApiPropertyOptional()
   @IsOptional()
-  timePerQuestion: string;
+  timePerQuestion: number;
 
   @ApiPropertyOptional()
   @IsOptional()

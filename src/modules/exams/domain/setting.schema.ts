@@ -17,7 +17,7 @@ export class Setting {
   showAllQuestion: boolean;
 
   @Prop()
-  timePerQuestion: string;
+  timePerQuestion: number;
 
   @Prop()
   shufflingExams: number;

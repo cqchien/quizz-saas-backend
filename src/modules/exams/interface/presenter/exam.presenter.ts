@@ -69,7 +69,6 @@ export class ExamPresenter {
     this.name = entity.name;
     this.description = entity.description;
     this.defaultQuestionNumber = entity.defaultQuestionNumber;
-    this.time = entity.time;
     this.type = entity.type;
     this.quesstionBankType = entity.quesstionBankType;
     this.questions = (entity.questionEntities || []).map(
