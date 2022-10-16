@@ -1,3 +1,5 @@
+import 'moment-timezone';
+
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { uniqBy } from 'lodash';
@@ -13,6 +15,7 @@ import type { UserEntity } from '../../user/domain/entity/user.entity';
 import {
   FORMAT_FULL_TIME,
   SCHEDULE_STATUS,
+  TZ,
   UPDATE_EXAM_STATUS_TIME,
 } from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
@@ -241,12 +244,12 @@ export class ExamService {
     await Promise.all(
       examEntities.map(async (exam) => {
         const schedules = exam.schedules.map((schedule) => {
-          const now = moment().utc().format(FORMAT_FULL_TIME);
+          const now = moment().tz(TZ).format(FORMAT_FULL_TIME);
           const endDate = moment(schedule.endTime)
-            .utc()
+            .tz(TZ)
             .format(FORMAT_FULL_TIME);
           const startDate = moment(schedule.startTime)
-            .utc()
+            .tz(TZ)
             .format(FORMAT_FULL_TIME);
 
           if (now === endDate) {

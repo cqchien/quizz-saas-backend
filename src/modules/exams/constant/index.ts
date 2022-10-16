@@ -9,6 +9,8 @@ export const SCHEDULE_STATUS = {
   COMPLETED: 'completed',
 };
 
-export const UPDATE_EXAM_STATUS_TIME = '0 */1 * * * *'; // 5 minutes
+export const UPDATE_EXAM_STATUS_TIME = '0 */1 * * * *'; // 1 minutes
 
 export const FORMAT_FULL_TIME = 'YYYY-MM-DD  HH:mm';
+
+export const TZ = 'asia/ho_chi_minh';
