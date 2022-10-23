@@ -30,7 +30,7 @@ export class ExamDto {
     enum: QUESTION_BANK_TYPE,
   })
   @IsOptional()
-  quesstionBankType: string;
+  questionBankType: string;
 
   @ApiProperty()
   @IsNotEmpty()

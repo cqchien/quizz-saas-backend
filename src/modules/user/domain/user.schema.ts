@@ -6,6 +6,8 @@ import { AbstractSchema } from '../../../common/abstract.schema';
 import { generateHash } from '../../../common/utils';
 import { RoleType } from '../../../constants';
 import type { UserEntity } from './entity/user.entity';
+import type { UserExam } from './user-exam.schema';
+import { userExamSchema } from './user-exam.schema';
 
 @Schema()
 export class User extends AbstractSchema {
@@ -35,6 +37,11 @@ export class User extends AbstractSchema {
 
   @Prop()
   avatar: string;
+
+  @Prop({
+    type: [userExamSchema],
+  })
+  exams: UserExam[];
 }
 
 export const userSchema = SchemaFactory.createForClass(User);

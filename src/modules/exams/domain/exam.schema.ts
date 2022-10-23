@@ -34,7 +34,7 @@ export class Exam extends AbstractSchema {
   type: string;
 
   @Prop()
-  quesstionBankType: string;
+  questionBankType: string;
 
   @Prop({
     type: [
@@ -48,13 +48,13 @@ export class Exam extends AbstractSchema {
 
   @Prop({
     type: SchemaTypes.ObjectId,
-    ref: User.name,
+    ref: 'User',
   })
   createdBy: User;
 
   @Prop({
     type: SchemaTypes.ObjectId,
-    ref: User.name,
+    ref: 'User',
   })
   updatedBy: User;
 

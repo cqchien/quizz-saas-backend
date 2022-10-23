@@ -32,7 +32,7 @@ export class ExamPresenter {
   @ApiProperty({
     enum: QUESTION_BANK_TYPE,
   })
-  quesstionBankType: string;
+  questionBankType: string;
 
   @ApiProperty({
     type: QuestionPresenter,
@@ -70,7 +70,7 @@ export class ExamPresenter {
     this.description = entity.description;
     this.defaultQuestionNumber = entity.defaultQuestionNumber;
     this.type = entity.type;
-    this.quesstionBankType = entity.quesstionBankType;
+    this.questionBankType = entity.questionBankType;
     this.questions = (entity.questionEntities || []).map(
       (questionEntity) => new QuestionPresenter(questionEntity),
     );

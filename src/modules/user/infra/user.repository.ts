@@ -24,20 +24,28 @@ export class UserRepository {
       .lean<User>()
       .exec();
 
+    if (!userModel) {
+      return;
+    }
+
     return this.toEntity(userModel);
   }
 
-  public async create(userEntity: UserEntity): Promise<UserEntity | undefined> {
+  public async create(userEntity: UserEntity): Promise<UserEntity> {
     const user = await this.repository.create(userEntity);
 
     return this.toEntity(user.toObject());
   }
 
-  private toEntity(userModel: User): UserEntity | undefined {
-    if (!userModel) {
-      return undefined;
-    }
+  public async update(userEntity: UserEntity): Promise<UserEntity> {
+    await this.repository.updateOne({ _id: userEntity.id }, userEntity);
 
+    return this.findByCondition({
+      id: userEntity.id || '',
+    }) as unknown as UserEntity;
+  }
+
+  private toEntity(userModel: User): UserEntity {
     return {
       id: userModel._id.toString(),
       name: userModel.name,
@@ -46,6 +54,7 @@ export class UserRepository {
       password: userModel.password,
       phone: userModel.phone,
       avatar: userModel.avatar,
+      exams: userModel.exams,
       createdAt: userModel.createdAt,
       updatedAt: userModel.updatedAt,
     };

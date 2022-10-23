@@ -48,6 +48,10 @@ export class ApiConfigService {
     return this.getString('NODE_ENV');
   }
 
+  public getTimeZone(): string {
+    return this.getString('TZ');
+  }
+
   get fallbackLanguage(): string {
     return this.getString('FALLBACK_LANGUAGE').toLowerCase();
   }

@@ -16,7 +16,7 @@ export class ExamEntity {
 
   type: string;
 
-  quesstionBankType: string;
+  questionBankType: string;
 
   questions: string[];
 

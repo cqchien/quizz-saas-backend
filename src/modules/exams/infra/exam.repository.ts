@@ -104,7 +104,7 @@ export class ExamRepository {
       description: exam.description,
       defaultQuestionNumber: exam.defaultQuestionNumber,
       type: exam.type,
-      quesstionBankType: exam.quesstionBankType,
+      questionBankType: exam.questionBankType,
       questions: (exam.questions || []).map((question) =>
         question._id.toString(),
       ),

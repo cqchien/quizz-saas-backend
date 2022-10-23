@@ -11,6 +11,7 @@ import {
   ExamNotFoundException,
   ExamSaveFailedException,
 } from '../../../exceptions/exam';
+import { UserService } from '../../user/app/user.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
 import {
   FORMAT_FULL_TIME,
@@ -25,7 +26,10 @@ import type { QueryExamDto } from '../interface/dto/query.dto';
 
 @Injectable()
 export class ExamService {
-  constructor(private examRepository: ExamRepository) {}
+  constructor(
+    private examRepository: ExamRepository,
+    private userService: UserService,
+  ) {}
 
   async createExam(user: UserEntity, examDto: ExamDto): Promise<ExamEntity> {
     try {
@@ -46,9 +50,9 @@ export class ExamService {
         };
       });
 
-      const uniqiueSchedule = uniqBy(formattedSchedules, 'code');
+      const uniqueSchedule = uniqBy(formattedSchedules, 'code');
 
-      if (uniqiueSchedule.length !== formattedSchedules.length) {
+      if (uniqueSchedule.length !== formattedSchedules.length) {
         error = 'Can not create with duplicated code in schedule';
       }
 
@@ -64,6 +68,21 @@ export class ExamService {
       };
 
       const exam = await this.examRepository.create(examEntity);
+
+      await Promise.all(
+        exam.schedules.map(async (schedule) => {
+          if (schedule.assignedGroup && schedule.assignedGroup.length > 0) {
+            // Create exam for user in assigned group
+          }
+
+          // Create exam for user who created exam
+          return this.userService.createExamForUser(
+            user.id || '',
+            exam,
+            schedule.code,
+          );
+        }),
+      );
 
       return exam;
     } catch (error) {
@@ -119,9 +138,9 @@ export class ExamService {
       };
     });
 
-    const uniqiueSchedule = uniqBy(formattedSchedules, 'code');
+    const uniqueSchedule = uniqBy(formattedSchedules, 'code');
 
-    if (uniqiueSchedule.length !== formattedSchedules.length) {
+    if (uniqueSchedule.length !== formattedSchedules.length) {
       error = 'Can not create with duplicated code in schedule';
     }
 
@@ -276,7 +295,7 @@ export class ExamService {
     const now = new Date();
     const dateTime = new Date(date);
 
-    return now.getTime() > dateTime.getTime();
+    return now.getTime() - dateTime.getTime() > 60 * 1000;
   }
 
   private checkStartEndTime(startTime: Date, endTime: Date) {

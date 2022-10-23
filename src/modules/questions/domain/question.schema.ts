@@ -5,7 +5,6 @@ import type { Document } from 'mongoose';
 import { SchemaTypes } from 'mongoose';
 
 import { AbstractSchema } from '../../../common/abstract.schema';
-import { User } from '../../user/domain/user.schema';
 import type { QuestionOptionsDto } from '../interface/dto/question-options.dto';
 import type { QuestionEntity } from './entity/question.entity';
 
@@ -46,13 +45,13 @@ export class Question extends AbstractSchema {
 
   @Prop({
     type: SchemaTypes.ObjectId,
-    ref: User.name,
+    ref: 'User',
   })
   createdBy: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
-    ref: User.name,
+    ref: 'User',
   })
   updatedBy: string;
 }
