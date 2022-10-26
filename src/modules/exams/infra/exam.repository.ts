@@ -44,7 +44,10 @@ export class ExamRepository {
   }
 
   public async update(examEntity: ExamEntity): Promise<ExamEntity> {
-    await this.repository.updateOne({ _id: examEntity.id }, examEntity);
+    await this.repository.updateOne(
+      { _id: examEntity.id },
+      { ...examEntity, _id: examEntity.id },
+    );
 
     return this.findByCondition({
       id: examEntity.id || '',
@@ -108,15 +111,16 @@ export class ExamRepository {
       questions: (exam.questions || []).map((question) =>
         question._id.toString(),
       ),
-      questionEntities: exam.questions,
+      questionEntities: (exam.questions || []).map((question) => ({
+        ...question,
+        id: question._id.toString(),
+      })),
       setting: exam.setting,
       schedules: exam.schedules,
       updatedAt: exam.updatedAt,
       createdAt: exam.createdAt,
       createdBy: exam.createdBy?._id?.toString(),
-      createdByEntity: exam.createdBy,
       updatedBy: exam.updatedBy?._id?.toString(),
-      updatedByEntity: exam.updatedBy,
     };
   }
 }

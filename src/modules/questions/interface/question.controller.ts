@@ -22,7 +22,7 @@ import { QuestionExistException } from '../../../exceptions/question/question-ex
 import { QuestionNotFoundException } from '../../../exceptions/question/question-not-found.exception';
 import { ServerErrorException } from '../../../exceptions/server-error.exception';
 import { IFile } from '../../../interfaces/IFile';
-import { User } from '../../user/domain/user.schema';
+import { UserEntity } from '../../user/domain/entity/user.entity';
 import { QuestionService } from '../app/question.service';
 import type { QuestionEntity } from '../domain/entity/question.entity';
 import { QueryQuestionDto } from './dto/query.dto';
@@ -44,7 +44,7 @@ export class QuestionController {
     description: 'Question is created successfully',
   })
   async createQuestion(
-    @AuthUser() user: User,
+    @AuthUser() user: UserEntity,
     @Body() questionDto: QuestionDto,
   ): Promise<QuestionResponsePresenter> {
     const questionEntity = await this.questionService.createQuestion(
@@ -66,7 +66,7 @@ export class QuestionController {
     description: 'Get all questions successfully',
   })
   async getAllQuestions(
-    @AuthUser() user: User,
+    @AuthUser() user: UserEntity,
     @Query() pageOptionsDto: PageOptionsDto,
     @Query() queryDto: QueryQuestionDto,
   ): Promise<QuestionResponsePresenter> {
@@ -93,7 +93,7 @@ export class QuestionController {
   @ApiException(() => [ServerErrorException])
   @ApiFile([{ name: 'file', isArray: false }])
   async uploadQuestions(
-    @AuthUser() user: User,
+    @AuthUser() user: UserEntity,
     @UploadedFile() file: IFile,
   ): Promise<QuestionResponsePresenter> {
     const questions = await this.questionService.uploadQuestions(file, user);
@@ -134,7 +134,7 @@ export class QuestionController {
     description: 'Question is updated successfully',
   })
   async updateQuestion(
-    @AuthUser() user: User,
+    @AuthUser() user: UserEntity,
     @Param('questionId') questionId: string,
     @Body() questionUpdateDto: QuestionDto,
   ): Promise<QuestionResponsePresenter> {
@@ -158,7 +158,7 @@ export class QuestionController {
     description: 'Successfully Delete',
   })
   async deleteQuestion(
-    @AuthUser() user: User,
+    @AuthUser() user: UserEntity,
     @Param('questionId') questionId: string,
   ): Promise<QuestionResponsePresenter> {
     await this.questionService.deleteQuestion(user, questionId);

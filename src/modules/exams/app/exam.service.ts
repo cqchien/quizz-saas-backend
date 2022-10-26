@@ -1,23 +1,18 @@
-import 'moment-timezone';
-
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { uniqBy } from 'lodash';
 import moment from 'moment';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
+import { FORMAT_FULL_TIME } from '../../../constants';
 import { RoleType } from '../../../constants/role-type';
 import {
   ExamNotFoundException,
   ExamSaveFailedException,
 } from '../../../exceptions/exam';
-import { UserService } from '../../user/app/user.service';
+import { UserExamService } from '../../user/app/user-exam.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
-import {
-  FORMAT_FULL_TIME,
-  SCHEDULE_STATUS,
-  UPDATE_EXAM_STATUS_TIME,
-} from '../constant';
+import { SCHEDULE_STATUS, UPDATE_EXAM_STATUS_TIME } from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
 import type { Schedule } from '../domain/entity/schedule.entity';
 import { ExamRepository } from '../infra/exam.repository';
@@ -28,7 +23,7 @@ import type { QueryExamDto } from '../interface/dto/query.dto';
 export class ExamService {
   constructor(
     private examRepository: ExamRepository,
-    private userService: UserService,
+    private userExamService: UserExamService,
   ) {}
 
   async createExam(user: UserEntity, examDto: ExamDto): Promise<ExamEntity> {
@@ -76,7 +71,7 @@ export class ExamService {
           }
 
           // Create exam for user who created exam
-          return this.userService.createExamForUser(
+          return this.userExamService.createExamForUser(
             user.id || '',
             exam,
             schedule.code,
@@ -213,47 +208,6 @@ export class ExamService {
     return exam;
   }
 
-  public async takeExam(
-    user: UserEntity,
-    examId: string,
-    scheduleCode: string,
-  ): Promise<ExamEntity> {
-    const exam = await this.examRepository.findByCondition({
-      id: examId,
-    });
-
-    if (!exam) {
-      throw new ExamNotFoundException(
-        'Exam does not exist or user not allow to get the exam!!',
-      );
-    }
-
-    const inProgressSchedule = exam.schedules.find(
-      (schedule) =>
-        schedule.status === SCHEDULE_STATUS.IN_PROGRESS &&
-        schedule.code === scheduleCode,
-    );
-
-    if (!inProgressSchedule) {
-      throw new ExamNotFoundException(
-        'Schedule have not start yet or does not exist.',
-      );
-    }
-
-    if (
-      !this.checkValidTakeExam(
-        inProgressSchedule.startTime,
-        inProgressSchedule.endTime,
-      )
-    ) {
-      throw new BadRequestException(
-        'You can view the exam when it has started and during the test.',
-      );
-    }
-
-    return exam;
-  }
-
   @Cron(UPDATE_EXAM_STATUS_TIME)
   public async handleStatusExam() {
     // Get all exams with status of the schedule not completed
@@ -303,15 +257,5 @@ export class ExamService {
     const endDate = new Date(endTime);
 
     return startDate.getTime() <= endDate.getTime();
-  }
-
-  private checkValidTakeExam(startTime: Date, endTime: Date) {
-    const now = new Date();
-    const startDate = new Date(startTime);
-    const endDate = new Date(endTime);
-
-    return (
-      startDate.getTime() <= now.getTime() && now.getTime() <= endDate.getTime()
-    );
   }
 }

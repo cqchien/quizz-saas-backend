@@ -95,6 +95,16 @@ export class ApiConfigService {
     };
   }
 
+  get mailOptionsConfig() {
+    return {
+      host: this.getString('MAIL_HOST'),
+      port: this.getNumber('MAIL_PORT'),
+      user: this.getString('MAIL_USERNAME'),
+      pass: this.getString('MAIL_PASS'),
+      defaultFrom: this.getString('MAIL_DEFAULT_FROM'),
+    };
+  }
+
   get appConfig() {
     return {
       port: this.getString('PORT'),

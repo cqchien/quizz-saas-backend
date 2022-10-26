@@ -4,6 +4,7 @@ import { SchemaTypes } from 'mongoose';
 import { AbstractSchema } from '../../../common/abstract.schema';
 import { Exam } from '../../exams/domain/exam.schema';
 import { Question } from '../../questions/domain/question.schema';
+import { UserExamSetting } from './setting.schema';
 
 @Schema()
 export class AnswerQuestion {
@@ -11,7 +12,7 @@ export class AnswerQuestion {
     type: SchemaTypes.ObjectId,
     ref: Question.name,
   })
-  question: string;
+  question: Question;
 
   @Prop()
   answerOrder: number;
@@ -31,10 +32,15 @@ export class UserExam extends AbstractSchema {
     type: SchemaTypes.ObjectId,
     ref: Exam.name,
   })
-  templateExam: string;
+  templateExam: Exam;
 
   @Prop()
   scheduleCode: string;
+
+  @Prop({
+    type: () => UserExamSetting,
+  })
+  setting: UserExamSetting;
 
   @Prop()
   code: string;

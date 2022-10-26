@@ -1,7 +1,8 @@
 import type { ExamEntity } from '../../../exams/domain/entity/exam.entity';
 import type { QuestionEntity } from '../../../questions/domain/entity/question.entity';
+import type { UserExamSettingEntity } from './setting.entity';
 
-class AnswerQuestion {
+class AnswerQuestionEntity {
   question: string;
 
   questionEntity?: QuestionEntity;
@@ -20,6 +21,8 @@ export class UserExamEntity {
 
   scheduleCode: string;
 
+  setting: UserExamSettingEntity;
+
   code: string;
 
   name: string;
@@ -30,7 +33,7 @@ export class UserExamEntity {
 
   questionBankType: string;
 
-  questions?: AnswerQuestion[];
+  questions?: AnswerQuestionEntity[];
 
   status: string; // Not started, in-progress, submitted
 
