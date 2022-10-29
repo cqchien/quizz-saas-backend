@@ -6,12 +6,13 @@ import {
 
 import { SCHEDULE_STATUS } from '../../exams/constant';
 import type { ExamEntity } from '../../exams/domain/entity/exam.entity';
+import type { Schedule } from '../../exams/domain/entity/schedule.entity';
 import { MailService } from '../../mail/mail.service';
 import { RESULT_EXAM_STATUS, USER_EXAM_STATUS } from '../constant';
 import type { UserEntity } from '../domain/entity/user.entity';
 import type { UserExamEntity } from '../domain/entity/user-exam.entity';
 import { UserRepository } from '../infra/user.repository';
-import type { UserAnswerQuestionDto } from '../interface/dto/user-answer-exam.dto';
+import type { UserAnswersDto } from '../interface/dto/user-answer-exam.dto';
 
 @Injectable()
 export class UserExamService {
@@ -102,7 +103,7 @@ export class UserExamService {
 
     if (!inProgressSchedule) {
       throw new BadRequestException(
-        'Schedule have not start yet or does not exist.',
+        'Exam not allow to view or does not exist.',
       );
     }
 
@@ -131,13 +132,22 @@ export class UserExamService {
   public async submit(
     user: UserEntity,
     examId: string,
-    answers: UserAnswerQuestionDto[],
+    userAnswer: UserAnswersDto,
   ) {
-    const exam = await this.userRepository.findExam(user.id || '', examId);
+    const { answers } = userAnswer;
 
-    if (!exam) {
+    const exam = await this.userRepository.findExam(user.id || '', examId);
+    const userExamSchedule = (exam?.templateExamEntity?.schedules || []).find(
+      (schedule: Schedule) => schedule.code === exam?.scheduleCode,
+    );
+
+    if (
+      !exam ||
+      exam.status === USER_EXAM_STATUS.SUBMITTED ||
+      userExamSchedule?.status !== SCHEDULE_STATUS.IN_PROGRESS
+    ) {
       throw new NotFoundException(
-        'Exam does not exist or user not allow to get the exam!!',
+        'Exam does not exist or user not allow to submit the exam!!',
       );
     }
 
@@ -152,7 +162,7 @@ export class UserExamService {
     }, {});
 
     const correctAnswer = answers.filter((answer) =>
-      questionMap[answer.questionId].inclues(answer.answerOrder),
+      questionMap[answer.questionId.toString()].includes(answer.answerOrder),
     );
 
     const numberOfCorrectAnswer = correctAnswer.length;
@@ -169,7 +179,7 @@ export class UserExamService {
 
     const updatedExam = {
       ...exam,
-      score,
+      score: score > 0 ? score : 0,
       resultStatus,
       status: USER_EXAM_STATUS.SUBMITTED,
     };

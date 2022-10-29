@@ -125,11 +125,11 @@ export class ExamController {
     type: ExamResponsePresenter,
     description: 'Successfully Delete',
   })
-  async deleteQuestion(
+  async deleteExam(
     @AuthUser() user: UserEntity,
-    @Param('questionId') questionId: string,
+    @Param('id') examId: string,
   ): Promise<ExamResponsePresenter> {
-    await this.examService.delete(user, questionId);
+    await this.examService.delete(user, examId);
 
     return new ExamResponsePresenter({});
   }

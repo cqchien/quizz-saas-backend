@@ -229,7 +229,7 @@ export class ExamService {
     return exam;
   }
 
-  @Cron(UPDATE_EXAM_STATUS_TIME)
+  @Cron(UPDATE_EXAM_STATUS_TIME.toString())
   public async handleStatusExam() {
     // Get all exams with status of the schedule not completed
     const examEntities = await this.examRepository.findExamNotCompleted();

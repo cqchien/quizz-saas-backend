@@ -75,7 +75,6 @@ export class UserRepository {
     const userEntity = await this.repository
       // eslint-disable-next-line quote-props
       .findOne({ _id: userId })
-      .populate('exams.templateExam exams.questions.question')
       .lean<User>()
       .exec();
 
@@ -122,10 +121,10 @@ export class UserRepository {
   private toUserExamEntity(userExam: UserExam): UserExamEntity {
     return {
       id: userExam._id.toString(),
-      templateExam: userExam.templateExam._id.toString(),
+      templateExam: userExam.templateExam?._id.toString(),
       templateExamEntity: {
         ...userExam.templateExam,
-        id: userExam.templateExam._id.toString(),
+        id: userExam.templateExam?._id.toString(),
         questions: [],
         createdBy: undefined,
         updatedBy: undefined,
@@ -142,10 +141,10 @@ export class UserRepository {
       questionBankType: userExam.questionBankType,
       questions: userExam.questions.map((answerQuestion) => ({
         ...answerQuestion,
-        question: answerQuestion.question._id.toString(),
+        question: answerQuestion.question?._id.toString(),
         questionEntity: {
           ...answerQuestion.question,
-          id: answerQuestion.question._id.toString(),
+          id: answerQuestion.question?._id.toString(),
         },
       })),
       scheduleCode: userExam.scheduleCode,

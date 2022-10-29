@@ -15,7 +15,7 @@ import { Auth, AuthUser } from '../../../decorators';
 import { ServerErrorException } from '../../../exceptions/server-error.exception';
 import { UserExamService } from '../app/user-exam.service';
 import { UserEntity } from '../domain/entity/user.entity';
-import type { UserAnswerQuestionDto } from './dto/user-answer-exam.dto';
+import { UserAnswersDto } from './dto/user-answer-exam.dto';
 import { UserResponsePresenter } from './presenter/response.presenter';
 import { UserExamPresenter } from './presenter/user-exam.presenter';
 
@@ -69,7 +69,7 @@ export class UserExamController {
   })
   async submit(
     @AuthUser() user: UserEntity,
-    @Body() answers: UserAnswerQuestionDto[],
+    @Body() answers: UserAnswersDto,
     @Param('id') userExamId: string,
   ) {
     const examEntity = await this.userExamService.submit(
