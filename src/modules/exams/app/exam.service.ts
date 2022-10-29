@@ -18,6 +18,7 @@ import type { Schedule } from '../domain/entity/schedule.entity';
 import { ExamRepository } from '../infra/exam.repository';
 import type { ExamDto } from '../interface/dto/exam.dto';
 import type { QueryExamDto } from '../interface/dto/query.dto';
+import type { ScheduleDto } from '../interface/dto/schedule.dto';
 
 @Injectable()
 export class ExamService {
@@ -87,6 +88,7 @@ export class ExamService {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   public async update(
     user: UserEntity,
     examId: string,
@@ -108,6 +110,8 @@ export class ExamService {
       );
     }
 
+    const newSchedules: ScheduleDto[] = [];
+
     const formattedSchedules = examDto.schedules.map((schedule): Schedule => {
       const existedSchedule = existedExam.schedules.find(
         (examSchedule) => schedule.code === examSchedule.code,
@@ -125,6 +129,10 @@ export class ExamService {
         error = 'End time should be greater than start time.';
       }
 
+      if (!existedSchedule) {
+        newSchedules.push(schedule);
+      }
+
       return {
         ...schedule,
         status: existedSchedule
@@ -132,6 +140,19 @@ export class ExamService {
           : SCHEDULE_STATUS.NOT_STARTED,
       };
     });
+
+    await Promise.all(
+      newSchedules.map(async (schedule) =>
+        this.userExamService.createExamForUser(
+          user.id || '',
+          {
+            ...existedExam,
+            ...examDto,
+          },
+          schedule.code,
+        ),
+      ),
+    );
 
     const uniqueSchedule = uniqBy(formattedSchedules, 'code');
 

@@ -71,6 +71,19 @@ export class UserRepository {
     return this.toUserExamEntity(examEntity);
   }
 
+  public async getAllExams(userId: string): Promise<UserExamEntity[]> {
+    const userEntity = await this.repository
+      // eslint-disable-next-line quote-props
+      .findOne({ _id: userId })
+      .populate('exams.templateExam exams.questions.question')
+      .lean<User>()
+      .exec();
+
+    return userEntity.exams.map((examEntity) =>
+      this.toUserExamEntity(examEntity),
+    );
+  }
+
   public async updateUserExam(
     userId: string,
     userExamEntity: UserExamEntity,
@@ -123,6 +136,9 @@ export class UserRepository {
       description: userExam.description,
       status: userExam.status,
       type: userExam.type,
+      score: userExam.score,
+      total: userExam.total,
+      resultStatus: userExam.resultStatus,
       questionBankType: userExam.questionBankType,
       questions: userExam.questions.map((answerQuestion) => ({
         ...answerQuestion,

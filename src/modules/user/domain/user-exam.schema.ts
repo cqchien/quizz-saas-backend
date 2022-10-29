@@ -20,7 +20,7 @@ export class AnswerQuestion {
   @Prop({
     type: String || Boolean,
   })
-  answers: string | boolean;
+  answerValue: string | boolean;
 }
 export const examQuestionSchema = SchemaFactory.createForClass(AnswerQuestion);
 
@@ -56,6 +56,19 @@ export class UserExam extends AbstractSchema {
 
   @Prop()
   type: string;
+
+  @Prop({
+    default: 0,
+  })
+  score: number;
+
+  @Prop({
+    default: 0,
+  })
+  total: number;
+
+  @Prop()
+  resultStatus: string;
 
   @Prop()
   questionBankType: string;

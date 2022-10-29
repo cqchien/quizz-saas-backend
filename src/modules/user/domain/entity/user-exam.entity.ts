@@ -9,7 +9,7 @@ class AnswerQuestionEntity {
 
   answerOrder?: number;
 
-  answers?: string | boolean;
+  answerValue?: string | boolean;
 }
 
 export class UserExamEntity {
@@ -33,9 +33,15 @@ export class UserExamEntity {
 
   questionBankType: string;
 
-  questions?: AnswerQuestionEntity[];
-
   status: string; // Not started, in-progress, submitted
+
+  score: number;
+
+  total: number;
+
+  resultStatus: string;
+
+  questions?: AnswerQuestionEntity[];
 
   updatedAt?: Date;
 
