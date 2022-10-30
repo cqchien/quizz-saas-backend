@@ -24,20 +24,20 @@ export class UserRepository {
       .lean<User>()
       .exec();
 
+    if (!userModel) {
+      return;
+    }
+
     return this.toEntity(userModel);
   }
 
-  public async create(userEntity: UserEntity): Promise<UserEntity | undefined> {
+  public async create(userEntity: UserEntity): Promise<UserEntity> {
     const user = await this.repository.create(userEntity);
 
     return this.toEntity(user.toObject());
   }
 
-  private toEntity(userModel: User): UserEntity | undefined {
-    if (!userModel) {
-      return undefined;
-    }
-
+  private toEntity(userModel: User): UserEntity {
     return {
       id: userModel._id.toString(),
       name: userModel.name,

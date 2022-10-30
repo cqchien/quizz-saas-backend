@@ -1,3 +1,4 @@
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import {
   Body,
   Controller,
@@ -9,16 +10,25 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { PageMetaDto } from '../../../common/dto/page-meta.dto';
 import { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { RoleType } from '../../../constants/role-type';
-import { Auth } from '../../../decorators';
+import { ApiFile, Auth, AuthUser } from '../../../decorators';
+import { QuestionExistException } from '../../../exceptions/question/question-exist.exception';
+import { QuestionNotFoundException } from '../../../exceptions/question/question-not-found.exception';
+import { ServerErrorException } from '../../../exceptions/server-error.exception';
+import { IFile } from '../../../interfaces/IFile';
+import { UserEntity } from '../../user/domain/entity/user.entity';
 import { QuestionService } from '../app/question.service';
-import { QuestionCreateDto } from '../domain/dto/question.create.dto';
-import { QuestionUpdateDto } from '../domain/dto/question.update.dto';
-import { QuestionResponseSerialization } from './serialization/question.response.serialization';
+import type { QuestionEntity } from '../domain/entity/question.entity';
+import { QueryQuestionDto } from './dto/query.dto';
+import { QuestionDto } from './dto/question.dto';
+import { QuestionPresenter } from './presenter/question.presenter';
+import { QuestionResponsePresenter } from './presenter/response.presenter';
 
 @Controller('questions')
 @ApiTags('questions')
@@ -26,83 +36,133 @@ export class QuestionController {
   constructor(private questionService: QuestionService) {}
 
   @Post()
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
+  @ApiException(() => [QuestionExistException, ServerErrorException])
   @ApiOkResponse({
-    type: QuestionResponseSerialization,
-    description: 'Successfully created',
+    type: QuestionResponsePresenter,
+    description: 'Question is created successfully',
   })
   async createQuestion(
-    @Body() questionCreateDto: QuestionCreateDto,
-  ): Promise<QuestionResponseSerialization> {
-    const question = await this.questionService.createQuestion(
-      questionCreateDto,
+    @AuthUser() user: UserEntity,
+    @Body() questionDto: QuestionDto,
+  ): Promise<QuestionResponsePresenter> {
+    const questionEntity = await this.questionService.createQuestion(
+      user,
+      questionDto,
     );
 
-    return question;
+    const questionPresenter = new QuestionPresenter(questionEntity);
+
+    return new QuestionResponsePresenter(questionPresenter);
   }
 
   @Get()
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
+  @ApiException(() => [ServerErrorException])
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: QuestionResponseSerialization,
-    description: 'Successfully Get All',
+    type: QuestionResponsePresenter,
+    description: 'Get all questions successfully',
   })
   async getAllQuestions(
-    @Query() getAllDto: PageOptionsDto,
-  ): Promise<QuestionResponseSerialization> {
-    const questions = await this.questionService.findAll(getAllDto);
+    @AuthUser() user: UserEntity,
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Query() queryDto: QueryQuestionDto,
+  ): Promise<QuestionResponsePresenter> {
+    const { data, total } = await this.questionService.findAll(
+      user,
+      queryDto,
+      pageOptionsDto,
+    );
 
-    return questions;
+    const questionPresenters = (data || []).map(
+      (question: QuestionEntity) => new QuestionPresenter(question),
+    );
+
+    const pageMetaPresenters = new PageMetaDto(pageOptionsDto, total);
+
+    return new QuestionResponsePresenter(
+      questionPresenters,
+      pageMetaPresenters,
+    );
+  }
+
+  @Post('upload')
+  @Auth([RoleType.ADMIN, RoleType.USER])
+  @ApiException(() => [ServerErrorException])
+  @ApiFile([{ name: 'file', isArray: false }])
+  async uploadQuestions(
+    @AuthUser() user: UserEntity,
+    @UploadedFile() file: IFile,
+  ): Promise<QuestionResponsePresenter> {
+    const questions = await this.questionService.uploadQuestions(file, user);
+
+    const questionPresenters = (questions || []).map(
+      (question: QuestionEntity) => new QuestionPresenter(question),
+    );
+
+    return new QuestionResponsePresenter(questionPresenters);
   }
 
   @Get(':questionId')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
+  @ApiException(() => [QuestionNotFoundException, ServerErrorException])
   @ApiOkResponse({
-    type: QuestionResponseSerialization,
-    description: 'Successfully Get Detail',
+    type: QuestionResponsePresenter,
+    description: 'Get detail information of the questions successfully',
   })
   async getDetailQuestion(
     @Param('questionId') questionId: string,
-  ): Promise<QuestionResponseSerialization> {
-    const question = await this.questionService.findOne(questionId);
+  ): Promise<QuestionResponsePresenter> {
+    const questionEntity = await this.questionService.findOne({
+      id: questionId,
+    });
 
-    return question;
+    const questionPresenter = new QuestionPresenter(questionEntity);
+
+    return new QuestionResponsePresenter(questionPresenter);
   }
 
   @Put(':questionId')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
+  @ApiException(() => [QuestionNotFoundException, ServerErrorException])
   @ApiOkResponse({
-    type: QuestionResponseSerialization,
-    description: 'Successfully Update',
+    type: QuestionResponsePresenter,
+    description: 'Question is updated successfully',
   })
   async updateQuestion(
+    @AuthUser() user: UserEntity,
     @Param('questionId') questionId: string,
-    @Body() questionUpdateDto: QuestionUpdateDto,
-  ): Promise<QuestionResponseSerialization> {
-    const question = await this.questionService.updateQuestion(
+    @Body() questionUpdateDto: QuestionDto,
+  ): Promise<QuestionResponsePresenter> {
+    const questionEntity = await this.questionService.updateQuestion(
+      user,
       questionId,
       questionUpdateDto,
     );
 
-    return question;
+    const questionPresenter = new QuestionPresenter(questionEntity);
+
+    return new QuestionResponsePresenter(questionPresenter);
   }
 
   @Delete(':questionId')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)
+  @ApiException(() => [QuestionNotFoundException, ServerErrorException])
   @ApiOkResponse({
-    type: QuestionResponseSerialization,
+    type: QuestionResponsePresenter,
     description: 'Successfully Delete',
   })
   async deleteQuestion(
+    @AuthUser() user: UserEntity,
     @Param('questionId') questionId: string,
-  ): Promise<QuestionResponseSerialization> {
-    const question = await this.questionService.deleteQuestion(questionId);
+  ): Promise<QuestionResponsePresenter> {
+    await this.questionService.deleteQuestion(user, questionId);
 
-    return question;
+    return new QuestionResponsePresenter();
   }
 }

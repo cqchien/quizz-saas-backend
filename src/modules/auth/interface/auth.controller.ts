@@ -1,15 +1,10 @@
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  NotFoundException,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { UserNotFoundException } from '../../../exceptions';
 import { UserService } from '../../user/app/user.service';
+import { UserPresenter } from '../../user/interface/presenter/user.presenter';
 import { AuthService } from '../app/auth.service';
 import { UserLoginDto } from './dto/login.dto';
 import { UserRegisterDto } from './dto/register.dto';
@@ -30,18 +25,19 @@ export class AuthController {
     type: AuthResponsePresenter,
     description: 'User info with access token',
   })
-  @ApiException(() => [NotFoundException])
+  @ApiException(() => [UserNotFoundException])
   async userLogin(
     @Body() userLoginDto: UserLoginDto,
   ): Promise<AuthResponsePresenter> {
     const user = await this.authService.validateUser(userLoginDto);
 
     const token = await this.authService.createAccessToken({
-      userId: user.id ? user.id : '',
+      userId: user.id,
       role: user.role,
     });
 
-    const loginPresenter = new LoginPresenter(user, token);
+    const userPresenter = new UserPresenter(user);
+    const loginPresenter = new LoginPresenter(userPresenter, token);
 
     return new AuthResponsePresenter(loginPresenter);
   }
@@ -56,7 +52,8 @@ export class AuthController {
     @Body() userRegisterDto: UserRegisterDto,
   ): Promise<AuthResponsePresenter> {
     const user = await this.userService.createUser(userRegisterDto);
+    const userPresenter = new UserPresenter(user);
 
-    return new AuthResponsePresenter(user);
+    return new AuthResponsePresenter(userPresenter);
   }
 }

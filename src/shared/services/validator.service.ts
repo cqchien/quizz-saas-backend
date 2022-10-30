@@ -7,4 +7,12 @@ export class ValidatorService {
 
     return imageMimeTypes.includes(mimeType);
   }
+
+  public isExcel(mimeType: string): boolean {
+    const exelMimeTypes = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+
+    return exelMimeTypes.includes(mimeType);
+  }
 }

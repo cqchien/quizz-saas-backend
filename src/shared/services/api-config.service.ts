@@ -48,6 +48,10 @@ export class ApiConfigService {
     return this.getString('NODE_ENV');
   }
 
+  public getTimeZone(): string {
+    return this.getString('TZ');
+  }
+
   get fallbackLanguage(): string {
     return this.getString('FALLBACK_LANGUAGE').toLowerCase();
   }
@@ -88,6 +92,16 @@ export class ApiConfigService {
       privateKey: this.getString('JWT_PRIVATE_KEY'),
       publicKey: this.getString('JWT_PUBLIC_KEY'),
       jwtExpirationTime: this.getNumber('JWT_EXPIRATION_TIME'),
+    };
+  }
+
+  get mailOptionsConfig() {
+    return {
+      host: this.getString('MAIL_HOST'),
+      port: this.getNumber('MAIL_PORT'),
+      user: this.getString('MAIL_USERNAME'),
+      pass: this.getString('MAIL_PASS'),
+      defaultFrom: this.getString('MAIL_DEFAULT_FROM'),
     };
   }
 

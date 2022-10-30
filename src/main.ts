@@ -33,6 +33,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
       'http://localhost:3000',
       'https://knowled.netlify.app',
     ],
+    credentials: true,
   });
 
   app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
@@ -47,8 +48,6 @@ export async function bootstrap(): Promise<NestExpressApplication> {
   app.use(compression());
   app.use(morgan('combined'));
   app.enableVersioning();
-  //To set a prefix for every route registered in an HTTP application
-  app.setGlobalPrefix('/api');
 
   const reflector = app.get(Reflector);
 

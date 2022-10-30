@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
     "module": "commonjs",
     "declaration": false,
     "noImplicitAny": false,
@@ -16,7 +15,8 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "incremental": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "allowJs": true,
   },
   "include": [
     "src/**/*"
