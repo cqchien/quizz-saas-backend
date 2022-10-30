@@ -86,8 +86,34 @@ export class UserExamService {
     return updatedUser;
   }
 
-  public async takeExam(user: UserEntity, examId: string) {
+  public async getOverview(user: UserEntity, examId: string) {
     const exam = await this.userRepository.findExam(user.id || '', examId);
+
+    if (!exam || exam.status !== USER_EXAM_STATUS.SUBMITTED) {
+      throw new NotFoundException(
+        'Exam does not exist or user not allow to get the exam!!',
+      );
+    }
+
+    const inProgressSchedule = exam.templateExamEntity?.schedules.find(
+      (schedule) =>
+        schedule.status === SCHEDULE_STATUS.COMPLETED &&
+        schedule.code === exam.scheduleCode,
+    );
+
+    if (!inProgressSchedule) {
+      throw new BadRequestException('Exam not allow to view.');
+    }
+
+    return exam;
+  }
+
+  public async takeExam(user: UserEntity, examId: string) {
+    const exam = await this.userRepository.findExam(
+      user.id || '',
+      examId,
+      true,
+    );
 
     if (!exam) {
       throw new NotFoundException(
@@ -103,7 +129,7 @@ export class UserExamService {
 
     if (!inProgressSchedule) {
       throw new BadRequestException(
-        'Exam not allow to view or does not exist.',
+        'Exam not allow to view or schedule does not exist.',
       );
     }
 
@@ -177,11 +203,24 @@ export class UserExamService {
         ? RESULT_EXAM_STATUS.PASS
         : RESULT_EXAM_STATUS.FAILED;
 
+    const questions = (exam.questions || []).map((userAnswerQuestion) => {
+      const userAnswerByQuestion = answers.find(
+        (answer) => answer.questionId === userAnswerQuestion.question,
+      );
+
+      return {
+        ...userAnswerQuestion,
+        answerOrder: userAnswerByQuestion?.answerOrder,
+        answerValue: userAnswerByQuestion?.answerValue,
+      };
+    });
+
     const updatedExam = {
       ...exam,
       score: score > 0 ? score : 0,
       resultStatus,
       status: USER_EXAM_STATUS.SUBMITTED,
+      questions,
     };
 
     // Send email report to user

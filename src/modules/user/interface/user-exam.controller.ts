@@ -41,6 +41,24 @@ export class UserExamController {
     return new UserResponsePresenter(userExamPresenters);
   }
 
+  @Get(':id/overview')
+  @Auth([])
+  @HttpCode(HttpStatus.OK)
+  @ApiException(() => [NotFoundException, ServerErrorException])
+  @ApiOkResponse({
+    type: UserResponsePresenter,
+    description: 'Get overview information of the exam by user',
+  })
+  async getOverview(
+    @AuthUser() user: UserEntity,
+    @Param('id') userExamId: string,
+  ) {
+    const examEntity = await this.userExamService.getOverview(user, userExamId);
+    const userExamPresenter = new UserExamPresenter(examEntity);
+
+    return new UserResponsePresenter(userExamPresenter);
+  }
+
   @Get(':id/take-exam')
   @Auth([])
   @HttpCode(HttpStatus.OK)

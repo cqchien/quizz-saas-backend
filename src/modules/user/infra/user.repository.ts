@@ -53,11 +53,14 @@ export class UserRepository {
   public async findExam(
     userId: string,
     examId: string,
+    isHideResult = false,
   ): Promise<UserExamEntity | undefined> {
+    const populateOptions = isHideResult && '-options.value';
+
     const userEntity = await this.repository
       // eslint-disable-next-line quote-props
       .findOne({ _id: userId })
-      .populate('exams.templateExam exams.questions.question')
+      .populate('exams.templateExam exams.questions.question', populateOptions)
       .lean<User>()
       .exec();
     const examEntity = (userEntity?.exams || []).find(
@@ -100,6 +103,7 @@ export class UserRepository {
     return this.findExam(
       userId,
       userExamEntity.id || '',
+      true,
     ) as unknown as UserExamEntity;
   }
 
