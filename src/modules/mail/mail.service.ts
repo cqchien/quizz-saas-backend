@@ -22,7 +22,7 @@ export class MailService {
     exam: UserExamEntity,
     schedule: Schedule,
   ) {
-    const magicLink = `${process.env.API_URL}/user-exams/${exam.id}`;
+    const magicLink = `${process.env.API_URL}/user-exams/${exam.id}/take-exam`;
 
     await this.mailerService.sendMail({
       to: user.email,
