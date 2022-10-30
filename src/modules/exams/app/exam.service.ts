@@ -217,7 +217,10 @@ export class ExamService {
     user: UserEntity,
     options: Record<string, string>,
   ): Promise<ExamEntity> {
-    const query = user.id ? { ...options, createdBy: user.id } : options;
+    const query =
+      user.role !== RoleType.ADMIN
+        ? { ...options, createdBy: user.id || '' }
+        : options;
     const exam = await this.examRepository.findByCondition(query);
 
     if (!exam) {
