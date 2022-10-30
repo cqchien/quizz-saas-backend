@@ -66,18 +66,14 @@ export class ExamService {
       const exam = await this.examRepository.create(examEntity);
 
       await Promise.all(
-        exam.schedules.map(async (schedule) => {
-          if (schedule.assignedGroup && schedule.assignedGroup.length > 0) {
-            // Create exam for user in assigned group
-          }
-
+        exam.schedules.map(async (schedule) =>
           // Create exam for user who created exam
-          return this.userExamService.createExamForUser(
+          this.userExamService.createExamForUser(
             user.id || '',
             exam,
             schedule.code,
-          );
-        }),
+          ),
+        ),
       );
 
       return exam;
