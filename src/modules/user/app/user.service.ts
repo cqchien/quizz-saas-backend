@@ -5,10 +5,7 @@ import { UserExistException } from '../../../exceptions/user/user-exist.exceptio
 import { UserNotFoundException } from '../../../exceptions/user/user-not-found.exception';
 import { UserSaveFailedException } from '../../../exceptions/user/user-save-failed.exception';
 import type { UserRegisterDto } from '../../auth/interface/dto/register.dto';
-import type { ExamEntity } from '../../exams/domain/entity/exam.entity';
-import { USER_EXAM_STATUS } from '../constant';
 import type { UserEntity } from '../domain/entity/user.entity';
-import type { UserExamEntity } from '../domain/entity/user-exam.entity';
 import { UserRepository } from '../infra/user.repository';
 
 @Injectable()
@@ -54,45 +51,5 @@ export class UserService {
     }
 
     return user;
-  }
-
-  async createExamForUser(
-    userId: string,
-    exam: ExamEntity,
-    scheduleCode: string,
-  ) {
-    // validate user
-    const userEntity = await this.userRepository.findByCondition({
-      id: userId,
-    });
-
-    if (!userEntity) {
-      return;
-    }
-
-    const questionsUserExam = exam.questions.map((questionId) => ({
-      question: questionId,
-    }));
-
-    const userExamEntity: UserExamEntity = {
-      templateExam: exam.id || '',
-      scheduleCode,
-      code: exam.code,
-      name: exam.name,
-      description: exam.description,
-      type: exam.type,
-      questionBankType: exam.questionBankType,
-      status: USER_EXAM_STATUS.NOT_STARTED,
-      questions: questionsUserExam,
-    };
-
-    const updatedUserEntity = {
-      ...userEntity,
-      exams: userEntity.exams
-        ? [...userEntity.exams, userExamEntity]
-        : [userExamEntity],
-    };
-
-    return this.userRepository.update(updatedUserEntity);
   }
 }

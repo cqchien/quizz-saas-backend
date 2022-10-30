@@ -112,7 +112,10 @@ export class QuestionRepository {
   public async update(
     questionEntity: QuestionEntity,
   ): Promise<QuestionEntity | undefined> {
-    await this.repository.updateOne({ _id: questionEntity.id }, questionEntity);
+    await this.repository.updateOne(
+      { _id: questionEntity.id },
+      { ...questionEntity, _id: questionEntity.id },
+    );
 
     return this.findByCondition({ id: questionEntity.id || '' });
   }

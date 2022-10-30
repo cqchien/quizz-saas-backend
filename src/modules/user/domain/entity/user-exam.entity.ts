@@ -1,14 +1,15 @@
 import type { ExamEntity } from '../../../exams/domain/entity/exam.entity';
 import type { QuestionEntity } from '../../../questions/domain/entity/question.entity';
+import type { UserExamSettingEntity } from './setting.entity';
 
-class AnswerQuestion {
+class AnswerQuestionEntity {
   question: string;
 
   questionEntity?: QuestionEntity;
 
   answerOrder?: number;
 
-  answers?: string | boolean;
+  answerValue?: string | boolean;
 }
 
 export class UserExamEntity {
@@ -20,6 +21,8 @@ export class UserExamEntity {
 
   scheduleCode: string;
 
+  setting: UserExamSettingEntity;
+
   code: string;
 
   name: string;
@@ -30,9 +33,15 @@ export class UserExamEntity {
 
   questionBankType: string;
 
-  questions?: AnswerQuestion[];
-
   status: string; // Not started, in-progress, submitted
+
+  score: number;
+
+  total: number;
+
+  resultStatus: string;
+
+  questions?: AnswerQuestionEntity[];
 
   updatedAt?: Date;
 

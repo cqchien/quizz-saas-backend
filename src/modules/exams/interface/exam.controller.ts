@@ -20,7 +20,7 @@ import { Auth, AuthUser } from '../../../decorators';
 import { ExamNotFoundException } from '../../../exceptions/exam/exam-not-found.exception';
 import { ExamSaveFailedException } from '../../../exceptions/exam/exam-save-failed.exception';
 import { ServerErrorException } from '../../../exceptions/server-error.exception';
-import { User } from '../../user/domain/user.schema';
+import { UserEntity } from '../../user/domain/entity/user.entity';
 import { ExamService } from '../app/exam.service';
 import type { ExamEntity } from '../domain/entity/exam.entity';
 import { ExamDto } from './dto/exam.dto';
@@ -41,7 +41,7 @@ export class ExamController {
     description: 'Get all exams successfully',
   })
   async getAllQuestions(
-    @AuthUser() user: User,
+    @AuthUser() user: UserEntity,
     @Query() pageOptionsDto: PageOptionsDto,
     @Query() queryDto: QueryExamDto,
   ): Promise<ExamResponsePresenter> {
@@ -68,7 +68,7 @@ export class ExamController {
     type: ExamResponsePresenter,
     description: 'Exam is created successfully',
   })
-  async createExam(@AuthUser() user: User, @Body() examDto: ExamDto) {
+  async createExam(@AuthUser() user: UserEntity, @Body() examDto: ExamDto) {
     const examEntity = await this.examService.createExam(user, examDto);
     const examPresenter = new ExamPresenter(examEntity);
 
@@ -88,7 +88,7 @@ export class ExamController {
     description: 'Exam is update successfully',
   })
   async updateExam(
-    @AuthUser() user: User,
+    @AuthUser() user: UserEntity,
     @Param('id') examId: string,
     @Body() examDto: ExamDto,
   ) {
@@ -106,7 +106,10 @@ export class ExamController {
     type: ExamResponsePresenter,
     description: 'Get detail information of the exam successfully',
   })
-  async getDetailQuestion(@AuthUser() user: User, @Param('id') examId: string) {
+  async getDetailQuestion(
+    @AuthUser() user: UserEntity,
+    @Param('id') examId: string,
+  ) {
     const examEntity = await this.examService.findOne(user, { id: examId });
 
     const examPresenter = new ExamPresenter(examEntity);
@@ -122,36 +125,12 @@ export class ExamController {
     type: ExamResponsePresenter,
     description: 'Successfully Delete',
   })
-  async deleteQuestion(
-    @AuthUser() user: User,
-    @Param('questionId') questionId: string,
+  async deleteExam(
+    @AuthUser() user: UserEntity,
+    @Param('id') examId: string,
   ): Promise<ExamResponsePresenter> {
-    await this.examService.delete(user, questionId);
+    await this.examService.delete(user, examId);
 
     return new ExamResponsePresenter({});
-  }
-
-  @Get(':id/take-exam')
-  @Auth([RoleType.ADMIN, RoleType.USER])
-  @HttpCode(HttpStatus.OK)
-  @ApiException(() => [ExamNotFoundException])
-  @ApiOkResponse({
-    type: ExamResponsePresenter,
-    description: 'Take the exam successfully',
-  })
-  async takeExam(
-    @AuthUser() user: User,
-    @Param('id') examId: string,
-    @Query('code') scheduleCode: string,
-  ) {
-    const examEntity = await this.examService.takeExam(
-      user,
-      examId,
-      scheduleCode,
-    );
-
-    const examPresenter = new ExamPresenter(examEntity);
-
-    return new ExamResponsePresenter(examPresenter);
   }
 }

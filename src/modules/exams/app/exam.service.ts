@@ -1,34 +1,30 @@
-import 'moment-timezone';
-
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { uniqBy } from 'lodash';
 import moment from 'moment';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
+import { FORMAT_FULL_TIME } from '../../../constants';
 import { RoleType } from '../../../constants/role-type';
 import {
   ExamNotFoundException,
   ExamSaveFailedException,
 } from '../../../exceptions/exam';
-import { UserService } from '../../user/app/user.service';
+import { UserExamService } from '../../user/app/user-exam.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
-import {
-  FORMAT_FULL_TIME,
-  SCHEDULE_STATUS,
-  UPDATE_EXAM_STATUS_TIME,
-} from '../constant';
+import { SCHEDULE_STATUS, UPDATE_EXAM_STATUS_TIME } from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
 import type { Schedule } from '../domain/entity/schedule.entity';
 import { ExamRepository } from '../infra/exam.repository';
 import type { ExamDto } from '../interface/dto/exam.dto';
 import type { QueryExamDto } from '../interface/dto/query.dto';
+import type { ScheduleDto } from '../interface/dto/schedule.dto';
 
 @Injectable()
 export class ExamService {
   constructor(
     private examRepository: ExamRepository,
-    private userService: UserService,
+    private userExamService: UserExamService,
   ) {}
 
   async createExam(user: UserEntity, examDto: ExamDto): Promise<ExamEntity> {
@@ -76,7 +72,7 @@ export class ExamService {
           }
 
           // Create exam for user who created exam
-          return this.userService.createExamForUser(
+          return this.userExamService.createExamForUser(
             user.id || '',
             exam,
             schedule.code,
@@ -92,6 +88,7 @@ export class ExamService {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   public async update(
     user: UserEntity,
     examId: string,
@@ -113,6 +110,8 @@ export class ExamService {
       );
     }
 
+    const newSchedules: ScheduleDto[] = [];
+
     const formattedSchedules = examDto.schedules.map((schedule): Schedule => {
       const existedSchedule = existedExam.schedules.find(
         (examSchedule) => schedule.code === examSchedule.code,
@@ -130,6 +129,10 @@ export class ExamService {
         error = 'End time should be greater than start time.';
       }
 
+      if (!existedSchedule) {
+        newSchedules.push(schedule);
+      }
+
       return {
         ...schedule,
         status: existedSchedule
@@ -137,6 +140,19 @@ export class ExamService {
           : SCHEDULE_STATUS.NOT_STARTED,
       };
     });
+
+    await Promise.all(
+      newSchedules.map(async (schedule) =>
+        this.userExamService.createExamForUser(
+          user.id || '',
+          {
+            ...existedExam,
+            ...examDto,
+          },
+          schedule.code,
+        ),
+      ),
+    );
 
     const uniqueSchedule = uniqBy(formattedSchedules, 'code');
 
@@ -201,7 +217,10 @@ export class ExamService {
     user: UserEntity,
     options: Record<string, string>,
   ): Promise<ExamEntity> {
-    const query = user.id ? { ...options, createdBy: user.id } : options;
+    const query =
+      user.role !== RoleType.ADMIN
+        ? { ...options, createdBy: user.id || '' }
+        : options;
     const exam = await this.examRepository.findByCondition(query);
 
     if (!exam) {
@@ -213,48 +232,7 @@ export class ExamService {
     return exam;
   }
 
-  public async takeExam(
-    user: UserEntity,
-    examId: string,
-    scheduleCode: string,
-  ): Promise<ExamEntity> {
-    const exam = await this.examRepository.findByCondition({
-      id: examId,
-    });
-
-    if (!exam) {
-      throw new ExamNotFoundException(
-        'Exam does not exist or user not allow to get the exam!!',
-      );
-    }
-
-    const inProgressSchedule = exam.schedules.find(
-      (schedule) =>
-        schedule.status === SCHEDULE_STATUS.IN_PROGRESS &&
-        schedule.code === scheduleCode,
-    );
-
-    if (!inProgressSchedule) {
-      throw new ExamNotFoundException(
-        'Schedule have not start yet or does not exist.',
-      );
-    }
-
-    if (
-      !this.checkValidTakeExam(
-        inProgressSchedule.startTime,
-        inProgressSchedule.endTime,
-      )
-    ) {
-      throw new BadRequestException(
-        'You can view the exam when it has started and during the test.',
-      );
-    }
-
-    return exam;
-  }
-
-  @Cron(UPDATE_EXAM_STATUS_TIME)
+  @Cron(UPDATE_EXAM_STATUS_TIME.toString())
   public async handleStatusExam() {
     // Get all exams with status of the schedule not completed
     const examEntities = await this.examRepository.findExamNotCompleted();
@@ -303,15 +281,5 @@ export class ExamService {
     const endDate = new Date(endTime);
 
     return startDate.getTime() <= endDate.getTime();
-  }
-
-  private checkValidTakeExam(startTime: Date, endTime: Date) {
-    const now = new Date();
-    const startDate = new Date(startTime);
-    const endDate = new Date(endTime);
-
-    return (
-      startDate.getTime() <= now.getTime() && now.getTime() <= endDate.getTime()
-    );
   }
 }
