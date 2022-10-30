@@ -10,8 +10,8 @@ import {
   ExamNotFoundException,
   ExamSaveFailedException,
 } from '../../../exceptions/exam';
-import { UserExamService } from '../../user/app/user-exam.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
+import { UserExamService } from '../../user-exam/app/user-exam.service';
 import { SCHEDULE_STATUS, UPDATE_EXAM_STATUS_TIME } from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
 import type { Schedule } from '../domain/entity/schedule.entity';

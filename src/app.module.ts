@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ExamModule } from './modules/exams/exam.module';
 import { QuestionModule } from './modules/questions/question.module';
 import { UserModule } from './modules/user/user.module';
+import { UserExamModule } from './modules/user-exam/user-exam.module';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { SharedModule } from './shared/shared.module';
 
@@ -25,6 +26,7 @@ import { SharedModule } from './shared/shared.module';
       inject: [ApiConfigService],
     }),
     UserModule,
+    UserExamModule,
     AuthModule,
     QuestionModule,
     ExamModule,

@@ -138,7 +138,10 @@ export class QuestionRepository {
       level: questionModel.level,
       topic: questionModel.topic,
       tags: questionModel.tags,
-      options: questionModel.options,
+      options: questionModel.options.map((questionOption) => ({
+        order: questionOption.order,
+        option: questionOption.option,
+      })),
       language: questionModel.language,
       attachments: questionModel.attachments,
       mode: questionModel.mode,

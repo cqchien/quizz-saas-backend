@@ -8,7 +8,7 @@ import { FORMAT_FULL_TIME } from '../../constants/date-time';
 import { ApiConfigService } from '../../shared/services/api-config.service';
 import type { Schedule } from '../exams/domain/entity/schedule.entity';
 import type { UserEntity } from '../user/domain/entity/user.entity';
-import type { UserExamEntity } from '../user/domain/entity/user-exam.entity';
+import type { UserExamEntity } from '../user-exam/domain/entity/user-exam.entity';
 
 @Injectable()
 export class MailService {

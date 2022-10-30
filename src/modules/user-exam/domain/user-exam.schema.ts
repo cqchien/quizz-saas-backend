@@ -4,6 +4,7 @@ import { SchemaTypes } from 'mongoose';
 import { AbstractSchema } from '../../../common/abstract.schema';
 import { Exam } from '../../exams/domain/exam.schema';
 import { Question } from '../../questions/domain/question.schema';
+import { User } from '../../user/domain/user.schema';
 import { UserExamSetting } from './setting.schema';
 
 @Schema()
@@ -33,6 +34,14 @@ export class UserExam extends AbstractSchema {
     ref: Exam.name,
   })
   templateExam: Exam;
+
+  @Prop({
+    required: true,
+    index: true,
+    type: SchemaTypes.ObjectId,
+    ref: User.name,
+  })
+  user: User;
 
   @Prop()
   scheduleCode: string;

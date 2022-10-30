@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import type { QuestionEntity } from '../../domain/entity/question.entity';
-import type { QuestionOptionsDto } from '../dto/question-options.dto';
+import type { QuestionOptionsPresenter } from './question-options.presenter';
 
 export class QuestionPresenter {
   @ApiProperty()
@@ -29,7 +29,7 @@ export class QuestionPresenter {
   tags: string[];
 
   @ApiProperty()
-  options: QuestionOptionsDto[];
+  options: QuestionOptionsPresenter[];
 
   @ApiProperty({ default: 'vi' })
   language: string;

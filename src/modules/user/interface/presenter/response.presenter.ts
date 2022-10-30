@@ -1,18 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UserPresenter } from './user.presenter';
-import { UserExamPresenter } from './user-exam.presenter';
 
 export class UserResponsePresenter {
   @ApiProperty({
-    type: UserPresenter || UserExamPresenter || [UserExamPresenter],
+    type: UserPresenter,
   })
-  data: UserPresenter | UserExamPresenter | UserExamPresenter[];
+  data: UserPresenter;
 
   @ApiProperty()
   success: boolean;
 
-  constructor(data: UserPresenter | UserExamPresenter | UserExamPresenter[]) {
+  constructor(data: UserPresenter) {
     this.data = data;
     this.success = true;
   }

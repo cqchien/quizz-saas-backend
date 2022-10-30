@@ -1,5 +1,3 @@
-import type { UserExamEntity } from './user-exam.entity';
-
 export class UserEntity {
   id?: string;
 
@@ -10,8 +8,6 @@ export class UserEntity {
   email: string;
 
   password: string;
-
-  exams?: UserExamEntity[];
 
   phone?: string;
 

@@ -40,7 +40,6 @@ export class UserService {
 
     const userEntity: UserEntity = {
       ...userRegisterDto,
-      exams: [],
       role: RoleType.USER,
     };
 

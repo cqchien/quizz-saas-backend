@@ -3,7 +3,7 @@ export class QuestionOption {
 
   option: string;
 
-  value: string | boolean;
+  value?: string | boolean;
 }
 
 export class QuestionEntity {

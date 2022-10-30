@@ -1,8 +1,9 @@
 import type { ExamEntity } from '../../../exams/domain/entity/exam.entity';
 import type { QuestionEntity } from '../../../questions/domain/entity/question.entity';
+import type { UserEntity } from '../../../user/domain/entity/user.entity';
 import type { UserExamSettingEntity } from './setting.entity';
 
-class AnswerQuestionEntity {
+export class AnswerQuestionEntity {
   question: string;
 
   questionEntity?: QuestionEntity;
@@ -18,6 +19,10 @@ export class UserExamEntity {
   templateExam: string;
 
   templateExamEntity?: ExamEntity;
+
+  user: string;
+
+  userEntity?: UserEntity;
 
   scheduleCode: string;
 

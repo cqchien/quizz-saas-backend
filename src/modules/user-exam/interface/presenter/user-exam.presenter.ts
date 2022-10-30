@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { ExamPresenter } from '../../../exams/interface/presenter/exam.presenter';
 import { QuestionPresenter } from '../../../questions/interface/presenter/question.presenter';
+import { UserPresenter } from '../../../user/interface/presenter/user.presenter';
 import { MAP_RESULT_EXAM_STATUS } from '../../constant';
 import type { UserExamEntity } from '../../domain/entity/user-exam.entity';
 import { UserExamSettingPresenter } from './setting.presenter';
@@ -27,6 +28,11 @@ export class UserExamPresenter {
     type: ExamPresenter,
   })
   templateExam?: ExamPresenter;
+
+  @ApiProperty({
+    type: UserPresenter,
+  })
+  user?: UserPresenter;
 
   @ApiProperty({
     type: UserExamSettingPresenter,
@@ -79,6 +85,9 @@ export class UserExamPresenter {
     this.id = entity.id;
     this.templateExam = entity.templateExamEntity
       ? new ExamPresenter(entity.templateExamEntity)
+      : undefined;
+    this.user = entity.userEntity
+      ? new UserPresenter(entity.userEntity)
       : undefined;
     this.code = entity.code;
     this.name = entity.name;

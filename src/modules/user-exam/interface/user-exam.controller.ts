@@ -13,10 +13,10 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { Auth, AuthUser } from '../../../decorators';
 import { ServerErrorException } from '../../../exceptions/server-error.exception';
+import { UserEntity } from '../../user/domain/entity/user.entity';
 import { UserExamService } from '../app/user-exam.service';
-import { UserEntity } from '../domain/entity/user.entity';
 import { UserAnswersDto } from './dto/user-answer-exam.dto';
-import { UserResponsePresenter } from './presenter/response.presenter';
+import { UserExamResponsePresenter } from './presenter/response.presenter';
 import { UserExamPresenter } from './presenter/user-exam.presenter';
 
 @Controller('user-exams')
@@ -29,7 +29,7 @@ export class UserExamController {
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [NotFoundException, ServerErrorException])
   @ApiOkResponse({
-    type: UserResponsePresenter,
+    type: UserExamResponsePresenter,
     description: 'Get information of the exam by user',
   })
   async getAll(@AuthUser() user: UserEntity) {
@@ -38,7 +38,7 @@ export class UserExamController {
       (examEntity) => new UserExamPresenter(examEntity),
     );
 
-    return new UserResponsePresenter(userExamPresenters);
+    return new UserExamResponsePresenter(userExamPresenters);
   }
 
   @Get(':id/overview')
@@ -46,7 +46,7 @@ export class UserExamController {
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [NotFoundException, ServerErrorException])
   @ApiOkResponse({
-    type: UserResponsePresenter,
+    type: UserExamResponsePresenter,
     description: 'Get overview information of the exam by user',
   })
   async getOverview(
@@ -56,7 +56,7 @@ export class UserExamController {
     const examEntity = await this.userExamService.getOverview(user, userExamId);
     const userExamPresenter = new UserExamPresenter(examEntity);
 
-    return new UserResponsePresenter(userExamPresenter);
+    return new UserExamResponsePresenter(userExamPresenter);
   }
 
   @Get(':id/take-exam')
@@ -64,7 +64,7 @@ export class UserExamController {
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [NotFoundException, ServerErrorException])
   @ApiOkResponse({
-    type: UserResponsePresenter,
+    type: UserExamResponsePresenter,
     description: 'Get information of the exam by user',
   })
   async takeExam(
@@ -74,7 +74,7 @@ export class UserExamController {
     const examEntity = await this.userExamService.takeExam(user, userExamId);
     const userExamPresenter = new UserExamPresenter(examEntity);
 
-    return new UserResponsePresenter(userExamPresenter);
+    return new UserExamResponsePresenter(userExamPresenter);
   }
 
   @Post(':id/submit')
@@ -82,7 +82,7 @@ export class UserExamController {
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [NotFoundException, ServerErrorException])
   @ApiOkResponse({
-    type: UserResponsePresenter,
+    type: UserExamResponsePresenter,
     description: 'User submit the exam',
   })
   async submit(
@@ -97,6 +97,6 @@ export class UserExamController {
     );
     const userExamPresenter = new UserExamPresenter(examEntity);
 
-    return new UserResponsePresenter(userExamPresenter);
+    return new UserExamResponsePresenter(userExamPresenter);
   }
 }

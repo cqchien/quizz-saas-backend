@@ -8,16 +8,21 @@ import { SCHEDULE_STATUS } from '../../exams/constant';
 import type { ExamEntity } from '../../exams/domain/entity/exam.entity';
 import type { Schedule } from '../../exams/domain/entity/schedule.entity';
 import { MailService } from '../../mail/mail.service';
+import { UserService } from '../../user/app/user.service';
+import type { UserEntity } from '../../user/domain/entity/user.entity';
 import { RESULT_EXAM_STATUS, USER_EXAM_STATUS } from '../constant';
-import type { UserEntity } from '../domain/entity/user.entity';
-import type { UserExamEntity } from '../domain/entity/user-exam.entity';
-import { UserRepository } from '../infra/user.repository';
+import type {
+  AnswerQuestionEntity,
+  UserExamEntity,
+} from '../domain/entity/user-exam.entity';
+import { UserExamRepository } from '../infra/user-exam.repository';
 import type { UserAnswersDto } from '../interface/dto/user-answer-exam.dto';
 
 @Injectable()
 export class UserExamService {
   constructor(
-    private userRepository: UserRepository,
+    private userExamRepository: UserExamRepository,
+    private userService: UserService,
     private mailService: MailService,
   ) {}
 
@@ -27,7 +32,7 @@ export class UserExamService {
     scheduleCode: string,
   ) {
     // validate user
-    const userEntity = await this.userRepository.findByCondition({
+    const userEntity = await this.userService.findOne({
       id: userId,
     });
 
@@ -45,6 +50,7 @@ export class UserExamService {
 
     const userExamEntity: UserExamEntity = {
       templateExam: exam.id || '',
+      user: userId,
       scheduleCode,
       setting: exam.setting,
       code: exam.code,
@@ -59,35 +65,27 @@ export class UserExamService {
       questions: questionsUserExam,
     };
 
-    const updatedUserEntity = {
-      ...userEntity,
-      exams: userEntity.exams
-        ? [...userEntity.exams, userExamEntity]
-        : [userExamEntity],
-    };
+    const userExam = await this.userExamRepository.create(userExamEntity);
 
-    const updatedUser = await this.userRepository.update(updatedUserEntity);
-
-    const newExam = (updatedUser.exams || []).find(
-      (userExam) =>
-        userExam.templateExam === exam.id &&
-        userExam.scheduleCode === schedule.code,
-    );
-
-    if (newExam) {
-      // Send email to user
-      await this.mailService.sendEmailInformUserTakeExam(
-        userEntity,
-        newExam,
-        schedule,
-      );
+    if (!userExam) {
+      return;
     }
 
-    return updatedUser;
+    // Send email to user
+    await this.mailService.sendEmailInformUserTakeExam(
+      userEntity,
+      userExam,
+      schedule,
+    );
+
+    return userExam;
   }
 
   public async getOverview(user: UserEntity, examId: string) {
-    const exam = await this.userRepository.findExam(user.id || '', examId);
+    const exam = await this.userExamRepository.findByCondition({
+      id: examId,
+      user: user.id || '',
+    });
 
     if (!exam || exam.status !== USER_EXAM_STATUS.SUBMITTED) {
       throw new NotFoundException(
@@ -109,9 +107,11 @@ export class UserExamService {
   }
 
   public async takeExam(user: UserEntity, examId: string) {
-    const exam = await this.userRepository.findExam(
-      user.id || '',
-      examId,
+    const exam = await this.userExamRepository.findByCondition(
+      {
+        id: examId,
+        user: user.id || '',
+      },
       true,
     );
 
@@ -145,14 +145,14 @@ export class UserExamService {
     }
 
     // Change status of the exam to in_progress when user view detail of the exam
-    return this.userRepository.updateUserExam(user.id || '', {
+    return this.userExamRepository.update({
       ...exam,
       status: USER_EXAM_STATUS.IN_PROGRESS,
     });
   }
 
   public async getAll(user: UserEntity) {
-    return this.userRepository.getAllExams(user.id || '');
+    return this.userExamRepository.getAll({ user: user.id || '' });
   }
 
   public async submit(
@@ -162,7 +162,11 @@ export class UserExamService {
   ) {
     const { answers } = userAnswer;
 
-    const exam = await this.userRepository.findExam(user.id || '', examId);
+    const exam = await this.userExamRepository.findByCondition({
+      user: user.id || '',
+      id: examId,
+    });
+
     const userExamSchedule = (exam?.templateExamEntity?.schedules || []).find(
       (schedule: Schedule) => schedule.code === exam?.scheduleCode,
     );
@@ -208,8 +212,8 @@ export class UserExamService {
         (answer) => answer.questionId === userAnswerQuestion.question,
       );
 
-      return {
-        ...userAnswerQuestion,
+      return <AnswerQuestionEntity>{
+        question: userAnswerQuestion.question,
         answerOrder: userAnswerByQuestion?.answerOrder,
         answerValue: userAnswerByQuestion?.answerValue,
       };
@@ -224,7 +228,7 @@ export class UserExamService {
     };
 
     // Send email report to user
-    return this.userRepository.updateUserExam(user.id || '', updatedExam);
+    return this.userExamRepository.update(updatedExam);
   }
 
   private checkValidTakeExam(startTime: Date, endTime: Date) {
