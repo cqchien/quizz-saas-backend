@@ -10,7 +10,7 @@ jobs:
       - name: Push
         uses: actions/checkout@main
       - name: Cyber Sierra Github CI Scan
-        uses: cyber-sierra/cybersierra-scanning-workflow@v0.0.1
+        uses: cyber-sierra/cybersierra-scanning-workflow
         env:
           CS_API_TOKEN: baefb70c-5030-44d1-8a52-d7c2cd956420
           CS_SCAN_URL: https://github.com/cqchien/entionary-frontend
