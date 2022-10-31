@@ -1,0 +1,16 @@
+on: push
+
+name: Scan repo workflow
+
+jobs:
+  my-job:
+    name: ci scan job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push
+        uses: actions/checkout@main
+      - name: scan
+        uses: ./
+        env:
+          CS_API_TOKEN: baefb70c-5030-44d1-8a52-d7c2cd956420
+          CS_SCAN_URL: https://github.com/cqchien/entionary-frontend
