@@ -10,7 +10,7 @@ jobs:
       - name: Push
         uses: actions/checkout@main
       - name: Cyber Sierra Github CI Scan
-        uses: cyber-sierra/cybersierra-scanning-workflow@v0.0.3
+        uses: cyber-sierra/cybersierra-scanning-workflow@v0.0.4
         env:
           CS_API_TOKEN: baefb70c-5030-44d1-8a52-d7c2cd956420
           CS_SCAN_URL: http://a5b69c9119dfc425b8841d81cef833f1-895789991.ap-southeast-1.elb.amazonaws.com:7778
