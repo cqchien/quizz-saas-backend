@@ -6,7 +6,8 @@
   "private": false,
   "license": "MIT",
   "scripts": {
-    "build:prod": "tsc -p tsconfig.build.json",
+    "copy:templates": "copyfiles --up 1 src/modules/mail/templates/** dist",
+    "build:prod": "rimraf dist && tsc -p tsconfig.build.json && yarn copy:templates",
     "start:hmr": "node dist/main.hmr.ts",
     "start": "ts-node src/main.ts",
     "start:dev": "nodemon src/main.ts",
