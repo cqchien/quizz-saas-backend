@@ -68,6 +68,8 @@ export class ExamRepository {
       ? this.repository.find({ ...query, createdBy: userId })
       : this.repository.find({ ...query });
 
+    const total = await examQuery.clone().count();
+
     const exams = await examQuery
       .limit(take)
       .skip(skip)
@@ -78,7 +80,7 @@ export class ExamRepository {
 
     return {
       data: exams.map((examModel: Exam) => this.toEntity(examModel)),
-      total: exams.length,
+      total,
     };
   }
 
