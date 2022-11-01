@@ -39,6 +39,10 @@ export class GroupRepository {
         ...member,
       })),
       createdBy: groupModel.createdBy?._id.toString(),
+      createdByEntity: {
+        id: groupModel.createdBy?._id.toString(),
+        ...groupModel.createdBy,
+      },
       updatedAt: groupModel.updatedAt,
       createdAt: groupModel.createdAt,
     };
