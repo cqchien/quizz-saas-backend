@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class UserAnswerQuestionDto {
+export class GroupDto {
   @ApiProperty()
   @IsNotEmpty()
-  questionId: string;
+  name: string;
 
   @ApiProperty()
   @IsOptional()
-  answerOrder: number;
+  description: string;
 
   @ApiProperty()
   @IsOptional()
-  answerValue: string | boolean;
+  members: string[];
 }

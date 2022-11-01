@@ -11,11 +11,11 @@ export class GroupEntity {
 
   memberEntities?: UserEntity[];
 
-  createdBy: string;
+  createdBy?: string;
 
   createdByEntity?: UserEntity;
 
-  updatedAt: Date;
+  updatedAt?: Date;
 
-  createdAt: Date;
+  createdAt?: Date;
 }

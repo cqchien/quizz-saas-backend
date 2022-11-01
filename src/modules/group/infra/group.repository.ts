@@ -19,12 +19,25 @@ export class GroupRepository {
     return this.toEntity(user.toObject());
   }
 
+  public async findAll(query = {}): Promise<GroupEntity[]> {
+    const groups = await this.repository
+      .find({ ...query })
+      .lean<Group[]>()
+      .exec();
+
+    return groups.map((group) => this.toEntity(group));
+  }
+
   private toEntity(groupModel: Group): GroupEntity {
     return {
       id: groupModel._id.toString(),
       name: groupModel.name,
       description: groupModel.description,
       members: groupModel.members.map((member) => member?._id.toString()),
+      memberEntities: groupModel.members.map((member) => ({
+        id: member._id.toString(),
+        ...member,
+      })),
       createdBy: groupModel.createdBy?._id.toString(),
       updatedAt: groupModel.updatedAt,
       createdAt: groupModel.createdAt,
