@@ -9,5 +9,5 @@ export class Schedule {
 
   endTime: Date;
 
-  assignedGroup?: string[];
+  assignedGroup?: string;
 }
