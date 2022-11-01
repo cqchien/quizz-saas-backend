@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
 import { uniqBy } from 'lodash';
-import moment from 'moment';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
-import { FORMAT_FULL_TIME } from '../../../constants';
 import { RoleType } from '../../../constants/role-type';
 import {
   ExamNotFoundException,
@@ -12,7 +9,7 @@ import {
 } from '../../../exceptions/exam';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
 import { UserExamService } from '../../user-exam/app/user-exam.service';
-import { SCHEDULE_STATUS, UPDATE_EXAM_STATUS_TIME } from '../constant';
+import { SCHEDULE_STATUS } from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
 import type { Schedule } from '../domain/entity/schedule.entity';
 import { ExamRepository } from '../infra/exam.repository';
@@ -232,41 +229,30 @@ export class ExamService {
     return exam;
   }
 
-  @Cron(UPDATE_EXAM_STATUS_TIME.toString())
-  public async handleStatusExam() {
-    // Get all exams with status of the schedule not completed
-    const examEntities = await this.examRepository.findExamNotCompleted();
-    await Promise.all(
-      examEntities.map(async (exam) => {
-        const schedules = exam.schedules.map((schedule) => {
-          const now = moment().utc().format(FORMAT_FULL_TIME);
-          const endDate = moment(schedule.endTime)
-            .utc()
-            .format(FORMAT_FULL_TIME);
-          const startDate = moment(schedule.startTime)
-            .utc()
-            .format(FORMAT_FULL_TIME);
-
-          if (now === endDate) {
-            return {
-              ...schedule,
-              status: SCHEDULE_STATUS.COMPLETED,
-            };
-          }
-
-          if (now === startDate) {
-            return {
-              ...schedule,
-              status: SCHEDULE_STATUS.IN_PROGRESS,
-            };
-          }
-
-          return schedule;
-        });
-
-        await this.examRepository.update({ ...exam, schedules });
-      }),
+  public async getOverview(user: UserEntity, examId: string) {
+    const query =
+      user.role !== RoleType.ADMIN
+        ? { id: examId, createdBy: user.id || '' }
+        : { id: examId };
+    const exam = await this.examRepository.findByCondition(
+      query as Record<string, string>,
     );
+
+    if (!exam) {
+      throw new ExamNotFoundException(
+        'Exam does not exist or user not allow to get the exam!!',
+      );
+    }
+
+    // Get user exams.
+    const userExams = await this.userExamService.getUsersExamsByTemplate(
+      examId,
+    );
+
+    return {
+      ...exam,
+      userExams,
+    };
   }
 
   private checkTimePast(date: Date) {

@@ -1,5 +1,6 @@
 import type { QuestionEntity } from '../../../questions/domain/entity/question.entity';
 import type { UserEntity } from '../../../user/domain/entity/user.entity';
+import type { UserExamEntity } from '../../../user-exam/domain/entity/user-exam.entity';
 import type { Schedule } from './schedule.entity';
 import type { Setting } from './setting.entity';
 
@@ -25,6 +26,8 @@ export class ExamEntity {
   setting: Setting;
 
   schedules: Schedule[];
+
+  userExams?: UserExamEntity[];
 
   updatedAt?: Date;
 

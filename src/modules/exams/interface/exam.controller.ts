@@ -117,6 +117,22 @@ export class ExamController {
     return new ExamResponsePresenter(examPresenter);
   }
 
+  @Get(':id/overview')
+  @Auth([RoleType.ADMIN, RoleType.USER])
+  @HttpCode(HttpStatus.OK)
+  @ApiException(() => [ExamNotFoundException])
+  @ApiOkResponse({
+    type: ExamResponsePresenter,
+    description: 'Get detail information of the exam successfully',
+  })
+  async getOverView(@AuthUser() user: UserEntity, @Param('id') examId: string) {
+    const examEntity = await this.examService.getOverview(user, examId);
+
+    const examPresenter = new ExamPresenter(examEntity);
+
+    return new ExamResponsePresenter(examPresenter);
+  }
+
   @Delete(':id')
   @Auth([RoleType.ADMIN, RoleType.USER])
   @HttpCode(HttpStatus.OK)

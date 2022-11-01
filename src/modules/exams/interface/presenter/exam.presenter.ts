@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { QuestionPresenter } from '../../../questions/interface/presenter/question.presenter';
 import { UserPresenter } from '../../../user/interface/presenter/user.presenter';
+import { UserExamPresenter } from '../../../user-exam/interface/presenter/user-exam.presenter';
 import { QUESTION_BANK_TYPE } from '../../constant';
 import type { ExamEntity } from '../../domain/entity/exam.entity';
 import { SchedulePresenter } from './schedule.presenter';
@@ -51,6 +52,11 @@ export class ExamPresenter {
   })
   schedules: SchedulePresenter[];
 
+  @ApiProperty({
+    type: UserExamPresenter,
+  })
+  userExams?: UserExamPresenter[];
+
   @ApiPropertyOptional()
   createdAt?: Date;
 
@@ -76,6 +82,9 @@ export class ExamPresenter {
     );
     this.setting = entity.setting;
     this.schedules = entity.schedules;
+    this.userExams = (entity.userExams || []).map(
+      (userExamEntity) => new UserExamPresenter(userExamEntity),
+    );
     this.createdAt = entity.createdAt;
     this.updatedAt = entity.updatedAt;
     this.createdBy = entity.createdByEntity

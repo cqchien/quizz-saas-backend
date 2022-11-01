@@ -155,6 +155,14 @@ export class UserExamService {
     return this.userExamRepository.getAll({ user: user.id || '' });
   }
 
+  public async getUsersExamsByTemplate(
+    templateExamId: string,
+  ): Promise<UserExamEntity[]> {
+    return this.userExamRepository.getAll({
+      templateExam: templateExamId,
+    });
+  }
+
   public async submit(
     user: UserEntity,
     examId: string,

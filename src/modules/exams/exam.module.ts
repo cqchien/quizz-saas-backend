@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { UserExamModule } from '../user-exam/user-exam.module';
 import { ExamService } from './app/exam.service';
+import { JobExamService } from './app/job.service';
 import { Exam, examSchema } from './domain/exam.schema';
 import { ExamRepository } from './infra/exam.repository';
 import { ExamController } from './interface/exam.controller';
@@ -14,6 +15,6 @@ import { ExamController } from './interface/exam.controller';
   ],
   controllers: [ExamController],
   exports: [ExamService],
-  providers: [ExamService, ExamRepository],
+  providers: [ExamService, JobExamService, ExamRepository],
 })
 export class ExamModule {}
