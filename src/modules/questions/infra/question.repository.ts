@@ -141,6 +141,7 @@ export class QuestionRepository {
       options: questionModel.options.map((questionOption) => ({
         order: questionOption.order,
         option: questionOption.option,
+        value: questionOption.value,
       })),
       language: questionModel.language,
       attachments: questionModel.attachments,
