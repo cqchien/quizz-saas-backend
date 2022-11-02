@@ -64,6 +64,9 @@ export class UserExamPresenter {
   total: number;
 
   @ApiProperty()
+  numberOfCorrectAnswer?: number;
+
+  @ApiProperty()
   resultStatus: string;
 
   @ApiProperty()
@@ -98,6 +101,7 @@ export class UserExamPresenter {
     this.type = entity.type;
     this.score = entity.score || 0;
     this.total = entity.total || 0;
+    this.numberOfCorrectAnswer = entity.numberOfCorrectAnswer || 0;
     this.resultStatus = MAP_RESULT_EXAM_STATUS[entity.resultStatus];
     this.questionBankType = entity.questionBankType;
     this.questions = (entity.questions || []).map((answerQuestionEntity) => ({

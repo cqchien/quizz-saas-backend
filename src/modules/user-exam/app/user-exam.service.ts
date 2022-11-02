@@ -167,7 +167,7 @@ export class UserExamService {
     user: UserEntity,
     examId: string,
     userAnswer: UserAnswersDto,
-  ) {
+  ): Promise<UserExamEntity> {
     const { answers } = userAnswer;
 
     const exam = await this.userExamRepository.findByCondition({
@@ -210,8 +210,13 @@ export class UserExamService {
     const score =
       exam.setting.plusScorePerQuestion * numberOfCorrectAnswer -
       exam.setting.minusScorePerQuestion * numberOfWrongAnswer;
+
+    const percentResult = Math.round(
+      (numberOfCorrectAnswer / (exam.questions || []).length) * 100,
+    );
+
     const resultStatus =
-      Math.round((score / exam.total) * 100) >= exam.setting.percentageToPass
+      percentResult >= exam.setting.percentageToPass
         ? RESULT_EXAM_STATUS.PASS
         : RESULT_EXAM_STATUS.FAILED;
 
@@ -235,8 +240,12 @@ export class UserExamService {
       questions,
     };
 
-    // Send email report to user
-    return this.userExamRepository.update(updatedExam);
+    const newExam = await this.userExamRepository.update(updatedExam);
+
+    return {
+      ...newExam,
+      numberOfCorrectAnswer,
+    };
   }
 
   private checkValidTakeExam(startTime: Date, endTime: Date) {

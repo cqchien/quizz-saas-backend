@@ -46,6 +46,8 @@ export class UserExamEntity {
 
   resultStatus: string;
 
+  numberOfCorrectAnswer?: number;
+
   questions?: AnswerQuestionEntity[];
 
   updatedAt?: Date;
