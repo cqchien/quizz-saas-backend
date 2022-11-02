@@ -114,11 +114,22 @@ export class ExamService {
         return existedSchedule;
       }
 
-      if (this.checkTimePast(schedule.startTime)) {
+      const isStartTimeChange =
+        new Date(schedule.startTime).getTime() !==
+        new Date(existedSchedule?.startTime || '').getTime();
+
+      const isEndTimeChange =
+        new Date(schedule.endTime).getTime() !==
+        new Date(existedSchedule?.endTime || '').getTime();
+
+      if (isStartTimeChange && this.checkTimePast(schedule.startTime)) {
         error = 'Can not schedule for the past!';
       }
 
-      if (!this.checkStartEndTime(schedule.startTime, schedule.endTime)) {
+      if (
+        (isEndTimeChange || isStartTimeChange) &&
+        !this.checkStartEndTime(schedule.startTime, schedule.endTime)
+      ) {
         error = 'End time should be greater than start time.';
       }
 
