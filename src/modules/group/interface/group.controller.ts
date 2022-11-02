@@ -7,26 +7,30 @@ import {
   ServerErrorException,
   UserNotFoundException,
 } from '../../../exceptions';
-import { UserResponsePresenter } from './presenter/response.presenter';
-import { UserPresenter } from './presenter/user.presenter';
+import { UserEntity } from '../../user/domain/entity/user.entity';
+import { GroupService } from '../app/group.service';
+import { GroupPresenter } from './presenter/group.presenter';
+import { GroupResponsePresenter } from './presenter/response.presenter';
 
 @Controller('groups')
 @ApiTags('groups')
-export class UserController {
-  constructor(private userService: UserService) {}
+export class GroupController {
+  constructor(private groupService: GroupService) {}
 
-  @Get('me')
+  @Get()
   @Auth([])
   @HttpCode(HttpStatus.OK)
   @ApiException(() => [UserNotFoundException, ServerErrorException])
   @ApiOkResponse({
-    type: UserResponsePresenter,
+    type: GroupResponsePresenter,
     description: 'Get information of current user',
   })
-  public async getCurrentUser(@AuthUser() user: UserEntity) {
-    const userEntity = await this.userService.findOne({ email: user.email });
-    const userPresenter = new UserPresenter(userEntity);
+  public async getAll(@AuthUser() user: UserEntity) {
+    const groupEntities = await this.groupService.findAll(user);
+    const groupPresenters = groupEntities.map(
+      (groupEntity) => new GroupPresenter(groupEntity),
+    );
 
-    return new UserResponsePresenter(userPresenter);
+    return new GroupResponsePresenter(groupPresenters);
   }
 }

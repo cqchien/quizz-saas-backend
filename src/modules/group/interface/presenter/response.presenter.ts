@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { GroupPresenter } from './group.presenter';
 
-export class UserResponsePresenter {
+export class GroupResponsePresenter {
   @ApiProperty({
     type: GroupPresenter || [GroupPresenter],
   })

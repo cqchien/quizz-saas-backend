@@ -2,17 +2,15 @@ import { Injectable } from '@nestjs/common';
 
 import { RoleType } from '../../../constants/role-type';
 import { MailService } from '../../mail/mail.service';
-import { UserService } from '../../user/app/user.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
 import type { GroupEntity } from '../domain/entity/group.entity';
 import { GroupRepository } from '../infra/group.repository';
 import type { GroupDto } from '../interface/dto/group.dto';
 
 @Injectable()
-export class UserExamService {
+export class GroupService {
   constructor(
     private groupRepository: GroupRepository,
-    private userService: UserService,
     private mailService: MailService,
   ) {}
 
