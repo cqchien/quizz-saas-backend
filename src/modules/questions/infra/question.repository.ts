@@ -78,6 +78,8 @@ export class QuestionRepository {
 
     const questionsQuery = this.repository.find({ ...query });
 
+    const total = await questionsQuery.clone().count();
+
     const questions = await questionsQuery
       .limit(take)
       .skip(skip)
@@ -89,7 +91,7 @@ export class QuestionRepository {
       data: questions.map((questionModel: Question) =>
         this.toEntity(questionModel),
       ),
-      total: questions.length,
+      total,
     };
   }
 
