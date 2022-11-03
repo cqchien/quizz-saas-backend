@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
-import { SCHEDULE_STATUS } from '../constant';
 import type { ExamEntity } from '../domain/entity/exam.entity';
 import type { ExamDocument } from '../domain/exam.schema';
 import { Exam } from '../domain/exam.schema';
@@ -88,15 +87,8 @@ export class ExamRepository {
     await this.repository.deleteOne({ _id: examId });
   }
 
-  public async findExamNotCompleted(): Promise<ExamEntity[]> {
-    const examModels = await this.repository
-      .find({
-        'schedules.status': {
-          $ne: SCHEDULE_STATUS.COMPLETED,
-        },
-      })
-      .lean<Exam[]>()
-      .exec();
+  public async findAllExams(): Promise<ExamEntity[]> {
+    const examModels = await this.repository.find().lean<Exam[]>().exec();
 
     return examModels.map((examModel: Exam) => this.toEntity(examModel));
   }

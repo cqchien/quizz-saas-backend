@@ -13,10 +13,14 @@ export class JobExamService {
   @Cron(UPDATE_EXAM_STATUS_TIME.toString())
   public async handleStatusExam() {
     // Get all exams with status of the schedule not completed
-    const examEntities = await this.examRepository.findExamNotCompleted();
+    const examEntities = await this.examRepository.findAllExams();
     await Promise.all(
       examEntities.map(async (exam) => {
         const schedules = exam.schedules.map((schedule) => {
+          if (schedule.status === SCHEDULE_STATUS.COMPLETED) {
+            return schedule;
+          }
+
           const now = moment().utc().format(FORMAT_FULL_TIME);
           const endDate = moment(schedule.endTime)
             .utc()
