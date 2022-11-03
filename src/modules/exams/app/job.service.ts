@@ -25,14 +25,14 @@ export class JobExamService {
             .utc()
             .format(FORMAT_FULL_TIME);
 
-          if (now === endDate) {
+          if (now >= endDate) {
             return {
               ...schedule,
               status: SCHEDULE_STATUS.COMPLETED,
             };
           }
 
-          if (now === startDate) {
+          if (now >= startDate && now < endDate) {
             return {
               ...schedule,
               status: SCHEDULE_STATUS.IN_PROGRESS,
