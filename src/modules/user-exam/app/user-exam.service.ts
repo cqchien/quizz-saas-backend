@@ -123,6 +123,10 @@ export class UserExamService {
       );
     }
 
+    if (exam.status === USER_EXAM_STATUS.SUBMITTED) {
+      throw new BadRequestException('Exam have already submitted!!');
+    }
+
     const inProgressSchedule = exam.templateExamEntity?.schedules.find(
       (schedule) =>
         schedule.status === SCHEDULE_STATUS.IN_PROGRESS &&
