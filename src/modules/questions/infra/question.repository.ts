@@ -44,11 +44,21 @@ export class QuestionRepository {
     const { topic, tags } = queryDto;
 
     let query = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tmp: any = [];
+
+    if (topic) {
+      tmp.push({ topic });
+    }
+
+    if (tags) {
+      tmp.push({ tags: { $in: tags.split(',') } });
+    }
 
     if (topic || tags) {
       query = {
         ...query,
-        $or: [{ topic }, { tags: { $in: tags.split(',') } }],
+        $or: [...tmp],
       };
     }
 
