@@ -63,6 +63,8 @@ export class UserExamService {
       questionBankType: exam.questionBankType,
       status: USER_EXAM_STATUS.NOT_STARTED,
       questions: questionsUserExam,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     const userExam = await this.userExamRepository.create(userExamEntity);
@@ -238,6 +240,7 @@ export class UserExamService {
       resultStatus,
       status: USER_EXAM_STATUS.SUBMITTED,
       questions,
+      updatedAt: new Date(),
     };
 
     const newExam = await this.userExamRepository.update(updatedExam);
