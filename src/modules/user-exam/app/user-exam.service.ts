@@ -23,7 +23,7 @@ export class UserExamService {
   constructor(
     private userExamRepository: UserExamRepository,
     private userService: UserService,
-    private mailService: MailService,
+    // private mailService: MailService,
   ) {}
 
   async createExamForUser(
@@ -74,11 +74,11 @@ export class UserExamService {
     }
 
     // Send email to user
-    await this.mailService.sendEmailInformUserTakeExam(
-      userEntity,
-      userExam,
-      schedule,
-    );
+    // await this.mailService.sendEmailInformUserTakeExam(
+    //   userEntity,
+    //   userExam,
+    //   schedule,
+    // );
 
     return userExam;
   }
