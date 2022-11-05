@@ -1,14 +1,23 @@
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { Auth, AuthUser } from '../../../decorators';
-import {
-  ServerErrorException,
-  UserNotFoundException,
-} from '../../../exceptions';
+import { ServerErrorException } from '../../../exceptions';
 import { UserEntity } from '../../user/domain/entity/user.entity';
 import { GroupService } from '../app/group.service';
+import { GroupDto } from './dto/group.dto';
 import { GroupPresenter } from './presenter/group.presenter';
 import { GroupResponsePresenter } from './presenter/response.presenter';
 
@@ -20,10 +29,10 @@ export class GroupController {
   @Get()
   @Auth([])
   @HttpCode(HttpStatus.OK)
-  @ApiException(() => [UserNotFoundException, ServerErrorException])
+  @ApiException(() => [NotFoundException, ServerErrorException])
   @ApiOkResponse({
     type: GroupResponsePresenter,
-    description: 'Get information of current user',
+    description: 'Get all groups',
   })
   public async getAll(@AuthUser() user: UserEntity) {
     const groupEntities = await this.groupService.findAll(user);
@@ -32,5 +41,84 @@ export class GroupController {
     );
 
     return new GroupResponsePresenter(groupPresenters);
+  }
+
+  @Get(':id')
+  @Auth([])
+  @HttpCode(HttpStatus.OK)
+  @ApiException(() => [NotFoundException, ServerErrorException])
+  @ApiOkResponse({
+    type: GroupResponsePresenter,
+    description: 'Get information of the group',
+  })
+  public async getOne(
+    @AuthUser() user: UserEntity,
+    @Param('id') groupId: string,
+  ) {
+    const groupEntity = await this.groupService.findOne(user, groupId);
+    const groupPresenter = new GroupPresenter(groupEntity);
+
+    return new GroupResponsePresenter(groupPresenter);
+  }
+
+  @Post()
+  @Auth([])
+  @HttpCode(HttpStatus.OK)
+  @ApiException(() => [NotFoundException, ServerErrorException])
+  @ApiOkResponse({
+    type: GroupResponsePresenter,
+    description: 'Get information of current user',
+  })
+  public async create(
+    @AuthUser() user: UserEntity,
+    @Body() createGroupDto: GroupDto,
+  ) {
+    const groupEntity = await this.groupService.createGroup(
+      user,
+      createGroupDto,
+    );
+    const groupPresenter = new GroupPresenter(groupEntity);
+
+    return new GroupResponsePresenter(groupPresenter);
+  }
+
+  @Put(':id')
+  @Auth([])
+  @HttpCode(HttpStatus.OK)
+  @ApiException(() => [NotFoundException, ServerErrorException])
+  @ApiOkResponse({
+    type: GroupResponsePresenter,
+    description: 'Get information of current user',
+  })
+  public async update(
+    @AuthUser() user: UserEntity,
+    @Param('id') groupId: string,
+    @Body() createGroupDto: GroupDto,
+  ) {
+    const groupEntity = await this.groupService.updateOne(
+      user,
+      groupId,
+      createGroupDto,
+    );
+    const groupPresenter = new GroupPresenter(groupEntity);
+
+    return new GroupResponsePresenter(groupPresenter);
+  }
+
+  @Delete(':id')
+  @Auth([])
+  @HttpCode(HttpStatus.OK)
+  @ApiException(() => [NotFoundException, ServerErrorException])
+  @ApiOkResponse({
+    type: GroupResponsePresenter,
+    description: 'Get information of current user',
+  })
+  public async delete(
+    @AuthUser() user: UserEntity,
+    @Param('id') groupId: string,
+  ) {
+    await this.groupService.delete(user, groupId);
+
+    return new GroupResponsePresenter({});
   }
 }

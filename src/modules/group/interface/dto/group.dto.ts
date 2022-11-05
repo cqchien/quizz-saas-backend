@@ -1,6 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
+export class MemberGroupDto {
+  @ApiProperty()
+  @IsOptional()
+  name: string;
+
+  @ApiProperty()
+  @IsOptional()
+  email: string;
+}
+
 export class GroupDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -10,7 +20,10 @@ export class GroupDto {
   @IsOptional()
   description: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: MemberGroupDto,
+    isArray: true,
+  })
   @IsOptional()
-  members: string[];
+  members: MemberGroupDto[];
 }

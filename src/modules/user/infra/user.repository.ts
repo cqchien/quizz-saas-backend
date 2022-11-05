@@ -31,6 +31,17 @@ export class UserRepository {
     return this.toEntity(userModel);
   }
 
+  public async findAll(
+    options?: Record<string, string>,
+  ): Promise<UserEntity[]> {
+    const userModels = await this.repository
+      .find({ ...options })
+      .lean<User[]>()
+      .exec();
+
+    return userModels.map((model) => this.toEntity(model));
+  }
+
   public async create(userEntity: UserEntity): Promise<UserEntity> {
     const user = await this.repository.create(userEntity);
 

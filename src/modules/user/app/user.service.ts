@@ -22,6 +22,10 @@ export class UserService {
     return user;
   }
 
+  public async findAll(): Promise<UserEntity[]> {
+    return this.userRepository.findAll();
+  }
+
   async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
     const existedUser = await this.userRepository.findByCondition({
       email: userRegisterDto.email,

@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 import { AuthModule } from './modules/auth/auth.module';
 import { ExamModule } from './modules/exams/exam.module';
+import { GroupModule } from './modules/group/group.module';
 import { QuestionModule } from './modules/questions/question.module';
 import { UserModule } from './modules/user/user.module';
 import { UserExamModule } from './modules/user-exam/user-exam.module';
@@ -30,6 +31,7 @@ import { SharedModule } from './shared/shared.module';
     AuthModule,
     QuestionModule,
     ExamModule,
+    GroupModule,
   ],
 })
 export class AppModule {}

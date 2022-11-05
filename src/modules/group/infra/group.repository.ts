@@ -19,13 +19,38 @@ export class GroupRepository {
     return this.toEntity(user.toObject());
   }
 
+  public async update(groupEntity: GroupEntity): Promise<GroupEntity> {
+    await this.repository.updateOne({ _id: groupEntity.id }, groupEntity);
+
+    return this.findOne(groupEntity.id || '');
+  }
+
+  public async delete(groupId: string): Promise<void> {
+    await this.repository.deleteOne({ _id: groupId });
+  }
+
   public async findAll(query = {}): Promise<GroupEntity[]> {
     const groups = await this.repository
       .find({ ...query })
+      .populate('members')
       .lean<Group[]>()
       .exec();
 
     return groups.map((group) => this.toEntity(group));
+  }
+
+  public async findOne(groupId: string, userId = ''): Promise<GroupEntity> {
+    const query = userId
+      ? { createdBy: userId, _id: groupId }
+      : { _id: groupId };
+
+    const group = await this.repository
+      .findOne(query)
+      .populate('members')
+      .lean<Group>()
+      .exec();
+
+    return this.toEntity(group);
   }
 
   private toEntity(groupModel: Group): GroupEntity {

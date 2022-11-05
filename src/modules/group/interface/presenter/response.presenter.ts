@@ -4,14 +4,16 @@ import { GroupPresenter } from './group.presenter';
 
 export class GroupResponsePresenter {
   @ApiProperty({
-    type: GroupPresenter || [GroupPresenter],
+    type: GroupPresenter || [GroupPresenter] || {},
   })
-  data: GroupPresenter | GroupPresenter[];
+  data: GroupPresenter | GroupPresenter[] | Record<string, string>;
 
   @ApiProperty()
   success: boolean;
 
-  constructor(data: GroupPresenter | GroupPresenter[]) {
+  constructor(
+    data: GroupPresenter | GroupPresenter[] | Record<string, string>,
+  ) {
     this.data = data;
     this.success = true;
   }
