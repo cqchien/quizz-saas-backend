@@ -10,6 +10,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
@@ -18,6 +19,7 @@ import { ServerErrorException } from '../../../exceptions';
 import { UserEntity } from '../../user/domain/entity/user.entity';
 import { GroupService } from '../app/group.service';
 import { GroupDto } from './dto/group.dto';
+import { QueryGroupDto } from './dto/query.dto';
 import { GroupPresenter } from './presenter/group.presenter';
 import { GroupResponsePresenter } from './presenter/response.presenter';
 
@@ -34,8 +36,11 @@ export class GroupController {
     type: GroupResponsePresenter,
     description: 'Get all groups',
   })
-  public async getAll(@AuthUser() user: UserEntity) {
-    const groupEntities = await this.groupService.findAll(user);
+  public async getAll(
+    @AuthUser() user: UserEntity,
+    @Query() query: QueryGroupDto,
+  ) {
+    const groupEntities = await this.groupService.findAll(user, query);
     const groupPresenters = groupEntities.map(
       (groupEntity) => new GroupPresenter(groupEntity),
     );

@@ -8,6 +8,7 @@ import type { UserEntity } from '../../user/domain/entity/user.entity';
 import type { GroupEntity } from '../domain/entity/group.entity';
 import { GroupRepository } from '../infra/group.repository';
 import type { GroupDto, MemberGroupDto } from '../interface/dto/group.dto';
+import type { QueryGroupDto } from '../interface/dto/query.dto';
 
 @Injectable()
 export class GroupService {
@@ -34,8 +35,14 @@ export class GroupService {
     return this.groupRepository.create(groupEntity);
   }
 
-  public findAll(user: UserEntity): Promise<GroupEntity[]> {
-    const query = user.role !== RoleType.ADMIN ? { createdBy: user.id } : {};
+  public findAll(
+    user: UserEntity,
+    queryOption: QueryGroupDto,
+  ): Promise<GroupEntity[]> {
+    const query =
+      user.role !== RoleType.ADMIN
+        ? { createdBy: user.id, ...queryOption }
+        : queryOption;
 
     return this.groupRepository.findAll(query);
   }
