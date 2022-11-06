@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
+import { GroupRepository } from '../../group/infra/group.repository';
 import type { ExamEntity } from '../domain/entity/exam.entity';
 import type { ExamDocument } from '../domain/exam.schema';
 import { Exam } from '../domain/exam.schema';
@@ -13,6 +14,7 @@ export class ExamRepository {
   constructor(
     @InjectModel(Exam.name)
     private repository: Model<ExamDocument>,
+    private groupRepository: GroupRepository,
   ) {}
 
   public async findByCondition(
@@ -23,8 +25,8 @@ export class ExamRepository {
 
     const exam = await this.repository
       .findOne(formatedOptions)
+      .populate('questions createdBy', '-options.value')
       .lean()
-      .populate('questions createdBy updatedBy', '-options.value')
       .exec();
 
     if (!exam) {
@@ -110,7 +112,13 @@ export class ExamRepository {
         id: question._id.toString(),
       })),
       setting: exam.setting,
-      schedules: exam.schedules,
+      schedules: exam.schedules.map((schedule) => ({
+        ...schedule,
+        assignedGroup: schedule.assignedGroup?._id.toString(),
+        assignedGroupEntity: schedule.assignedGroup
+          ? this.groupRepository.toEntity(schedule.assignedGroup)
+          : undefined,
+      })),
       updatedAt: exam.updatedAt,
       createdAt: exam.createdAt,
       createdBy: exam.createdBy?._id?.toString(),

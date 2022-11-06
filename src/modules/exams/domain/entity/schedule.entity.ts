@@ -1,3 +1,5 @@
+import type { GroupEntity } from '../../../group/domain/entity/group.entity';
+
 export class Schedule {
   code: string;
 
@@ -10,4 +12,6 @@ export class Schedule {
   endTime: Date;
 
   assignedGroup?: string;
+
+  assignedGroupEntity?: GroupEntity;
 }

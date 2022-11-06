@@ -68,6 +68,11 @@ export class UserExamRepository {
   }
 
   private toEntity(userExam: UserExam): UserExamEntity {
+    const schedules = userExam.templateExam.schedules.map((schedule) => ({
+      ...schedule,
+      assignedGroup: schedule.assignedGroup?._id?.toString(),
+    }));
+
     return {
       id: userExam._id.toString(),
       templateExam: userExam.templateExam?._id.toString(),
@@ -75,6 +80,7 @@ export class UserExamRepository {
         ...userExam.templateExam,
         id: userExam.templateExam?._id.toString(),
         questions: [],
+        schedules,
         createdBy: undefined,
         updatedBy: undefined,
       },

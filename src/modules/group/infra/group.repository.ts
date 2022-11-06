@@ -53,7 +53,7 @@ export class GroupRepository {
     return this.toEntity(group);
   }
 
-  private toEntity(groupModel: Group): GroupEntity {
+  public toEntity(groupModel: Group): GroupEntity {
     return {
       id: groupModel._id.toString(),
       name: groupModel.name,

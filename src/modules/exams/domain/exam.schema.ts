@@ -8,6 +8,7 @@ import { Question } from '../../questions/domain/question.schema';
 import { User } from '../../user/domain/user.schema';
 import type { ExamEntity } from './entity/exam.entity';
 import type { Schedule } from './schedule.schema';
+import { scheduleSchema } from './schedule.schema';
 import { Setting } from './setting.schema';
 
 @Schema()
@@ -61,7 +62,7 @@ export class Exam extends AbstractSchema {
   @Prop({ type: () => Setting })
   setting: Setting;
 
-  @Prop({ type: Array })
+  @Prop({ type: [scheduleSchema] })
   schedules: Schedule[];
 }
 

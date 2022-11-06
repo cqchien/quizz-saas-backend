@@ -16,7 +16,7 @@ import { GroupController } from './interface/group.controller';
     MongooseModule.forFeature([{ name: Group.name, schema: groupSchema }]),
   ],
   controllers: [GroupController],
-  exports: [GroupService],
+  exports: [GroupService, GroupRepository],
   providers: [GroupService, GroupRepository],
 })
 export class GroupModule {}

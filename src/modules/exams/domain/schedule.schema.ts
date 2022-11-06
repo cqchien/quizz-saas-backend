@@ -1,4 +1,7 @@
-import { Prop } from '@nestjs/mongoose';
+import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { SchemaTypes } from 'mongoose';
+
+import { Group } from '../../group/domain/group.schema';
 
 export class Schedule {
   @Prop({
@@ -18,4 +21,13 @@ export class Schedule {
 
   @Prop()
   endTime: Date;
+
+  @Prop({
+    index: true,
+    type: SchemaTypes.ObjectId,
+    ref: Group.name,
+  })
+  assignedGroup?: Group;
 }
+
+export const scheduleSchema = SchemaFactory.createForClass(Schedule);
