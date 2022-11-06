@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class ScheduleDto {
   @ApiProperty()
@@ -16,4 +16,8 @@ export class ScheduleDto {
   @ApiProperty()
   @IsDate()
   endTime: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  assignedGroup: string;
 }

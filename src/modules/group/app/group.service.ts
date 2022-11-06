@@ -47,6 +47,12 @@ export class GroupService {
     return this.groupRepository.findAll(query);
   }
 
+  public async getMembers(groupId: string) {
+    const group = await this.groupRepository.findOne(groupId);
+
+    return group ? group.memberEntities : [];
+  }
+
   public async findOne(
     user: UserEntity,
     groupId: string,

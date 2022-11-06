@@ -7,6 +7,7 @@ import {
   ExamNotFoundException,
   ExamSaveFailedException,
 } from '../../../exceptions/exam';
+import { GroupService } from '../../group/app/group.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
 import { UserExamService } from '../../user-exam/app/user-exam.service';
 import { SCHEDULE_STATUS } from '../constant';
@@ -22,6 +23,7 @@ export class ExamService {
   constructor(
     private examRepository: ExamRepository,
     private userExamService: UserExamService,
+    private groupService: GroupService,
   ) {}
 
   async createExam(user: UserEntity, examDto: ExamDto): Promise<ExamEntity> {
@@ -64,12 +66,7 @@ export class ExamService {
 
       await Promise.all(
         exam.schedules.map(async (schedule) =>
-          // Create exam for user who created exam
-          this.userExamService.createExamForUser(
-            user.id || '',
-            exam,
-            schedule.code,
-          ),
+          this.createUserExams(exam, schedule, user.id || ''),
         ),
       );
 
@@ -145,19 +142,6 @@ export class ExamService {
       };
     });
 
-    await Promise.all(
-      newSchedules.map(async (schedule) =>
-        this.userExamService.createExamForUser(
-          user.id || '',
-          {
-            ...existedExam,
-            ...examDto,
-          },
-          schedule.code,
-        ),
-      ),
-    );
-
     const uniqueSchedule = uniqBy(formattedSchedules, 'code');
 
     if (uniqueSchedule.length !== formattedSchedules.length) {
@@ -180,6 +164,12 @@ export class ExamService {
     if (!exam) {
       throw new ExamSaveFailedException('Update exam failed!');
     }
+
+    await Promise.all(
+      newSchedules.map(async (schedule) =>
+        this.createUserExams(exam, schedule, user.id || ''),
+      ),
+    );
 
     return exam;
   }
@@ -274,5 +264,32 @@ export class ExamService {
     const endDate = new Date(endTime);
 
     return startDate.getTime() <= endDate.getTime();
+  }
+
+  private async createUserExams(
+    exam: ExamEntity,
+    schedule: Schedule | ScheduleDto,
+    userId: string,
+  ) {
+    if (!schedule.assignedGroup) {
+      // Create exam for user who created exam
+      return this.userExamService.createExamForUser(
+        userId,
+        exam,
+        schedule.code,
+      );
+    }
+
+    const members = await this.groupService.getMembers(schedule.assignedGroup);
+
+    await Promise.all(
+      (members || []).map(async (memberEntity) =>
+        this.userExamService.createExamForUser(
+          memberEntity.id || '',
+          exam,
+          schedule.code,
+        ),
+      ),
+    );
   }
 }
