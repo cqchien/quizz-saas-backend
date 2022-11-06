@@ -271,25 +271,31 @@ export class ExamService {
     schedule: Schedule | ScheduleDto,
     userId: string,
   ) {
-    if (!schedule.assignedGroup) {
-      // Create exam for user who created exam
-      return this.userExamService.createExamForUser(
-        userId,
-        exam,
-        schedule.code,
-      );
-    }
-
-    const members = await this.groupService.getMembers(schedule.assignedGroup);
-
-    await Promise.all(
-      (members || []).map(async (memberEntity) =>
-        this.userExamService.createExamForUser(
-          memberEntity.id || '',
+    try {
+      if (!schedule.assignedGroup) {
+        // Create exam for user who created exam
+        return this.userExamService.createExamForUser(
+          userId,
           exam,
           schedule.code,
+        );
+      }
+
+      const members = await this.groupService.getMembers(
+        schedule.assignedGroup,
+      );
+
+      await Promise.all(
+        (members || []).map(async (memberEntity) =>
+          this.userExamService.createExamForUser(
+            memberEntity.id || '',
+            exam,
+            schedule.code,
+          ),
         ),
-      ),
-    );
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
