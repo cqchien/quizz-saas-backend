@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { RoleType } from '../../../constants/role-type';
 import { SCHEDULE_STATUS } from '../../exams/constant';
 import type { ExamEntity } from '../../exams/domain/entity/exam.entity';
 import type { Schedule } from '../../exams/domain/entity/schedule.entity';
@@ -22,8 +23,7 @@ import type { UserAnswersDto } from '../interface/dto/user-answer-exam.dto';
 export class UserExamService {
   constructor(
     private userExamRepository: UserExamRepository,
-    private userService: UserService,
-    // private mailService: MailService,
+    private userService: UserService, // private mailService: MailService,
   ) {}
 
   async createExamForUser(
@@ -158,7 +158,9 @@ export class UserExamService {
   }
 
   public async getAll(user: UserEntity) {
-    return this.userExamRepository.getAll({ user: user.id || '' });
+    const query = user.role !== RoleType.ADMIN ? { user: user.id || '' } : {};
+
+    return this.userExamRepository.getAll(query);
   }
 
   public async getUsersExamsByTemplate(

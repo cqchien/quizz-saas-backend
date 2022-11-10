@@ -56,15 +56,15 @@ export class UserExamRepository {
     ) as unknown as UserExamEntity;
   }
 
-  public async getAll(
-    query: Record<string, string>,
-  ): Promise<UserExamEntity[]> {
+  public async getAll(query = {}): Promise<UserExamEntity[]> {
     const userExamEntity = await this.repository
       .find({ ...query })
       .lean<UserExam[]>()
       .exec();
 
-    return userExamEntity.map((examEntity) => this.toEntity(examEntity));
+    return (userExamEntity || []).map((examEntity) =>
+      this.toEntity(examEntity),
+    );
   }
 
   private toEntity(userExam: UserExam): UserExamEntity {
