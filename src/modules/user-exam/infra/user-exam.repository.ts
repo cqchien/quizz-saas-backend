@@ -62,16 +62,16 @@ export class UserExamRepository {
       .lean<UserExam[]>()
       .exec();
 
-    return (userExamEntity || []).map((examEntity) =>
-      this.toEntity(examEntity),
-    );
+    return userExamEntity.map((examEntity) => this.toEntity(examEntity));
   }
 
   private toEntity(userExam: UserExam): UserExamEntity {
-    const schedules = userExam.templateExam.schedules.map((schedule) => ({
-      ...schedule,
-      assignedGroup: schedule.assignedGroup?._id?.toString(),
-    }));
+    const schedules = (userExam.templateExam.schedules || []).map(
+      (schedule) => ({
+        ...schedule,
+        assignedGroup: schedule.assignedGroup?._id?.toString(),
+      }),
+    );
 
     return {
       id: userExam._id.toString(),
@@ -99,7 +99,7 @@ export class UserExamRepository {
       total: userExam.total,
       resultStatus: userExam.resultStatus,
       questionBankType: userExam.questionBankType,
-      questions: userExam.questions.map((answerQuestion) => ({
+      questions: (userExam.questions || []).map((answerQuestion) => ({
         ...answerQuestion,
         question: answerQuestion.question?._id.toString(),
         questionEntity: {
