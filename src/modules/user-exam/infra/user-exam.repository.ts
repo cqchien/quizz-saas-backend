@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
+import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import type { UserExamEntity } from '../domain/entity/user-exam.entity';
 import type { UserExamDocument } from '../domain/user-exam.schema';
 import { UserExam } from '../domain/user-exam.schema';
@@ -56,9 +57,27 @@ export class UserExamRepository {
     ) as unknown as UserExamEntity;
   }
 
-  public async getAll(query = {}): Promise<UserExamEntity[]> {
-    const userExamEntity = await this.repository
-      .find({ ...query })
+  public async getAll(query = {}, pageOptions?: PageOptionsDto) {
+    const userExamQuery = this.repository.find({ ...query });
+
+    if (pageOptions) {
+      const total = await userExamQuery.clone().count();
+
+      const userExamEntity = await userExamQuery
+        .limit(pageOptions.take)
+        .skip(pageOptions.skip)
+        .sort({ updatedAt: -1 })
+        .lean<UserExam[]>()
+        .exec();
+
+      return {
+        data: userExamEntity.map((examEntity) => this.toEntity(examEntity)),
+        total,
+      };
+    }
+
+    const userExamEntity = await userExamQuery
+      .sort({ updatedAt: -1 })
       .lean<UserExam[]>()
       .exec();
 

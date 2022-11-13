@@ -1,5 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+import { PageMetaDto } from '../../../../common/dto/page-meta.dto';
 import { UserExamPresenter } from './user-exam.presenter';
 
 export class UserExamResponsePresenter {
@@ -11,8 +12,15 @@ export class UserExamResponsePresenter {
   @ApiProperty()
   success: boolean;
 
-  constructor(data: UserExamPresenter | UserExamPresenter[]) {
+  @ApiPropertyOptional()
+  meta?: PageMetaDto;
+
+  constructor(
+    data: UserExamPresenter | UserExamPresenter[],
+    meta?: PageMetaDto,
+  ) {
     this.data = data;
+    this.meta = meta;
     this.success = true;
   }
 }

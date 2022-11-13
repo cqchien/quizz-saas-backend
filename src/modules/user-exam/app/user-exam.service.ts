@@ -4,11 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { RoleType } from '../../../constants/role-type';
 import { SCHEDULE_STATUS } from '../../exams/constant';
 import type { ExamEntity } from '../../exams/domain/entity/exam.entity';
 import type { Schedule } from '../../exams/domain/entity/schedule.entity';
-import { MailService } from '../../mail/mail.service';
 import { UserService } from '../../user/app/user.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
 import { RESULT_EXAM_STATUS, USER_EXAM_STATUS } from '../constant';
@@ -157,18 +157,32 @@ export class UserExamService {
     });
   }
 
-  public async getAll(user: UserEntity) {
+  public async getAll(
+    user: UserEntity,
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<{
+    data: UserExamEntity[];
+    total: number;
+  }> {
     const query = user.role !== RoleType.ADMIN ? { user: user.id || '' } : {};
 
-    return this.userExamRepository.getAll(query);
+    const userExams = (await this.userExamRepository.getAll(
+      query,
+      pageOptionsDto,
+    )) as unknown as {
+      data: UserExamEntity[];
+      total: number;
+    };
+
+    return userExams;
   }
 
-  public async getUsersExamsByTemplate(
-    templateExamId: string,
-  ): Promise<UserExamEntity[]> {
-    return this.userExamRepository.getAll({
+  public async getUsersExamsByTemplate(templateExamId: string) {
+    const userExams = (await this.userExamRepository.getAll({
       templateExam: templateExamId,
-    });
+    })) as unknown as UserExamEntity[];
+
+    return userExams;
   }
 
   public async submit(

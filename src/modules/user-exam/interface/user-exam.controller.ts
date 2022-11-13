@@ -8,9 +8,12 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { PageMetaDto } from '../../../common/dto/page-meta.dto';
+import { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { Auth, AuthUser } from '../../../decorators';
 import { ServerErrorException } from '../../../exceptions/server-error.exception';
 import { UserEntity } from '../../user/domain/entity/user.entity';
@@ -32,13 +35,25 @@ export class UserExamController {
     type: UserExamResponsePresenter,
     description: 'Get information of the exam by user',
   })
-  async getAll(@AuthUser() user: UserEntity) {
-    const examEntities = await this.userExamService.getAll(user);
-    const userExamPresenters = examEntities.map(
+  async getAll(
+    @AuthUser() user: UserEntity,
+    @Query() pageOptionsDto: PageOptionsDto,
+  ) {
+    const { data, total } = await this.userExamService.getAll(
+      user,
+      pageOptionsDto,
+    );
+
+    const userExamPresenters = (data || []).map(
       (examEntity) => new UserExamPresenter(examEntity),
     );
 
-    return new UserExamResponsePresenter(userExamPresenters);
+    const pageMetaPresenters = new PageMetaDto(pageOptionsDto, total);
+
+    return new UserExamResponsePresenter(
+      userExamPresenters,
+      pageMetaPresenters,
+    );
   }
 
   @Get(':id/overview')
