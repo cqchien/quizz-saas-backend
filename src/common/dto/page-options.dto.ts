@@ -10,10 +10,10 @@ export class PageOptionsDto {
   readonly page: number = 1;
 
   @NumberFieldOptional({
-    minimum: 10,
+    minimum: 1,
     maximum: 50,
-    default: 10,
-    example: '10',
+    default: 1,
+    example: '1',
     int: true,
   })
   readonly take: number = 10;
