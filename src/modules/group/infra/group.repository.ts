@@ -58,8 +58,10 @@ export class GroupRepository {
       id: groupModel._id.toString(),
       name: groupModel.name,
       description: groupModel.description,
-      members: groupModel.members.map((member) => member?._id.toString()),
-      memberEntities: groupModel.members.map((member) => ({
+      members: (groupModel.members || []).map((member) =>
+        member._id.toString(),
+      ),
+      memberEntities: (groupModel.members || []).map((member) => ({
         id: member._id.toString(),
         ...member,
       })),

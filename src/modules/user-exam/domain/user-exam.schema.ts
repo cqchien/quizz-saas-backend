@@ -1,10 +1,13 @@
+/* eslint-disable no-invalid-this */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import type { NextFunction } from 'express';
 import { SchemaTypes } from 'mongoose';
 
 import { AbstractSchema } from '../../../common/abstract.schema';
 import { Exam } from '../../exams/domain/exam.schema';
 import { Question } from '../../questions/domain/question.schema';
 import { User } from '../../user/domain/user.schema';
+import type { UserExamEntity } from './entity/user-exam.entity';
 import { UserExamSetting } from './setting.schema';
 
 @Schema()
@@ -88,3 +91,18 @@ export class UserExam extends AbstractSchema {
 
 export const userExamSchema = SchemaFactory.createForClass(UserExam);
 export type UserExamDocument = UserExam & Document;
+
+userExamSchema.pre<UserExamEntity>(
+  'save',
+  function (this: UserExamEntity, next: NextFunction) {
+    const now = new Date();
+
+    this.updatedAt = now;
+
+    if (!this.createdAt) {
+      this.createdAt = now;
+    }
+
+    next();
+  },
+);

@@ -25,7 +25,7 @@ export class ExamRepository {
 
     const exam = await this.repository
       .findOne(formatedOptions)
-      .populate('questions createdBy', '-options.value')
+      .populate('questions createdBy schedules.assignedGroup', '-options.value')
       .lean()
       .exec();
 
