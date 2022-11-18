@@ -79,6 +79,7 @@ export class UserExamRepository {
 
     const userExamEntity = await userExamQuery
       .sort({ updatedAt: -1 })
+      .populate('templateExam')
       .lean<UserExam[]>()
       .exec();
 
@@ -86,7 +87,7 @@ export class UserExamRepository {
   }
 
   private toEntity(userExam: UserExam): UserExamEntity {
-    const schedules = (userExam.templateExam.schedules || []).map(
+    const schedules = (userExam.templateExam?.schedules || []).map(
       (schedule) => ({
         ...schedule,
         assignedGroup: schedule.assignedGroup?._id?.toString(),
