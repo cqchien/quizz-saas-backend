@@ -16,6 +16,9 @@ export class SchedulePresenter {
   @ApiProperty()
   endTime: Date;
 
+  @ApiProperty()
+  status?: string;
+
   @ApiPropertyOptional({
     type: GroupPresenter,
   })
@@ -25,6 +28,8 @@ export class SchedulePresenter {
     this.code = schedule.code;
     this.time = schedule.time;
     this.endTime = schedule.endTime;
+    this.startTime = schedule.startTime;
+    this.status = schedule.status;
     this.assignedGroup = schedule.assignedGroupEntity
       ? new GroupPresenter(schedule.assignedGroupEntity)
       : undefined;
