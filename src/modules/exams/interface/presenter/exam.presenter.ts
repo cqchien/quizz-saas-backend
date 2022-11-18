@@ -81,7 +81,7 @@ export class ExamPresenter {
       (questionEntity) => new QuestionPresenter(questionEntity),
     );
     this.setting = entity.setting;
-    this.schedules = entity.schedules.map(
+    this.schedules = (entity.schedules || []).map(
       (schedule) => new SchedulePresenter(schedule),
     );
     this.userExams = (entity.userExams || []).map(

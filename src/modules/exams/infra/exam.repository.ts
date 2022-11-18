@@ -112,7 +112,7 @@ export class ExamRepository {
         id: question._id.toString(),
       })),
       setting: exam.setting,
-      schedules: exam.schedules.map((schedule) => ({
+      schedules: (exam.schedules || []).map((schedule) => ({
         ...schedule,
         assignedGroup: schedule.assignedGroup?._id.toString(),
         assignedGroupEntity: schedule.assignedGroup

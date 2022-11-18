@@ -30,20 +30,22 @@ export class ExamService {
     try {
       let error = '';
 
-      const formattedSchedules = examDto.schedules.map((schedule): Schedule => {
-        if (this.checkTimePast(schedule.startTime)) {
-          error = 'Can not schedule for the past!';
-        }
+      const formattedSchedules = (examDto.schedules || []).map(
+        (schedule): Schedule => {
+          if (this.checkTimePast(schedule.startTime)) {
+            error = 'Can not schedule for the past!';
+          }
 
-        if (!this.checkStartEndTime(schedule.startTime, schedule.endTime)) {
-          error = 'End time should be greater than start time.';
-        }
+          if (!this.checkStartEndTime(schedule.startTime, schedule.endTime)) {
+            error = 'End time should be greater than start time.';
+          }
 
-        return {
-          ...schedule,
-          status: SCHEDULE_STATUS.NOT_STARTED,
-        };
-      });
+          return {
+            ...schedule,
+            status: SCHEDULE_STATUS.NOT_STARTED,
+          };
+        },
+      );
 
       const uniqueSchedule = uniqBy(formattedSchedules, 'code');
 
@@ -65,13 +67,15 @@ export class ExamService {
       const exam = await this.examRepository.create(examEntity);
 
       await Promise.all(
-        exam.schedules.map(async (schedule) =>
+        (exam.schedules || []).map(async (schedule) =>
           this.createUserExams(exam, schedule, user.id || ''),
         ),
       );
 
       return exam;
     } catch (error) {
+      console.error(error);
+
       throw new ExamSaveFailedException(
         (error as Error).message || 'Create exam failed!',
       );
@@ -102,45 +106,47 @@ export class ExamService {
 
     const newSchedules: ScheduleDto[] = [];
 
-    const formattedSchedules = examDto.schedules.map((schedule): Schedule => {
-      const existedSchedule = existedExam.schedules.find(
-        (examSchedule) => schedule.code === examSchedule.code,
-      );
+    const formattedSchedules = (examDto.schedules || []).map(
+      (schedule): Schedule => {
+        const existedSchedule = existedExam.schedules.find(
+          (examSchedule) => schedule.code === examSchedule.code,
+        );
 
-      if (existedSchedule?.status === SCHEDULE_STATUS.COMPLETED) {
-        return existedSchedule;
-      }
+        if (existedSchedule?.status === SCHEDULE_STATUS.COMPLETED) {
+          return existedSchedule;
+        }
 
-      const isStartTimeChange =
-        new Date(schedule.startTime).getTime() !==
-        new Date(existedSchedule?.startTime || '').getTime();
+        const isStartTimeChange =
+          new Date(schedule.startTime).getTime() !==
+          new Date(existedSchedule?.startTime || '').getTime();
 
-      const isEndTimeChange =
-        new Date(schedule.endTime).getTime() !==
-        new Date(existedSchedule?.endTime || '').getTime();
+        const isEndTimeChange =
+          new Date(schedule.endTime).getTime() !==
+          new Date(existedSchedule?.endTime || '').getTime();
 
-      if (isStartTimeChange && this.checkTimePast(schedule.startTime)) {
-        error = 'Can not schedule for the past!';
-      }
+        if (isStartTimeChange && this.checkTimePast(schedule.startTime)) {
+          error = 'Can not schedule for the past!';
+        }
 
-      if (
-        (isEndTimeChange || isStartTimeChange) &&
-        !this.checkStartEndTime(schedule.startTime, schedule.endTime)
-      ) {
-        error = 'End time should be greater than start time.';
-      }
+        if (
+          (isEndTimeChange || isStartTimeChange) &&
+          !this.checkStartEndTime(schedule.startTime, schedule.endTime)
+        ) {
+          error = 'End time should be greater than start time.';
+        }
 
-      if (!existedSchedule) {
-        newSchedules.push(schedule);
-      }
+        if (!existedSchedule) {
+          newSchedules.push(schedule);
+        }
 
-      return {
-        ...schedule,
-        status: existedSchedule
-          ? existedSchedule.status
-          : SCHEDULE_STATUS.NOT_STARTED,
-      };
-    });
+        return {
+          ...schedule,
+          status: existedSchedule
+            ? existedSchedule.status
+            : SCHEDULE_STATUS.NOT_STARTED,
+        };
+      },
+    );
 
     const uniqueSchedule = uniqBy(formattedSchedules, 'code');
 
