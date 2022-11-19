@@ -84,10 +84,12 @@ export class UserExamService {
   }
 
   public async getOverview(user: UserEntity, examId: string) {
-    const exam = await this.userExamRepository.findByCondition({
-      id: examId,
-      user: user.id || '',
-    });
+    const query =
+      user.role === RoleType.ADMIN
+        ? { id: examId }
+        : { id: examId, user: user.id || '' };
+
+    const exam = await this.userExamRepository.findByCondition(query);
 
     if (!exam || exam.status !== USER_EXAM_STATUS.SUBMITTED) {
       throw new NotFoundException(

@@ -15,7 +15,7 @@ export class UserExamRepository {
   ) {}
 
   public async findByCondition(
-    options: Record<string, string>,
+    options: Record<string, string | undefined>,
     isHideResult = false,
   ): Promise<UserExamEntity | undefined> {
     const { id, ...rest } = options;
