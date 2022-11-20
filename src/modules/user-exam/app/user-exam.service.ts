@@ -9,6 +9,7 @@ import { RoleType } from '../../../constants/role-type';
 import { SCHEDULE_STATUS } from '../../exams/constant';
 import type { ExamEntity } from '../../exams/domain/entity/exam.entity';
 import type { Schedule } from '../../exams/domain/entity/schedule.entity';
+import { QUESTION_TYPE } from '../../questions/constant';
 import { UserService } from '../../user/app/user.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
 import { RESULT_EXAM_STATUS, USER_EXAM_STATUS } from '../constant';
@@ -89,25 +90,27 @@ export class UserExamService {
         ? { id: examId }
         : { id: examId, user: user.id || '' };
 
-    const exam = await this.userExamRepository.findByCondition(query);
+    const userExam = await this.userExamRepository.findByCondition(query);
 
-    if (!exam || exam.status !== USER_EXAM_STATUS.SUBMITTED) {
+    if (!userExam || userExam.status !== USER_EXAM_STATUS.SUBMITTED) {
       throw new NotFoundException(
         'Exam does not exist or user not allow to get the exam!!',
       );
     }
 
-    const inProgressSchedule = exam.templateExamEntity?.schedules.find(
-      (schedule) =>
-        schedule.status === SCHEDULE_STATUS.COMPLETED &&
-        schedule.code === exam.scheduleCode,
+    // eslint-disable-next-line unicorn/no-array-reduce
+    const questionMap = this.getAnswerOfQuestions(userExam.questions || []);
+
+    const correctAnswer = (userExam.questions || []).filter((answerQuestion) =>
+      questionMap[answerQuestion.question.toString()].includes(
+        answerQuestion.answerOrder,
+      ),
     );
 
-    if (!inProgressSchedule) {
-      throw new BadRequestException('Exam not allow to view.');
-    }
-
-    return exam;
+    return {
+      ...userExam,
+      numberOfCorrectAnswer: correctAnswer.length,
+    };
   }
 
   public async takeExam(user: UserEntity, examId: string) {
@@ -214,14 +217,7 @@ export class UserExamService {
     }
 
     // eslint-disable-next-line unicorn/no-array-reduce
-    const questionMap = (exam.questions || []).reduce((map, answer) => {
-      const correctOptions = (answer.questionEntity?.options || [])
-        .filter((option) => option.value)
-        .map((option) => option.order);
-      map[answer.question.toString()] = correctOptions;
-
-      return map;
-    }, {});
+    const questionMap = this.getAnswerOfQuestions(exam.questions || []);
 
     const correctAnswer = answers.filter((answer) =>
       questionMap[answer.questionId.toString()].includes(answer.answerOrder),
@@ -281,5 +277,23 @@ export class UserExamService {
     return (
       startDate.getTime() <= now.getTime() && now.getTime() <= endDate.getTime()
     );
+  }
+
+  private getAnswerOfQuestions(questions: AnswerQuestionEntity[]) {
+    // eslint-disable-next-line unicorn/no-array-reduce
+    return questions.reduce((map, answer) => {
+      const typeOfQuestion = answer.questionEntity?.type;
+
+      const correctOptions = (answer.questionEntity?.options || [])
+        .filter((option) => option.value)
+        .map((option) =>
+          typeOfQuestion === QUESTION_TYPE.MULTIPLE_CHOICE
+            ? option.order
+            : option.value,
+        );
+      map[answer.question.toString()] = correctOptions;
+
+      return map;
+    }, {});
   }
 }
