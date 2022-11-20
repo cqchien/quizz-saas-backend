@@ -231,9 +231,15 @@ export class UserExamService {
       exam.setting.plusScorePerQuestion * numberOfCorrectAnswer -
       exam.setting.minusScorePerQuestion * numberOfWrongAnswer;
 
-    const percentResult = Math.round(
-      (numberOfCorrectAnswer / (exam.questions || []).length) * 100,
-    );
+    const percentResult = exam.setting.plusScorePerQuestion
+      ? Math.round(
+          (score / (exam.questions || []).length) *
+            exam.setting.plusScorePerQuestion *
+            100,
+        )
+      : Math.round(
+          (numberOfCorrectAnswer / (exam.questions || []).length) * 100,
+        );
 
     const resultStatus =
       percentResult >= exam.setting.percentageToPass
