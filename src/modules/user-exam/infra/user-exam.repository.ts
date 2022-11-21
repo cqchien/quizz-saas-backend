@@ -66,7 +66,7 @@ export class UserExamRepository {
       const userExamEntity = await userExamQuery
         .limit(pageOptions.take)
         .skip(pageOptions.skip)
-        .populate('templateExam')
+        .populate('templateExam ')
         .sort({ updatedAt: -1 })
         .lean<UserExam[]>()
         .exec();
@@ -79,7 +79,7 @@ export class UserExamRepository {
 
     const userExamEntity = await userExamQuery
       .sort({ updatedAt: -1 })
-      .populate('templateExam')
+      .populate('user')
       .lean<UserExam[]>()
       .exec();
 
