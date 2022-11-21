@@ -41,7 +41,7 @@ export class QuestionRepository {
     total: number;
   }> {
     const { take, skip } = pageOptions;
-    const { topic, tags } = queryDto;
+    const { topic, tags, question } = queryDto;
 
     let query = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,6 +59,19 @@ export class QuestionRepository {
       query = {
         ...query,
         $or: [...tmp],
+      };
+    }
+
+    if (question) {
+      query = {
+        ...query,
+        $and: [
+          {
+            $text: {
+              $search: question,
+            },
+          },
+        ],
       };
     }
 
@@ -142,7 +155,7 @@ export class QuestionRepository {
     }
 
     return {
-      id: questionModel._id.toString(),
+      id: questionModel._id?.toString(),
       question: questionModel.question,
       type: questionModel.type,
       heuristicLevel: questionModel.heuristicLevel,
