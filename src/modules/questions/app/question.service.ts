@@ -4,7 +4,7 @@ import { invert } from 'lodash';
 
 import type { PageOptionsDto } from '../../../common/dto/page-options.dto';
 import { RoleType } from '../../../constants/role-type';
-import { FileNotExelException } from '../../../exceptions/file/file-not-exel.exception';
+import { FileNotExcelException } from '../../../exceptions/file/file-not-exel.exception';
 import { QuestionExistException } from '../../../exceptions/question/question-exist.exception';
 import { QuestionNotAllowToSave } from '../../../exceptions/question/question-not-allow-to-save.exception';
 import { QuestionNotFoundException } from '../../../exceptions/question/question-not-found.exception';
@@ -183,7 +183,7 @@ export class QuestionService {
   public async uploadQuestions(file: IFile, user: UserEntity) {
     try {
       if (file && !this.validatorService.isExcel(file.mimetype)) {
-        throw new FileNotExelException(
+        throw new FileNotExcelException(
           'Only alow to upload exel file (.xlsx, .xls, .csv)',
         );
       }

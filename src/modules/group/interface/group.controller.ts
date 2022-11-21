@@ -11,11 +11,13 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { Auth, AuthUser } from '../../../decorators';
+import { ApiFile, Auth, AuthUser } from '../../../decorators';
 import { ServerErrorException } from '../../../exceptions';
+import { IFile } from '../../../interfaces/IFile';
 import { UserEntity } from '../../user/domain/entity/user.entity';
 import { GroupService } from '../app/group.service';
 import { GroupDto } from './dto/group.dto';
@@ -46,6 +48,14 @@ export class GroupController {
     );
 
     return new GroupResponsePresenter(groupPresenters);
+  }
+
+  @Post('/parse')
+  @Auth([])
+  @ApiException(() => [ServerErrorException])
+  @ApiFile([{ name: 'file', isArray: false }])
+  parseFile(@UploadedFile() file: IFile) {
+    return this.groupService.parseFile(file);
   }
 
   @Get(':id')

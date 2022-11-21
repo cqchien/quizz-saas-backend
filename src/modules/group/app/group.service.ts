@@ -1,7 +1,12 @@
+/* eslint-disable dot-notation */
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { IFile } from 'interfaces';
 
 import { RoleType } from '../../../constants/role-type';
+import { FileNotExcelException } from '../../../exceptions/file/file-not-exel.exception';
+import { FileService } from '../../../shared/services/file.service';
 import { GeneratorService } from '../../../shared/services/generator.service';
+import { ValidatorService } from '../../../shared/services/validator.service';
 import type { UserRegisterDto } from '../../auth/interface/dto/register.dto';
 import { UserService } from '../../user/app/user.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
@@ -16,6 +21,8 @@ export class GroupService {
     private groupRepository: GroupRepository,
     private userService: UserService,
     private generatorService: GeneratorService,
+    private validatorService: ValidatorService,
+    private fileService: FileService,
   ) {}
 
   async createGroup(
@@ -107,6 +114,21 @@ export class GroupService {
     };
 
     return this.groupRepository.update(groupEntity);
+  }
+
+  public parseFile(file: IFile) {
+    if (file && !this.validatorService.isExcel(file.mimetype)) {
+      throw new FileNotExcelException(
+        'Only alow to upload exel file (.xlsx, .xls, .csv)',
+      );
+    }
+
+    const data = this.fileService.parseExcelFIle(file);
+
+    return data.map((raw) => ({
+      name: raw['name'],
+      email: raw['email'],
+    }));
   }
 
   private async createMembersForGroup(
