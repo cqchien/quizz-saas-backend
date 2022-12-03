@@ -1,0 +1,17 @@
+version: '3'
+services:
+  backend:
+    image: caochientp1/knowled:latest
+    restart: always
+    environment:
+      DB_USER: caochientp1
+      DB_PASSWORD: chiengu0
+      DB_DATABASE: quizz-saas
+    ports:
+      - '3000:3000'
+
+  redis:
+    image: redis:6.0
+    restart: always
+    ports:
+      - 6379:6379
