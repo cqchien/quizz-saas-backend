@@ -21,8 +21,8 @@ import { SharedModule } from './shared/shared.module';
     }),
     MongooseModule.forRootAsync({
       imports: [SharedModule],
-      useFactory: (configService: ApiConfigService) => ({
-        uri: configService.getDatabaseUrl,
+      useFactory: () => ({
+        uri: 'mongodb+srv://caochientp1:chiengu0@devconnector.3mowt.mongodb.net/quizz-saas?retryWrites=true&w=majority',
       }),
       inject: [ApiConfigService],
     }),
