@@ -3,7 +3,7 @@ services:
   backend:
     image: caochientp1/knowled:latest
     restart: always
-    environment:
+    env_file:
       - .env
     ports:
       - '3000:3000'
