@@ -2,13 +2,14 @@ version: '3.1'
 services:
   backend:
     image: caochientp1/knowled:latest
+    # build: .
     restart: always
     env_file:
       - .env
     ports:
       - 3000:3000
-    volumes:
-      - .:/app
+    # volumes:
+    #   - .:/app
     depends_on:
       - redis
       - mongo
@@ -17,9 +18,8 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: knowled
-      MONGO_INITDB_ROOT_PASSWORD: knowled
       MONGODB_DATABASE: knowled
+    container_name: mongo
     ports:
       - 27017:27017
     volumes:
