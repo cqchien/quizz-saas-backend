@@ -1,16 +1,16 @@
 version: '3.1'
 services:
-  # backend:
-  #   image: caochientp1/knowled:latest
-  #   restart: always
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./:/app
-  #   depends_on:
-  #     - mongo
+  backend:
+    image: caochientp1/knowled:latest
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+    # volumes:
+    #   - ./:/app
+    depends_on:
+      - mongo
 
   mongo:
     image: mongo
