@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   backend:
-    build: .
+    image: caochientp1/knowled:latest
     restart: always
     env_file:
       - .env
