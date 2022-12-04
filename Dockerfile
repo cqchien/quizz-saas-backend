@@ -16,14 +16,14 @@ FROM node:lts
 
 ARG PORT=3000
 
-RUN mkdir -p /usr/src/app
+RUN mkdir -p /app
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY --from=dist dist /usr/src/app/dist
-COPY --from=node_modules node_modules /usr/src/app/node_modules
+COPY --from=dist dist /app/dist
+COPY --from=node_modules node_modules /app/node_modules
 
-COPY . /usr/src/app
+COPY . /app
 
 EXPOSE $PORT
 

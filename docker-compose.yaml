@@ -1,15 +1,49 @@
-version: '3'
+version: '3.1'
 services:
-  backend:
-    image: caochientp1/knowled:latest
+  # backend:
+  #   image: caochientp1/knowled:latest
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./:/app
+  #   depends_on:
+  #     - mongo
+
+  mongo:
+    image: mongo
     restart: always
-    env_file:
-      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: knowled
+      MONGO_INITDB_ROOT_PASSWORD: knowled
+      MONGO_INITDB_DATABASE: knowled
     ports:
-      - '3000:3000'
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: knowled
+      ME_CONFIG_MONGODB_ADMINPASSWORD: knowled
+      ME_CONFIG_MONGODB_URL: mongodb://knowled:knowled@mongo:27017
+    links:
+      - mongo
+    depends_on:
+      - mongo
 
   redis:
     image: redis:6.0
     restart: always
     ports:
       - 6379:6379
+      
+volumes:
+ mongodb:
