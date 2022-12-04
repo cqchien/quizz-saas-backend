@@ -1,4 +1,4 @@
-FROM node:lts AS dist
+FROM node:gallium-alpine AS dist
 COPY package.json yarn.lock ./
 
 RUN yarn install
@@ -7,12 +7,12 @@ COPY . ./
 
 RUN yarn build:prod
 
-FROM node:lts AS node_modules
+FROM node:gallium-alpine AS node_modules
 COPY package.json yarn.lock ./
 
 RUN yarn install --prod
 
-FROM node:lts
+FROM node:gallium-alpine
 
 ARG PORT=3000
 
