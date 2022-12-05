@@ -22,7 +22,7 @@ import { SharedModule } from './shared/shared.module';
     MongooseModule.forRootAsync({
       imports: [SharedModule],
       useFactory: () => ({
-        uri: 'mongodb://mongo/knowled',
+        uri: 'mongodb://mongo',
       }),
       inject: [ApiConfigService],
     }),
