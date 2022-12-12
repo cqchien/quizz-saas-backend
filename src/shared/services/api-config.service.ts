@@ -52,6 +52,10 @@ export class ApiConfigService {
     return this.getString('TZ');
   }
 
+  public getSendGridApiKey(): string {
+    return this.getString('SEND_GRID_KEY');
+  }
+
   get fallbackLanguage(): string {
     return this.getString('FALLBACK_LANGUAGE').toLowerCase();
   }

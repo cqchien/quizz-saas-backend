@@ -9,6 +9,7 @@ import { RoleType } from '../../../constants/role-type';
 import { SCHEDULE_STATUS } from '../../exams/constant';
 import type { ExamEntity } from '../../exams/domain/entity/exam.entity';
 import type { Schedule } from '../../exams/domain/entity/schedule.entity';
+import { MailService } from '../../mail/mail.service';
 import { QUESTION_TYPE } from '../../questions/constant';
 import { UserService } from '../../user/app/user.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
@@ -24,7 +25,8 @@ import type { UserAnswersDto } from '../interface/dto/user-answer-exam.dto';
 export class UserExamService {
   constructor(
     private userExamRepository: UserExamRepository,
-    private userService: UserService, // private mailService: MailService,
+    private userService: UserService,
+    private mailService: MailService,
   ) {}
 
   async createExamForUser(
@@ -75,13 +77,25 @@ export class UserExamService {
     }
 
     // Send email to user
-    // await this.mailService.sendEmailInformUserTakeExam(
-    //   userEntity,
-    //   userExam,
-    //   schedule,
-    // );
+    await this.sendEmailInformUser(userEntity, userExam, schedule);
 
     return userExam;
+  }
+
+  private async sendEmailInformUser(
+    userEntity: UserEntity,
+    userExam: UserExamEntity,
+    schedule: Schedule,
+  ) {
+    try {
+      await this.mailService.sendEmailInformUserTakeExam(
+        userEntity,
+        userExam,
+        schedule,
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   public async getOverview(user: UserEntity, examId: string) {

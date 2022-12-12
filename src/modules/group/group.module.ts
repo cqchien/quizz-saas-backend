@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { SharedModule } from '../../shared/shared.module';
+import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mail/mail.module';
 import { UserModule } from '../user/user.module';
 import { GroupService } from './app/group.service';
@@ -15,6 +16,7 @@ import { GroupController } from './interface/group.controller';
     UserModule,
     GroupModule,
     MailModule,
+    AuthModule,
     MongooseModule.forFeature([{ name: Group.name, schema: groupSchema }]),
   ],
   controllers: [GroupController],

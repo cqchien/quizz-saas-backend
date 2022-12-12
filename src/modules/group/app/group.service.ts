@@ -7,7 +7,9 @@ import { FileNotExcelException } from '../../../exceptions/file/file-not-exel.ex
 import { FileService } from '../../../shared/services/file.service';
 import { GeneratorService } from '../../../shared/services/generator.service';
 import { ValidatorService } from '../../../shared/services/validator.service';
+import { AuthService } from '../../auth/app/auth.service';
 import type { UserRegisterDto } from '../../auth/interface/dto/register.dto';
+import { MailService } from '../../mail/mail.service';
 import { UserService } from '../../user/app/user.service';
 import type { UserEntity } from '../../user/domain/entity/user.entity';
 import type { GroupEntity } from '../domain/entity/group.entity';
@@ -23,6 +25,8 @@ export class GroupService {
     private generatorService: GeneratorService,
     private validatorService: ValidatorService,
     private fileService: FileService,
+    private mailService: MailService,
+    private authService: AuthService,
   ) {}
 
   async createGroup(
@@ -160,10 +164,25 @@ export class GroupService {
         const newUser = await this.userService.createUser(userDto);
 
         // Send email
+        await this.handleSendEmailChangePass(newUser);
+
         return newUser;
       }),
     );
 
     return memberEntities;
+  }
+
+  private async handleSendEmailChangePass(user: UserEntity) {
+    try {
+      const token = await this.authService.createAccessToken({
+        role: RoleType.USER,
+        userId: user.id,
+      });
+
+      await this.mailService.sendEmailChangePassword(user, token.accessToken);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
