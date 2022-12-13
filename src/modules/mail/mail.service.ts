@@ -31,7 +31,7 @@ export class MailService {
   }
 
   async sendEmailChangePassword(user: UserEntity, token: string) {
-    const magicLink = `${process.env.API_URL}/user?token=${token}`;
+    const magicLink = `${process.env.API_URL}/change-password?token=${token}`;
     const html = this.replacer(informChangePassword.body, {
       name: user.name,
       magicLink,

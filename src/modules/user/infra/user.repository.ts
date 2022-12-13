@@ -48,6 +48,14 @@ export class UserRepository {
     return this.toEntity(user.toObject());
   }
 
+  public async update(userEntity: UserEntity): Promise<UserEntity> {
+    await this.repository.updateOne({ _id: userEntity.id }, userEntity);
+
+    return this.findByCondition({
+      id: userEntity.id || '',
+    }) as unknown as UserEntity;
+  }
+
   private toEntity(userModel: User): UserEntity {
     return {
       id: userModel._id.toString(),

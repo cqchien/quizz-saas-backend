@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { validateHash } from '../../../common/utils';
@@ -30,6 +30,25 @@ export class AuthService {
         role: data.role,
       }),
     });
+  }
+
+  async verifyAccessToken(token: string): Promise<UserEntity> {
+    const result = await this.jwtService.verifyAsync(token);
+
+    if (!result?.userId) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.userService.findOne({
+      id: result.userId,
+      role: result.role,
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return user;
   }
 
   async validateUser(userLoginDto: UserLoginDto): Promise<UserEntity> {
