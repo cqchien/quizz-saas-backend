@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../src/modules/exams/constant/index.ts"],"names":[],"mappings":";;;AAAa,QAAA,kBAAkB,GAAG;IAChC,MAAM,EAAE,QAAQ;IAChB,QAAQ,EAAE,UAAU;CACrB,CAAC;AAEW,QAAA,eAAe,GAAG;IAC7B,WAAW,EAAE,aAAa;IAC1B,WAAW,EAAE,aAAa;IAC1B,SAAS,EAAE,WAAW;CACvB,CAAC;AAEW,QAAA,uBAAuB,GAAG,eAAe,CAAC"}
