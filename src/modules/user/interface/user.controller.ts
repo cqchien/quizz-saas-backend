@@ -2,6 +2,7 @@ import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { RoleType } from '../../../constants/role-type';
 import { Auth, AuthUser } from '../../../decorators';
 import {
   ServerErrorException,
@@ -30,5 +31,25 @@ export class UserController {
     const userPresenter = new UserPresenter(userEntity);
 
     return new UserResponsePresenter(userPresenter);
+  }
+
+  @Get()
+  @Auth([])
+  @HttpCode(HttpStatus.OK)
+  @ApiException(() => [UserNotFoundException, ServerErrorException])
+  @ApiOkResponse({
+    type: UserResponsePresenter,
+    description: 'Get information of list users',
+  })
+  public async getUsers() {
+    const userEntities = await this.userService.findAll({
+      role: RoleType.USER,
+    });
+
+    const userPresenters = userEntities.map(
+      (entity) => new UserPresenter(entity),
+    );
+
+    return new UserResponsePresenter(userPresenters);
   }
 }

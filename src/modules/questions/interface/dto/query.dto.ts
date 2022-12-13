@@ -14,6 +14,9 @@ export class QueryQuestionDto {
   @StringFieldOptional()
   topic: string;
 
+  @StringFieldOptional()
+  createdBy: string;
+
   @ApiPropertyOptional({
     type: QUESTION_BANK_TYPE,
   })

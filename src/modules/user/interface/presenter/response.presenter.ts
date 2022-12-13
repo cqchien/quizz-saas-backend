@@ -4,14 +4,14 @@ import { UserPresenter } from './user.presenter';
 
 export class UserResponsePresenter {
   @ApiProperty({
-    type: UserPresenter,
+    type: UserPresenter || [UserPresenter],
   })
-  data: UserPresenter;
+  data: UserPresenter | UserPresenter[];
 
   @ApiProperty()
   success: boolean;
 
-  constructor(data: UserPresenter) {
+  constructor(data: UserPresenter | UserPresenter[]) {
     this.data = data;
     this.success = true;
   }

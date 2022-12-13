@@ -24,8 +24,8 @@ export class UserService {
     return user;
   }
 
-  public async findAll(): Promise<UserEntity[]> {
-    return this.userRepository.findAll();
+  public async findAll(opts?: Record<string, string>): Promise<UserEntity[]> {
+    return this.userRepository.findAll(opts);
   }
 
   async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {

@@ -41,7 +41,7 @@ export class QuestionRepository {
     total: number;
   }> {
     const { take, skip } = pageOptions;
-    const { topic, tags, question } = queryDto;
+    const { topic, tags, question, createdBy } = queryDto;
 
     let query = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,6 +72,13 @@ export class QuestionRepository {
             },
           },
         ],
+      };
+    }
+
+    if (createdBy) {
+      query = {
+        ...query,
+        $and: [{ createdBy }],
       };
     }
 
