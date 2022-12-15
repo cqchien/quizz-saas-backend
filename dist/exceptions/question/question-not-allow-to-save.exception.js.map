@@ -1,1 +1,0 @@
-{"version":3,"file":"question-not-allow-to-save.exception.js","sourceRoot":"","sources":["../../../src/exceptions/question/question-not-allow-to-save.exception.ts"],"names":[],"mappings":";;;AAAA,2CAAmD;AAEnD,MAAa,sBAAuB,SAAQ,0BAAiB;IAC3D,YAAY,OAAgB;QAC1B,KAAK,CAAC,OAAO,EAAE,kCAAkC,CAAC,CAAC;IACrD,CAAC;CACF;AAJD,wDAIC"}
