@@ -64,11 +64,18 @@ export class ExamRepository {
     total: number;
   }> {
     const { take, skip } = pageOptions;
-    const extractQuery = {
-      $or: [{ name: query.name }, { code: query.code }],
-    };
+    const extractQuery =
+      query.code || query.name
+        ? {
+            $or: [
+              { name: { $regex: '.*' + query.name + '.*' } },
+              { code: { $regex: '.*' + query.code + '.*' } },
+            ],
+          }
+        : {};
+
     const examQuery = userId
-      ? this.repository.find({ ...extractQuery, createdBy: userId })
+      ? this.repository.find({ ...extractQuery, $and: [{ createdBy: userId }] })
       : this.repository.find({ ...extractQuery });
 
     const total = await examQuery.clone().count();
