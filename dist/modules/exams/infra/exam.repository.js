@@ -61,15 +61,19 @@ let ExamRepository = class ExamRepository {
     }
     async findAll(pageOptions, query, userId = '') {
         const { take, skip } = pageOptions;
+        const extractQuery = {
+            $or: [{ name: query.name }, { code: query.code }],
+        };
         const examQuery = userId
-            ? this.repository.find(Object.assign(Object.assign({}, query), { createdBy: userId }))
-            : this.repository.find(Object.assign({}, query));
+            ? this.repository.find(Object.assign(Object.assign({}, extractQuery), { createdBy: userId }))
+            : this.repository.find(Object.assign({}, extractQuery));
         const total = await examQuery.clone().count();
         const exams = await examQuery
+            .populate('questions')
             .limit(take)
             .skip(skip)
             .sort({ updatedAt: -1 })
-            .select('-questions -createdBy -updatedBy')
+            .select('-questions.options -createdBy -updatedBy')
             .lean()
             .exec();
         return {

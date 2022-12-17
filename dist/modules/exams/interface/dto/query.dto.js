@@ -19,5 +19,10 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], QueryExamDto.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], QueryExamDto.prototype, "name", void 0);
 exports.QueryExamDto = QueryExamDto;
 //# sourceMappingURL=query.dto.js.map
