@@ -64,15 +64,14 @@ export class ExamRepository {
     total: number;
   }> {
     const { take, skip } = pageOptions;
-    const extractQuery =
-      query.code || query.name
-        ? {
-            $or: [
-              { name: { $regex: '.*' + query.name + '.*' } },
-              { code: { $regex: '.*' + query.code + '.*' } },
-            ],
-          }
-        : {};
+    const extractQuery = query.q
+      ? {
+          $or: [
+            { name: { $regex: '.*' + query.q + '.*' } },
+            { code: { $regex: '.*' + query.q + '.*' } },
+          ],
+        }
+      : {};
 
     const examQuery = userId
       ? this.repository.find({ ...extractQuery, $and: [{ createdBy: userId }] })

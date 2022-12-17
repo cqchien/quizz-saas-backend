@@ -61,11 +61,11 @@ let ExamRepository = class ExamRepository {
     }
     async findAll(pageOptions, query, userId = '') {
         const { take, skip } = pageOptions;
-        const extractQuery = query.code || query.name
+        const extractQuery = query.q
             ? {
                 $or: [
-                    { name: { $regex: '.*' + query.name + '.*' } },
-                    { code: { $regex: '.*' + query.code + '.*' } },
+                    { name: { $regex: '.*' + query.q + '.*' } },
+                    { code: { $regex: '.*' + query.q + '.*' } },
                 ],
             }
             : {};
