@@ -64,18 +64,21 @@ export class ExamRepository {
     total: number;
   }> {
     const { take, skip } = pageOptions;
-
+    const extractQuery = {
+      $or: [{ name: query.name }, { code: query.code }],
+    };
     const examQuery = userId
-      ? this.repository.find({ ...query, createdBy: userId })
-      : this.repository.find({ ...query });
+      ? this.repository.find({ ...extractQuery, createdBy: userId })
+      : this.repository.find({ ...extractQuery });
 
     const total = await examQuery.clone().count();
 
     const exams = await examQuery
+      .populate('questions')
       .limit(take)
       .skip(skip)
       .sort({ updatedAt: -1 })
-      .select('-questions -createdBy -updatedBy')
+      .select('-questions.options -createdBy -updatedBy')
       .lean<Exam[]>()
       .exec();
 

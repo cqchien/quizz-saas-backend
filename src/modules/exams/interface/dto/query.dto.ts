@@ -5,4 +5,8 @@ export class QueryExamDto {
   @ApiPropertyOptional()
   @IsOptional()
   code: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  name: string;
 }
