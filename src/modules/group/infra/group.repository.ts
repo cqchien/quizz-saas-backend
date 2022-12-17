@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { DefaultNamingStrategy } from 'typeorm';
 
 import type { GroupEntity } from '../domain/entity/group.entity';
 import type { GroupDocument } from '../domain/group.schema';
@@ -29,12 +30,20 @@ export class GroupRepository {
     await this.repository.deleteOne({ _id: groupId });
   }
 
-  public async findAll(query = {}): Promise<GroupEntity[]> {
-    const groups = await this.repository
-      .find({ ...query })
-      .populate('members')
-      .lean<Group[]>()
-      .exec();
+  public async findAll(query?: any): Promise<GroupEntity[]> {
+    const extractQuery = query.name
+      ? {
+          $or: [{ name: { $regex: '.*' + query.name + '.*' } }],
+        }
+      : {};
+
+    const groupQuery = query.createdBy
+      ? this.repository.find({
+          ...extractQuery,
+          $and: [{ createdBy: query.createdBy }],
+        })
+      : this.repository.find({ ...extractQuery });
+    const groups = await groupQuery.populate('members').lean<Group[]>().exec();
 
     return groups.map((group) => this.toEntity(group));
   }

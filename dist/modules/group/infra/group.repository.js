@@ -32,12 +32,16 @@ let GroupRepository = class GroupRepository {
     async delete(groupId) {
         await this.repository.deleteOne({ _id: groupId });
     }
-    async findAll(query = {}) {
-        const groups = await this.repository
-            .find(Object.assign({}, query))
-            .populate('members')
-            .lean()
-            .exec();
+    async findAll(query) {
+        const extractQuery = query.name
+            ? {
+                $or: [{ name: { $regex: '.*' + query.name + '.*' } }],
+            }
+            : {};
+        const groupQuery = query.createdBy
+            ? this.repository.find(Object.assign(Object.assign({}, extractQuery), { $and: [{ createdBy: query.createdBy }] }))
+            : this.repository.find(Object.assign({}, extractQuery));
+        const groups = await groupQuery.populate('members').lean().exec();
         return groups.map((group) => this.toEntity(group));
     }
     async findOne(groupId, userId = '') {
