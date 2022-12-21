@@ -32,7 +32,7 @@ let MailService = class MailService {
         });
     }
     async sendEmailChangePassword(user, token) {
-        const magicLink = `${process.env.API_URL}/change-password?token=${token}`;
+        const magicLink = `${process.env.API_URL}/users/change-password?token=${token}`;
         const html = this.replacer(change_password_1.informChangePassword.body, {
             name: user.name,
             magicLink,
