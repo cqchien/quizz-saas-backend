@@ -32,7 +32,7 @@ __decorate([
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Boolean)
-], Setting.prototype, "showAllQuestion", void 0);
+], Setting.prototype, "showCam", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)

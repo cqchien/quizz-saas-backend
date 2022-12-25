@@ -20,7 +20,7 @@ export class SettingPresenter {
 
   @ApiPropertyOptional()
   @IsOptional()
-  showAllQuestion: boolean;
+  showCam: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()

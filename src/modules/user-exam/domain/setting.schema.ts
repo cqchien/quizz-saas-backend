@@ -14,7 +14,7 @@ export class UserExamSetting {
   viewNextQuestion: boolean;
 
   @Prop()
-  showAllQuestion: boolean;
+  showCam: boolean;
 
   @Prop()
   timePerQuestion: number;

@@ -7,7 +7,7 @@ export class Setting {
 
   viewNextQuestion: boolean;
 
-  showAllQuestion: boolean;
+  showCam: boolean;
 
   timePerQuestion: number;
 

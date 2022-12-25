@@ -7,7 +7,7 @@ export class UserExamSettingEntity {
 
   viewNextQuestion: boolean;
 
-  showAllQuestion: boolean;
+  showCam: boolean;
 
   timePerQuestion: number;
 

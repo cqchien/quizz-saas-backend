@@ -20,7 +20,7 @@ export class SettingDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  showAllQuestion: boolean;
+  showCam: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()

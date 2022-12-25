@@ -14,7 +14,7 @@ export class UserExamSettingPresenter {
   viewNextQuestion: boolean;
 
   @ApiPropertyOptional()
-  showAllQuestion: boolean;
+  showCam: boolean;
 
   @ApiPropertyOptional()
   timePerQuestion: number;

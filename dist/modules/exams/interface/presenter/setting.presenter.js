@@ -38,7 +38,7 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
-], SettingPresenter.prototype, "showAllQuestion", void 0);
+], SettingPresenter.prototype, "showCam", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsOptional)(),

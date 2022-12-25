@@ -32,7 +32,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     __metadata("design:type", Boolean)
-], UserExamSettingPresenter.prototype, "showAllQuestion", void 0);
+], UserExamSettingPresenter.prototype, "showCam", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     __metadata("design:type", Number)
