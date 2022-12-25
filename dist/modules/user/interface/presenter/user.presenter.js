@@ -15,7 +15,8 @@ const constants_1 = require("../../../../constants");
 const decorators_1 = require("../../../../decorators");
 class UserPresenter {
     constructor(entity) {
-        this.id = entity.id;
+        var _a, _b;
+        this.id = entity.id || ((_b = (_a = entity) === null || _a === void 0 ? void 0 : _a._id) === null || _b === void 0 ? void 0 : _b.toString());
         this.name = entity.name;
         this.role = entity.role;
         this.email = entity.email;

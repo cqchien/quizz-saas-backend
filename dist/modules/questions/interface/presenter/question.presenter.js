@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionPresenter = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const user_presenter_1 = require("../../../user/interface/presenter/user.presenter");
 class QuestionPresenter {
     constructor(entity) {
         this.id = entity.id;
@@ -27,7 +28,9 @@ class QuestionPresenter {
         this.mode = entity.mode;
         this.createdAt = entity.createdAt;
         this.updatedAt = entity.updatedAt;
-        this.createdBy = entity.createdBy;
+        this.createdBy = entity.createdBy
+            ? new user_presenter_1.UserPresenter(entity.createdBy)
+            : undefined;
         this.updatedBy = entity.updatedBy;
     }
 }
@@ -89,7 +92,7 @@ __decorate([
 ], QuestionPresenter.prototype, "updatedAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", String)
+    __metadata("design:type", user_presenter_1.UserPresenter)
 ], QuestionPresenter.prototype, "createdBy", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),

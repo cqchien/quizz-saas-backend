@@ -86,6 +86,7 @@ let QuestionRepository = class QuestionRepository {
         const questionsQuery = this.repository.find(Object.assign({}, query));
         const total = await questionsQuery.clone().count();
         const questions = await questionsQuery
+            .populate('createdBy')
             .limit(take)
             .skip(skip)
             .sort({ updatedAt: -1 })
