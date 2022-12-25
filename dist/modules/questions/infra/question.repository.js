@@ -57,32 +57,37 @@ let QuestionRepository = class QuestionRepository {
         if (topic || tags) {
             query = Object.assign(Object.assign({}, query), { $or: [...tmp] });
         }
+        let andQuery = [];
         if (question) {
-            query = Object.assign(Object.assign({}, query), { $and: [
-                    {
-                        $text: {
-                            $search: question,
-                        },
+            andQuery = [
+                ...andQuery,
+                {
+                    $text: {
+                        $search: question,
                     },
-                ] });
+                },
+            ];
         }
         if (createdBy) {
-            query = Object.assign(Object.assign({}, query), { $and: [{ createdBy }] });
+            andQuery = [...andQuery, { createdBy }];
         }
         if (mode === constant_1.MODE.PUBLIC) {
-            query = Object.assign(Object.assign({}, query), { $and: [{ mode }] });
+            andQuery = [...andQuery, { mode }];
         }
         else {
             if (userId) {
-                query =
+                andQuery =
                     mode === constant_1.MODE.PRIVATE
-                        ? Object.assign(Object.assign({}, query), { $and: [{ createdBy: userId }] }) : Object.assign(Object.assign({}, query), { $and: [
+                        ? [...andQuery, { createdBy: userId }]
+                        : [
+                            ...andQuery,
                             {
                                 $or: [{ createdBy: userId }, { mode: constant_1.MODE.PUBLIC }],
                             },
-                        ] });
+                        ];
             }
         }
+        query = Object.assign(Object.assign({}, query), { $and: [...andQuery] });
         const questionsQuery = this.repository.find(Object.assign({}, query));
         const total = await questionsQuery.clone().count();
         const questions = await questionsQuery

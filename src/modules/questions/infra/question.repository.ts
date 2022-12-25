@@ -62,48 +62,42 @@ export class QuestionRepository {
       };
     }
 
+    let andQuery: any = [];
+
     if (question) {
-      query = {
-        ...query,
-        $and: [
-          {
-            $text: {
-              $search: question,
-            },
+      andQuery = [
+        ...andQuery,
+        {
+          $text: {
+            $search: question,
           },
-        ],
-      };
+        },
+      ];
     }
 
     if (createdBy) {
-      query = {
-        ...query,
-        $and: [{ createdBy }],
-      };
+      andQuery = [...andQuery, { createdBy }];
     }
 
     if (mode === MODE.PUBLIC) {
-      query = {
-        ...query,
-        $and: [{ mode }],
-      };
+      andQuery = [...andQuery, { mode }];
     } else {
       if (userId) {
-        query =
+        andQuery =
           mode === MODE.PRIVATE
-            ? {
-                ...query,
-                $and: [{ createdBy: userId }],
-              }
-            : {
-                ...query,
-                $and: [
-                  {
-                    $or: [{ createdBy: userId }, { mode: MODE.PUBLIC }],
-                  },
-                ],
-              };
+            ? [...andQuery, { createdBy: userId }]
+            : [
+                ...andQuery,
+                {
+                  $or: [{ createdBy: userId }, { mode: MODE.PUBLIC }],
+                },
+              ];
       }
+    }
+
+    query = {
+      ...query,
+      $and: [...andQuery],
     }
 
     const questionsQuery = this.repository.find({ ...query });
