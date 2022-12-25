@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import type { UserEntity } from '../../../user/domain/entity/user.entity';
+import { UserPresenter } from '../../../user/interface/presenter/user.presenter';
 import type { QuestionEntity } from '../../domain/entity/question.entity';
 import type { QuestionOptionsPresenter } from './question-options.presenter';
 
@@ -47,7 +49,7 @@ export class QuestionPresenter {
   updatedAt?: Date;
 
   @ApiProperty()
-  createdBy?: string;
+  createdBy?: UserPresenter;
 
   @ApiProperty()
   updatedBy?: string;
@@ -67,7 +69,9 @@ export class QuestionPresenter {
     this.mode = entity.mode;
     this.createdAt = entity.createdAt;
     this.updatedAt = entity.updatedAt;
-    this.createdBy = entity.createdBy;
+    this.createdBy = entity.createdBy
+      ? new UserPresenter(entity.createdBy as unknown as UserEntity)
+      : undefined;
     this.updatedBy = entity.updatedBy;
   }
 }

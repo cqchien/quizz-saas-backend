@@ -3,6 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RoleType } from '../../../../constants';
 import { ApiEnumProperty } from '../../../../decorators';
 import type { UserEntity } from '../../domain/entity/user.entity';
+import type { User } from '../../domain/user.schema';
 
 export class UserPresenter {
   @ApiProperty()
@@ -30,7 +31,7 @@ export class UserPresenter {
   createdAt?: Date;
 
   constructor(entity: UserEntity) {
-    this.id = entity.id;
+    this.id = entity.id || (entity as User)?._id?.toString();
     this.name = entity.name;
     this.role = entity.role;
     this.email = entity.email;

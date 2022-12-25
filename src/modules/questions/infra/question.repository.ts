@@ -111,6 +111,7 @@ export class QuestionRepository {
     const total = await questionsQuery.clone().count();
 
     const questions = await questionsQuery
+      .populate('createdBy')
       .limit(take)
       .skip(skip)
       .sort({ updatedAt: -1 })
