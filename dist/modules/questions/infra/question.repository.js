@@ -44,6 +44,7 @@ let QuestionRepository = class QuestionRepository {
         return this.toEntity(questionModel);
     }
     async findAll(pageOptions, queryDto, mode = '', userId = '') {
+        var _a, _b;
         const { take, skip } = pageOptions;
         const { topic, tags, question, createdBy } = queryDto;
         let query = {};
@@ -88,6 +89,12 @@ let QuestionRepository = class QuestionRepository {
             }
         }
         query = Object.assign(Object.assign({}, query), { $and: [...andQuery] });
+        if (!query['$or'] || ((_a = query['$or']) === null || _a === void 0 ? void 0 : _a.length) === 0) {
+            delete query['$or'];
+        }
+        if (!query['$and'] || ((_b = query['$and']) === null || _b === void 0 ? void 0 : _b.length) === 0) {
+            delete query['$and'];
+        }
         const questionsQuery = this.repository.find(Object.assign({}, query));
         const total = await questionsQuery.clone().count();
         const questions = await questionsQuery

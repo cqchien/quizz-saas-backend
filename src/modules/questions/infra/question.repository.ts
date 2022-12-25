@@ -98,6 +98,14 @@ export class QuestionRepository {
     query = {
       ...query,
       $and: [...andQuery],
+    };
+
+    if (!query['$or'] || query['$or']?.length === 0) {
+      delete query['$or'];
+    }
+
+    if (!query['$and'] || query['$and']?.length === 0) {
+      delete query['$and'];
     }
 
     const questionsQuery = this.repository.find({ ...query });
