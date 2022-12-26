@@ -18,18 +18,22 @@ class QueryQuestionDto {
 }
 __decorate([
     (0, decorators_1.StringFieldOptional)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], QueryQuestionDto.prototype, "question", void 0);
 __decorate([
     (0, decorators_1.StringFieldOptional)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], QueryQuestionDto.prototype, "tags", void 0);
 __decorate([
     (0, decorators_1.StringFieldOptional)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], QueryQuestionDto.prototype, "topic", void 0);
 __decorate([
     (0, decorators_1.StringFieldOptional)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], QueryQuestionDto.prototype, "createdBy", void 0);
 __decorate([
