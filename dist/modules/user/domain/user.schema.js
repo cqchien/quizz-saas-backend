@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userSchema = exports.User = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const abstract_schema_1 = require("../../../common/abstract.schema");
-const utils_1 = require("../../../common/utils");
 const constants_1 = require("../../../constants");
 let User = class User extends abstract_schema_1.AbstractSchema {
 };
@@ -60,7 +59,6 @@ exports.userSchema.pre('save', function (next) {
     if (!this.createdAt) {
         this.createdAt = now;
     }
-    this.password = (0, utils_1.generateHash)(this.password);
     next();
 });
 //# sourceMappingURL=user.schema.js.map

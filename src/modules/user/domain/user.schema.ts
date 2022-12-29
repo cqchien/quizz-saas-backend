@@ -3,7 +3,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import type { NextFunction } from 'express';
 
 import { AbstractSchema } from '../../../common/abstract.schema';
-import { generateHash } from '../../../common/utils';
 import { RoleType } from '../../../constants';
 import type { UserEntity } from './entity/user.entity';
 
@@ -50,8 +49,6 @@ userSchema.pre<UserEntity>(
     if (!this.createdAt) {
       this.createdAt = now;
     }
-
-    this.password = generateHash(this.password);
 
     next();
   },
