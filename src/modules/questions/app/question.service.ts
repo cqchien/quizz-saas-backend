@@ -238,6 +238,8 @@ export class QuestionService {
           language: lang || LANG.VIET,
           mode: invert(MAP_MODE)[mode],
           createdBy: user.id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         };
       });
 

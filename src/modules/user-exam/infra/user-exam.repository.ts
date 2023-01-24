@@ -105,7 +105,7 @@ export class UserExamRepository {
         createdBy: undefined,
         updatedBy: undefined,
       },
-      user: userExam.user._id.toString(),
+      user: userExam.user?._id.toString(),
       userEntity: {
         ...userExam.user,
         id: userExam.user._id.toString(),
