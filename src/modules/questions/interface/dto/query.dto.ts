@@ -5,7 +5,7 @@ import { StringFieldOptional } from '../../../../decorators';
 import { QUESTION_BANK_TYPE } from '../../../exams/constant';
 
 export class QueryQuestionDto {
-  @StringFieldOptional()
+  @ApiPropertyOptional()
   @IsOptional()
   question: string;
 
