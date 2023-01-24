@@ -81,7 +81,7 @@ let UserExamRepository = class UserExamRepository {
         return userExamEntity.map((examEntity) => this.toEntity(examEntity));
     }
     toEntity(userExam) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         const schedules = (((_a = userExam.templateExam) === null || _a === void 0 ? void 0 : _a.schedules) || []).map((schedule) => {
             var _a, _b;
             return (Object.assign(Object.assign({}, schedule), { assignedGroup: (_b = (_a = schedule.assignedGroup) === null || _a === void 0 ? void 0 : _a._id) === null || _b === void 0 ? void 0 : _b.toString() }));
@@ -90,7 +90,7 @@ let UserExamRepository = class UserExamRepository {
             id: userExam._id.toString(),
             templateExam: (_b = userExam.templateExam) === null || _b === void 0 ? void 0 : _b._id.toString(),
             templateExamEntity: Object.assign(Object.assign({}, userExam.templateExam), { id: (_c = userExam.templateExam) === null || _c === void 0 ? void 0 : _c._id.toString(), questions: [], schedules, createdBy: undefined, updatedBy: undefined }),
-            user: userExam.user._id.toString(),
+            user: (_d = userExam.user) === null || _d === void 0 ? void 0 : _d._id.toString(),
             userEntity: Object.assign(Object.assign({}, userExam.user), { id: userExam.user._id.toString() }),
             setting: userExam.setting,
             code: userExam.code,

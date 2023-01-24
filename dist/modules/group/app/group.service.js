@@ -67,7 +67,7 @@ let GroupService = class GroupService {
             throw new common_1.NotFoundException('Group does not exist or not allow to update');
         }
         const memberEntities = await this.createMembersForGroup(groupDto.members);
-        const groupEntity = Object.assign(Object.assign({}, group), { members: memberEntities.map((entity) => entity.id || '') });
+        const groupEntity = Object.assign(Object.assign(Object.assign({}, group), groupDto), { members: memberEntities.map((entity) => entity.id || '') });
         return this.groupRepository.update(groupEntity);
     }
     parseFile(file) {

@@ -56,7 +56,7 @@ let UserRepository = class UserRepository {
         return this.toEntity(user.toObject());
     }
     async update(userEntity) {
-        await this.repository.updateOne({ _id: userEntity.id }, userEntity);
+        await this.repository.updateOne({ _id: userEntity.id }, Object.assign(Object.assign({}, userEntity), { _id: userEntity.id }));
         return this.findByCondition({
             id: userEntity.id || '',
         });

@@ -143,6 +143,8 @@ let QuestionService = class QuestionService {
                     language: lang || constant_2.LANG.VIET,
                     mode: (0, lodash_1.invert)(constant_2.MAP_MODE)[mode],
                     createdBy: user.id,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 };
             });
             return this.questionRepository.createMultiple(questionsToInsert);

@@ -26,7 +26,7 @@ let GroupRepository = class GroupRepository {
         return this.toEntity(user.toObject());
     }
     async update(groupEntity) {
-        await this.repository.updateOne({ _id: groupEntity.id }, groupEntity);
+        await this.repository.updateOne({ _id: groupEntity.id }, Object.assign(Object.assign({}, groupEntity), { _id: groupEntity.id }));
         return this.findOne(groupEntity.id || '');
     }
     async delete(groupId) {
