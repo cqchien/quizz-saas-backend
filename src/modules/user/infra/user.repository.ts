@@ -49,7 +49,10 @@ export class UserRepository {
   }
 
   public async update(userEntity: UserEntity): Promise<UserEntity> {
-    await this.repository.updateOne({ _id: userEntity.id }, userEntity);
+    await this.repository.updateOne(
+      { _id: userEntity.id },
+      { ...userEntity, _id: userEntity.id },
+    );
 
     return this.findByCondition({
       id: userEntity.id || '',

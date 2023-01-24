@@ -21,7 +21,10 @@ export class GroupRepository {
   }
 
   public async update(groupEntity: GroupEntity): Promise<GroupEntity> {
-    await this.repository.updateOne({ _id: groupEntity.id }, groupEntity);
+    await this.repository.updateOne(
+      { _id: groupEntity.id },
+      { ...groupEntity, _id: groupEntity.id },
+    );
 
     return this.findOne(groupEntity.id || '');
   }
