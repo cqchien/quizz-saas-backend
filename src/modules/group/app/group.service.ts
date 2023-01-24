@@ -114,6 +114,7 @@ export class GroupService {
 
     const groupEntity = {
       ...group,
+      ...groupDto,
       members: memberEntities.map((entity) => entity.id || ''),
     };
 
