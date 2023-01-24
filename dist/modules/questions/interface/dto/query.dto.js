@@ -17,7 +17,7 @@ const constant_1 = require("../../../exams/constant");
 class QueryQuestionDto {
 }
 __decorate([
-    (0, decorators_1.StringFieldOptional)(),
+    (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], QueryQuestionDto.prototype, "question", void 0);
