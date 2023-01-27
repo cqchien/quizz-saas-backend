@@ -25,7 +25,7 @@ export class UserExamRepository {
 
     const userExamEntity = await this.repository
       .findOne(formatedOptions)
-      .populate('templateExam user questions.question', populateOptions)
+      .populate('user questions.question', populateOptions)
       .lean<UserExam>()
       .exec();
 
@@ -66,7 +66,6 @@ export class UserExamRepository {
       const userExamEntity = await userExamQuery
         .limit(pageOptions.take)
         .skip(pageOptions.skip)
-        .populate('templateExam')
         .sort({ updatedAt: -1 })
         .lean<UserExam[]>()
         .exec();
@@ -87,24 +86,9 @@ export class UserExamRepository {
   }
 
   private toEntity(userExam: UserExam): UserExamEntity {
-    const schedules = (userExam.templateExam?.schedules || []).map(
-      (schedule) => ({
-        ...schedule,
-        assignedGroup: schedule.assignedGroup?._id?.toString(),
-      }),
-    );
-
     return {
       id: userExam._id.toString(),
       templateExam: userExam.templateExam?._id.toString(),
-      templateExamEntity: {
-        ...userExam.templateExam,
-        id: userExam.templateExam?._id.toString(),
-        questions: [],
-        schedules,
-        createdBy: undefined,
-        updatedBy: undefined,
-      },
       user: userExam.user?._id.toString(),
       userEntity: {
         ...userExam.user,
