@@ -8,6 +8,7 @@ import { Exam } from '../../exams/domain/exam.schema';
 import { Question } from '../../questions/domain/question.schema';
 import { User } from '../../user/domain/user.schema';
 import type { UserExamEntity } from './entity/user-exam.entity';
+import { UserExamSchedule } from './schedule.schema';
 import { UserExamSetting } from './setting.schema';
 
 @Schema()
@@ -46,8 +47,10 @@ export class UserExam extends AbstractSchema {
   })
   user: User;
 
-  @Prop()
-  scheduleCode: string;
+  @Prop({
+    type: () => UserExamSchedule,
+  })
+  schedule: UserExamSchedule;
 
   @Prop({
     type: () => UserExamSetting,

@@ -5,6 +5,7 @@ import { QuestionPresenter } from '../../../questions/interface/presenter/questi
 import { UserPresenter } from '../../../user/interface/presenter/user.presenter';
 import { MAP_RESULT_EXAM_STATUS } from '../../constant';
 import type { UserExamEntity } from '../../domain/entity/user-exam.entity';
+import { UserExamSchedulePresenter } from './schedule.presenter';
 import { UserExamSettingPresenter } from './setting.presenter';
 
 export class AnswerQuestionPresenter {
@@ -54,8 +55,10 @@ export class UserExamPresenter {
   @ApiProperty()
   status: string;
 
-  @ApiProperty()
-  scheduleCode: string;
+  @ApiProperty({
+    type: UserExamSchedulePresenter,
+  })
+  schedule: UserExamSchedulePresenter;
 
   @ApiProperty()
   score: number;
@@ -95,7 +98,7 @@ export class UserExamPresenter {
     this.code = entity.code;
     this.name = entity.name;
     this.description = entity.description;
-    this.scheduleCode = entity.scheduleCode;
+    this.schedule = entity.schedule;
     this.setting = entity.setting;
     this.status = entity.status;
     this.type = entity.type;

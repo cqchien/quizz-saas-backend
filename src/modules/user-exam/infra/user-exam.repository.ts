@@ -128,7 +128,7 @@ export class UserExamRepository {
           id: answerQuestion.question?._id.toString(),
         },
       })),
-      scheduleCode: userExam.scheduleCode,
+      schedule: userExam.schedule,
       updatedAt: userExam.updatedAt,
       createdAt: userExam.createdAt,
     };

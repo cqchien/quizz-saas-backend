@@ -54,7 +54,7 @@ export class UserExamService {
     const userExamEntity: UserExamEntity = {
       templateExam: exam.id || '',
       user: userId,
-      scheduleCode,
+      schedule,
       setting: exam.setting,
       code: exam.code,
       name: exam.name,
@@ -146,23 +146,8 @@ export class UserExamService {
       throw new BadRequestException('Exam have already submitted!!');
     }
 
-    const inProgressSchedule = exam.templateExamEntity?.schedules.find(
-      (schedule) =>
-        schedule.status === SCHEDULE_STATUS.IN_PROGRESS &&
-        schedule.code === exam.scheduleCode,
-    );
-
-    if (!inProgressSchedule) {
-      throw new BadRequestException(
-        'Exam not allow to view or schedule does not exist.',
-      );
-    }
-
     if (
-      !this.checkValidTakeExam(
-        inProgressSchedule.startTime,
-        inProgressSchedule.endTime,
-      )
+      !this.checkValidTakeExam(exam.schedule.startTime, exam.schedule.endTime)
     ) {
       throw new BadRequestException(
         'You can view the exam when it has started and during the test.',
@@ -216,14 +201,10 @@ export class UserExamService {
       id: examId,
     });
 
-    const userExamSchedule = (exam?.templateExamEntity?.schedules || []).find(
-      (schedule: Schedule) => schedule.code === exam?.scheduleCode,
-    );
-
     if (
       !exam ||
       exam.status === USER_EXAM_STATUS.SUBMITTED ||
-      userExamSchedule?.status !== SCHEDULE_STATUS.IN_PROGRESS
+      exam.schedule?.status !== SCHEDULE_STATUS.IN_PROGRESS
     ) {
       throw new NotFoundException(
         'Exam does not exist or user not allow to submit the exam!!',
