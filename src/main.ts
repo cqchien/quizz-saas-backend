@@ -8,6 +8,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import compression from 'compression';
+import { json, urlencoded } from 'express';
 import { middleware as expressCtx } from 'express-ctx';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
@@ -26,6 +27,9 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     new ExpressAdapter(),
   );
 
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: false }));
+
   app.enableCors({
     origin: [
       'http://localhost:8000',
@@ -41,7 +45,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
   // app.setGlobalPrefix('/api'); use api as global prefix if you don't have subdomain
   app.use(
     rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
+      windowMs: 60 * 60 * 1000, // 15 minutes
       max: 100, // limit each IP to 100 requests per windowMs
     }),
   );

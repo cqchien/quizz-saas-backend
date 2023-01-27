@@ -8,6 +8,7 @@ const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const platform_express_1 = require("@nestjs/platform-express");
 const compression_1 = __importDefault(require("compression"));
+const express_1 = require("express");
 const express_ctx_1 = require("express-ctx");
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -20,6 +21,8 @@ const api_config_service_1 = require("./shared/services/api-config.service");
 const shared_module_1 = require("./shared/shared.module");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, new platform_express_1.ExpressAdapter());
+    app.use((0, express_1.json)({ limit: '50mb' }));
+    app.use((0, express_1.urlencoded)({ limit: '50mb', extended: false }));
     app.enableCors({
         origin: [
             'http://localhost:8000',
@@ -32,7 +35,7 @@ async function bootstrap() {
     app.enable('trust proxy');
     app.use((0, helmet_1.default)());
     app.use((0, express_rate_limit_1.default)({
-        windowMs: 15 * 60 * 1000,
+        windowMs: 60 * 60 * 1000,
         max: 100,
     }));
     app.use((0, compression_1.default)());
