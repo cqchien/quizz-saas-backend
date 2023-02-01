@@ -10,7 +10,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import compression from 'compression';
 import { json, urlencoded } from 'express';
 import { middleware as expressCtx } from 'express-ctx';
-import rateLimit from 'express-rate-limit';
+// import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
@@ -43,12 +43,12 @@ export async function bootstrap(): Promise<NestExpressApplication> {
   app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
   app.use(helmet());
   // app.setGlobalPrefix('/api'); use api as global prefix if you don't have subdomain
-  app.use(
-    rateLimit({
-      windowMs: 60 * 60 * 1000, // 15 minutes
-      max: 100, // limit each IP to 100 requests per windowMs
-    }),
-  );
+  // app.use(
+  //   rateLimit({
+  //     windowMs: 60 * 60 * 1000, // 15 minutes
+  //     max: 100, // limit each IP to 100 requests per windowMs
+  //   }),
+  // );
   app.use(compression());
   app.use(morgan('combined'));
   app.enableVersioning();
