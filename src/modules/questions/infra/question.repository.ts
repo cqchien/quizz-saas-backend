@@ -116,7 +116,7 @@ export class QuestionRepository {
       .populate('createdBy')
       .limit(take)
       .skip(skip)
-      .sort({ updatedAt: -1 })
+      .sort({updatedAt: "descending"})
       .lean<Question[]>()
       .exec();
 
