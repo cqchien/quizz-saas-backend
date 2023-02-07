@@ -181,8 +181,8 @@ export class QuestionRepository {
       language: questionModel.language,
       attachments: questionModel.attachments,
       mode: questionModel.mode,
-      createdBy: questionModel.createdBy,
-      updatedBy: questionModel.updatedBy,
+      createdBy: questionModel.createdBy.toString(),
+      updatedBy: questionModel.updatedBy.toString(),
       createdAt: questionModel.createdAt,
       updatedAt: questionModel.updatedAt,
     };

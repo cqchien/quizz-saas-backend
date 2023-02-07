@@ -70,9 +70,6 @@ let QuestionService = class QuestionService {
         if (!existedQuestion) {
             throw new question_not_found_exception_1.QuestionNotFoundException('Question does not exist!!');
         }
-        if (existedQuestion.createdBy !== user.id && user.role !== role_type_1.RoleType.ADMIN) {
-            throw new question_not_allow_to_save_exception_1.QuestionNotAllowToSave('User does not have permission to update this question');
-        }
         const questionEntity = Object.assign(Object.assign({}, questionDto), { id: questionId, updatedAt: new Date(), updatedBy: user.id });
         const question = await this.questionRepository.update(questionEntity);
         if (!question) {

@@ -131,11 +131,11 @@ export class QuestionService {
       throw new QuestionNotFoundException('Question does not exist!!');
     }
 
-    if (existedQuestion.createdBy !== user.id && user.role !== RoleType.ADMIN) {
-      throw new QuestionNotAllowToSave(
-        'User does not have permission to update this question',
-      );
-    }
+    // if (existedQuestion.createdBy !== user.id && user.role !== RoleType.ADMIN) {
+    //   throw new QuestionNotAllowToSave(
+    //     'User does not have permission to update this question',
+    //   );
+    // }
 
     const questionEntity: QuestionEntity = {
       ...questionDto,
